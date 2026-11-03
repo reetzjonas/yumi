@@ -114,7 +114,7 @@ test("adding a recipe scales quantities and keeps its source", async () => {
     method: "POST",
     body: JSON.stringify({ recipeId: recipe.id, servings: 4, locale: "en" }),
   });
-  expect(await added.json()).toEqual({ added: 1 });
+  expect(await added.json()).toEqual({ added: 1, staples: [] });
   expect(
     await (await c.request(`/api/shopping/lists/${list.id}`)).json(),
   ).toMatchObject({

@@ -226,5 +226,16 @@
   "shopping.browse": "Nach Kategorie stöbern",
   "shopping.all_categories": "Alle Kategorien",
   "shopping.on_list": "(schon auf der Liste)",
-  "shopping.more_options": "Weitere Optionen"
+  "shopping.more_options": "Weitere Optionen",
+  "pantry.title": "Vorrat",
+  "pantry.add": "Vorratsartikel hinzufügen",
+  "pantry.description": "Vorratsartikel hast du immer zu Hause. Beim Übernehmen eines Rezepts in die Einkaufsliste werden sie übersprungen; wenn sie leer sind, kannst du sie trotzdem hinzufügen.",
+  "pantry.empty": "Noch keine Vorratsartikel",
+  "pantry.empty_hint": "Füge Dinge wie Salz, Öl oder Pfeffer hinzu, die du immer zu Hause hast.",
+  "pantry.remove": "{name} aus dem Vorrat entfernen",
+  "pantry.check_title": "Prüfe, ob du das noch hast",
+  "pantry.check_hint": "Diese Vorratsartikel wurden nicht auf die Liste gesetzt.",
+  "pantry.add_anyway": "Trotzdem hinzufügen",
+  "pantry.add_all": "Alle hinzufügen",
+  "pantry.all_at_home": "Alles da"
 }

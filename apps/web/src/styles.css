@@ -1048,3 +1048,16 @@ select:focus-visible {
   overflow-wrap: anywhere;
   hyphens: auto;
 }
+
+.staple-check {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.staple-check h3 {
+  font-weight: 600;
+}

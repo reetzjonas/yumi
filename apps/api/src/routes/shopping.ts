@@ -1,5 +1,6 @@
 import {
   ingredient,
+  pantryItem,
   recipe,
   recipeIngredient,
   shoppingEvent,
@@ -242,13 +243,31 @@ export const shopping = new Hono<HouseholdEnv>()
           sources: [{ kind: "recipe", id: source.id }],
         },
       }));
-      const parsed = events.map((e) => shoppingEventSchema.parse(e));
+      const staples = new Set(
+        (
+          await db
+            .select({ ingredientId: pantryItem.ingredientId })
+            .from(pantryItem)
+            .where(eq(pantryItem.householdId, householdId))
+        ).map((row) => row.ingredientId),
+      );
+      const isStaple = (event: ShoppingEvent) =>
+        event.type === "item_added" &&
+        !!event.payload.ingredientId &&
+        staples.has(event.payload.ingredientId);
+      const parsed = events
+        .filter((e) => !isStaple(e))
+        .map((e) => shoppingEventSchema.parse(e));
       const applied = parsed.length
         ? await applyShoppingEvents(
             { listId, householdId, userId: c.get("user").id },
             parsed,
           )
         : [];
-      return c.json({ added: applied.length }, 201);
+      // offered as "check if you still have" so the client can add them anyway
+      const skipped = events.flatMap((e) =>
+        e.type === "item_added" && isStaple(e) ? [e.payload] : [],
+      );
+      return c.json({ added: applied.length, staples: skipped }, 201);
     },
   );

@@ -226,5 +226,16 @@
   "shopping.browse": "Browse by category",
   "shopping.all_categories": "All categories",
   "shopping.on_list": "(already on the list)",
-  "shopping.more_options": "More options"
+  "shopping.more_options": "More options",
+  "pantry.title": "Pantry staples",
+  "pantry.add": "Add staple",
+  "pantry.description": "Staples are always at home. They are skipped when you add a recipe to a shopping list, and you can still add them if you run out.",
+  "pantry.empty": "No staples yet",
+  "pantry.empty_hint": "Add things like salt, oil or pepper that you always have at home.",
+  "pantry.remove": "Remove {name} from staples",
+  "pantry.check_title": "Check if you still have",
+  "pantry.check_hint": "These staples were not added to the list.",
+  "pantry.add_anyway": "Add anyway",
+  "pantry.add_all": "Add all",
+  "pantry.all_at_home": "All at home"
 }

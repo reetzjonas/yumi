@@ -9,6 +9,7 @@ import { env } from "./env";
 import { ingredients } from "./routes/ingredients";
 import { householdInvites, invites } from "./routes/invites";
 import { me } from "./routes/me";
+import { pantry } from "./routes/pantry";
 import { recipes } from "./routes/recipes";
 import { shopping } from "./routes/shopping";
 import { listStore, stores } from "./routes/stores";
@@ -24,6 +25,7 @@ const api = new Hono<AppEnv>()
   .route("/invites", invites)
   .route("/ingredients", ingredients)
   .route("/recipes", recipes)
+  .route("/pantry", pantry)
   .route("/shopping", shopping)
   .route("/shopping", listStore)
   .route("/stores", stores);

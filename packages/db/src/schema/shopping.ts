@@ -7,6 +7,7 @@ import {
   real,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth";
@@ -100,5 +101,10 @@ export const pantryItem = pgTable(
       .references(() => ingredient.id, { onDelete: "cascade" }),
     ...timestamps,
   },
-  (t) => [index("pantry_item_household_idx").on(t.householdId)],
+  (t) => [
+    uniqueIndex("pantry_item_household_ingredient_idx").on(
+      t.householdId,
+      t.ingredientId,
+    ),
+  ],
 );

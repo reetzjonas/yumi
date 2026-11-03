@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useId, useState } from "react";
 import { toast } from "sonner";
 import { Field } from "@/components/auth-layout";
+import { StapleCheck } from "@/components/shopping/staple-check";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import { ensureOk, errorMessage } from "@/lib/api-error";
@@ -10,6 +11,8 @@ import { getLocale } from "@/lib/i18n";
 import { useMe } from "@/lib/session";
 import { useShoppingLists } from "@/lib/shopping";
 import { m } from "@/paraglide/messages";
+
+type StapleItems = Parameters<typeof StapleCheck>[0]["staples"];
 
 export function AddRecipeToList({
   recipeId,
@@ -24,6 +27,10 @@ export function AddRecipeToList({
   const queryClient = useQueryClient();
   const [selectedId, setSelectedId] = useState("");
   const [servings, setServings] = useState(String(defaultServings));
+  const [staples, setStaples] = useState<{
+    listId: string;
+    items: StapleItems;
+  } | null>(null);
   const listId = lists.data?.some((list) => list.id === selectedId)
     ? selectedId
     : (lists.data?.[0]?.id ?? "");
@@ -37,7 +44,8 @@ export function AddRecipeToList({
           }),
         )
       ).json(),
-    onSuccess: async ({ added }) => {
+    onSuccess: async ({ added, staples: skipped }) => {
+      setStaples(skipped.length ? { listId, items: skipped } : null);
       await queryClient.invalidateQueries({
         queryKey: ["shopping", householdId],
       });
@@ -98,6 +106,17 @@ export function AddRecipeToList({
           />
           <Button disabled={add.isPending}>{m["shopping.add_recipe"]()}</Button>
         </form>
+      )}
+      {staples && (
+        <StapleCheck
+          listId={staples.listId}
+          staples={staples.items}
+          onDone={(remaining) =>
+            setStaples(
+              remaining.length ? { ...staples, items: remaining } : null,
+            )
+          }
+        />
       )}
     </section>
   );
