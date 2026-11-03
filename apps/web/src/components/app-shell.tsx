@@ -7,6 +7,7 @@ import {
   ShoppingBasket,
 } from "lucide-react";
 import { createContext, type ReactNode, useContext } from "react";
+import { ConnectionStatus } from "@/components/pwa-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { m } from "@/paraglide/messages";
 
@@ -55,7 +56,10 @@ export function AppShell({
         </nav>
         {accountSlot && <div className="account-slot">{accountSlot}</div>}
         <main id="main" tabIndex={-1} className="app-main">
-          <div className="page-content">{children}</div>
+          <div className="page-content">
+            <ConnectionStatus />
+            {children}
+          </div>
         </main>
         <Toaster />
       </div>

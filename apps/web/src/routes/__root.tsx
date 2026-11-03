@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 import { AccountSlot, MoreAccountEntries } from "@/components/account-menu";
 import { AppShell } from "@/components/app-shell";
+import { PwaProvider } from "@/components/pwa-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { meQuery, useMe } from "@/lib/session";
 
@@ -45,16 +46,18 @@ function Root() {
   const me = useMe();
   return (
     <ThemeProvider>
-      {matches(pathname, BARE_PATHS) || !me ? (
-        <Outlet />
-      ) : (
-        <AppShell
-          accountSlot={<AccountSlot me={me} />}
-          moreSlot={<MoreAccountEntries me={me} />}
-        >
+      <PwaProvider>
+        {matches(pathname, BARE_PATHS) || !me ? (
           <Outlet />
-        </AppShell>
-      )}
+        ) : (
+          <AppShell
+            accountSlot={<AccountSlot me={me} />}
+            moreSlot={<MoreAccountEntries me={me} />}
+          >
+            <Outlet />
+          </AppShell>
+        )}
+      </PwaProvider>
     </ThemeProvider>
   );
 }

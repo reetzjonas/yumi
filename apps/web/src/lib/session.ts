@@ -4,6 +4,7 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { clearApiCache } from "@/lib/pwa-cache";
 
 async function fetchMe() {
   const res = await api.me.$get();
@@ -29,6 +30,7 @@ export function useMe() {
  * another account or household is shown.
  */
 export async function resetClientState(queryClient: QueryClient) {
+  await clearApiCache();
   // resetQueries drops cached data and refetches mounted queries (clear() would orphan them)
   await queryClient.resetQueries();
 }

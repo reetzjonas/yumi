@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
-export const buttonVariants = cva("button", {
+const buttonVariants = cva("button", {
   variants: {
     variant: {
       default: "button-primary",

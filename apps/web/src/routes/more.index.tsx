@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight, Settings } from "lucide-react";
 import { MoreSlot } from "@/components/app-shell";
 import { PageHeader } from "@/components/page";
+import { InstallHint } from "@/components/pwa-provider";
 import { m } from "@/paraglide/messages";
 
 export const Route = createFileRoute("/more/")({ component: More });
@@ -18,6 +19,7 @@ function More() {
         </Link>
       </div>
       <MoreSlot />
+      <InstallHint />
     </>
   );
 }
