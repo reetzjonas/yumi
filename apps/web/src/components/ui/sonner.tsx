@@ -9,7 +9,13 @@ export function Toaster() {
       theme={resolvedTheme}
       closeButton
       containerAriaLabel={m.toast_label()}
-      position="top-center"
+      position="bottom-right"
+      offset={{ bottom: 24, right: 24 }}
+      mobileOffset={{
+        bottom: "calc(88px + env(safe-area-inset-bottom))",
+        left: 16,
+        right: 16,
+      }}
       className="app-toaster"
       toastOptions={{
         closeButtonAriaLabel: m.toast_close(),

@@ -3,6 +3,8 @@ import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
+import { pwaOptions } from "./pwa.config.ts";
 
 export default defineConfig({
   plugins: [
@@ -10,6 +12,7 @@ export default defineConfig({
     tanstackRouter({ target: "react", autoCodeSplitting: true }),
     react(),
     tailwindcss(),
+    VitePWA(pwaOptions),
   ],
   resolve: { alias: { "@": new URL("./src", import.meta.url).pathname } },
   server: {
