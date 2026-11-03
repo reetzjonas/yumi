@@ -8,6 +8,7 @@ import {
   Pencil,
   SkipForward,
   Trash2,
+  X,
 } from "lucide-react";
 import { type ComponentProps, useId, useRef, useState } from "react";
 import { Field } from "@/components/auth-layout";
@@ -51,7 +52,7 @@ export function MealQueueEntry({
   onUpdate: (input: QueueEntryUpdate) => void;
 }) {
   const id = useId();
-  const menuButton = useRef<HTMLButtonElement>(null);
+  const sheet = useRef<HTMLDialogElement>(null);
   const [panel, setPanel] = useState<Panel>("closed");
   const [servings, setServings] = useState(String(entry.servings));
   const [plannedFor, setPlannedFor] = useState(entry.plannedFor ?? "");
@@ -76,12 +77,25 @@ export function MealQueueEntry({
     .filter(Boolean)
     .join(" · ");
 
+  function open() {
+    setPanel("menu");
+    sheet.current?.showModal();
+  }
+
   function close() {
+    sheet.current?.close();
+  }
+
+  function reset() {
     setPanel("closed");
     setRemoveItems(false);
     setServings(String(entry.servings));
     setPlannedFor(entry.plannedFor ?? "");
-    menuButton.current?.focus();
+  }
+
+  function move(offset: number) {
+    close();
+    onMove(offset);
   }
 
   return (
@@ -136,30 +150,39 @@ export function MealQueueEntry({
           <p className="row-detail">{meta}</p>
         </div>
         <Button
-          ref={menuButton}
           type="button"
           variant="ghost"
           className="queue-icon-action queue-menu-button"
           aria-label={m["queue.more_actions"]({ name })}
-          aria-expanded={panel !== "closed"}
-          aria-controls={`${id}-panel`}
-          onClick={() => (panel === "closed" ? setPanel("menu") : close())}
+          aria-haspopup="dialog"
+          onClick={open}
         >
           <Ellipsis size={20} aria-hidden="true" />
         </Button>
       </div>
-      {panel !== "closed" && (
-        <fieldset
-          id={`${id}-panel`}
-          className="queue-entry-panel"
-          aria-label={m["queue.more_actions"]({ name })}
-          onKeyDown={(event) => {
-            if (event.key === "Escape") {
-              event.stopPropagation();
-              close();
-            }
-          }}
-        >
+      <dialog
+        ref={sheet}
+        className="sheet"
+        aria-labelledby={`${id}-sheet-title`}
+        onClose={reset}
+      >
+        <div className="sheet-content">
+          <div className="sheet-header">
+            <div className="row-main">
+              <h2 id={`${id}-sheet-title`} className="sheet-title">
+                {name}
+              </h2>
+              <p className="row-detail">{meta}</p>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              aria-label={m["queue.close_menu"]()}
+              onClick={close}
+            >
+              <X size={20} aria-hidden="true" />
+            </Button>
+          </div>
           {panel === "menu" && (
             <ul className="queue-menu">
               <li>
@@ -203,7 +226,7 @@ export function MealQueueEntry({
                   variant="ghost"
                   disabled={disabled || index === 0}
                   aria-label={m["queue.move_up"]({ name })}
-                  onClick={() => onMove(-1)}
+                  onClick={() => move(-1)}
                 >
                   <ArrowUp size={18} aria-hidden="true" />
                   {m["queue.move_up_short"]()}
@@ -215,7 +238,7 @@ export function MealQueueEntry({
                   variant="ghost"
                   disabled={disabled || index === count - 1}
                   aria-label={m["queue.move_down"]({ name })}
-                  onClick={() => onMove(1)}
+                  onClick={() => move(1)}
                 >
                   <ArrowDown size={18} aria-hidden="true" />
                   {m["queue.move_down_short"]()}
@@ -224,7 +247,7 @@ export function MealQueueEntry({
               <li>
                 <Button
                   type="button"
-                  variant="ghost"
+                  variant="destructive"
                   disabled={disabled}
                   aria-label={m["queue.remove_meal"]({ name })}
                   onClick={() => setPanel("remove")}
@@ -301,7 +324,7 @@ export function MealQueueEntry({
               <div className="recipe-actions">
                 <Button
                   type="button"
-                  variant="secondary"
+                  variant="destructive"
                   disabled={disabled}
                   onClick={() => onRemove(removeItems)}
                 >
@@ -323,9 +346,14 @@ export function MealQueueEntry({
               )}
             </section>
           )}
-        </fieldset>
-      )}
-      {error && (
+          {error && (
+            <p className="form-error" role="alert">
+              {error}
+            </p>
+          )}
+        </div>
+      </dialog>
+      {error && panel === "closed" && (
         <p className="form-error" role="alert">
           {error}
         </p>

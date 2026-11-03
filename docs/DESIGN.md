@@ -14,7 +14,8 @@ imagery, gradients, blur, decorative accent borders or promotional copy.
 ## 2. Rules for every screen
 
 1. **One primary action per view.** Exactly one filled rust button. Everything
-   else is outline, ghost or a text link. Row actions are never rust.
+   else is outline, ghost or a text link. Row actions are never rust. Views
+   that save automatically (settings) have no primary button.
 2. **Color carries meaning.** Rust = do, olive = fine / done / info, amber =
    waiting, red = gone. Status is never hue alone: it always has an icon or a
    word ("wartet", "fällig", "abgehakt von Anna"). Sync pending is never red.
@@ -87,7 +88,7 @@ Quantities and timers use `tabular-nums`. Inputs never go below 16 px.
 
 | Width      | Navigation                                                                  | Content                       |
 | ---------- | --------------------------------------------------------------------------- | ----------------------------- |
-| < 768      | Top bar (page title + household chip), bottom tabs with labels              | One column                    |
+| < 768      | Top bar (wordmark + household chip)  , bottom tabs with labels              | One column                    |
 | 768 - 1199 | 88 px navigation rail, icon above label                                     | One column, max 760 px        |
 | >= 1200    | 256 px sidebar: household switcher, tabs, "Neues Rezept" (outline), account | Two panes per section (below) |
 
@@ -104,8 +105,9 @@ Shopping mode and cooking view are full-screen modes outside the shell at every
 size. From 768 px the cooking view uses two columns: ingredients for the step
 left, the step right.
 
-Each pane owns its scroll; there is no page scroll behind it and no horizontal
-scroll down to 320 px. Safe-area insets extend bars, rail and sidebar. On
+The page title stays in the content as the one h1. Each pane owns its scroll;
+there is no page scroll behind it and no horizontal page scroll down to 320 px.
+On phones, tag filters are one horizontally scrolling strip. Safe-area insets extend bars, rail and sidebar. On
 > = 1200 px, `/` focuses search and `n` starts a new recipe.
 
 ## 7. Component patterns
@@ -116,8 +118,9 @@ scroll down to 320 px. Safe-area insets extend bars, rail and sidebar. On
   ("4 Portionen · Do · 40 Min"), overflow menu. The menu holds Gekocht,
   Überspringen, Bearbeiten (servings, day), Nach oben / Nach unten, Entfernen.
   Servings and day are edited in a sheet, not inline.
-- **Overflow menu / sheet:** bottom sheet on phones, anchored menu or centered
-  dialog from 768 px.
+- **Overflow menu / sheet:** native `<dialog>` (focus trap, Escape, focus
+  return): bottom sheet on phones, centered dialog from 768 px. Header shows the
+  object (title + meta) and a close button; destructive items are red.
 - **Cooking view header (phone):** row 1 close + title (two lines max); row 2
   "Schritt 1 von 6 · 4 Portionen" and the wake-lock state as an icon.
 - **Empty state:** serif headline, one sentence, one primary next action.

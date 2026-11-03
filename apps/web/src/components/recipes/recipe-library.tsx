@@ -45,7 +45,7 @@ export function RecipeLibrary() {
           aria-label={m["recipes.filter_tags"]()}
         >
           <Button
-            variant={tag ? "ghost" : "secondary"}
+            variant="ghost"
             aria-pressed={!tag}
             onClick={() => setTag("")}
           >
@@ -54,7 +54,7 @@ export function RecipeLibrary() {
           {tags.data?.map((value) => (
             <Button
               key={value}
-              variant={tag === value ? "secondary" : "ghost"}
+              variant="ghost"
               aria-pressed={tag === value}
               onClick={() => setTag(value)}
             >
@@ -104,12 +104,15 @@ export function RecipeLibrary() {
                 )}
                 <div className="recipe-card-content">
                   <h2>{recipe.title}</h2>
-                  {totalMinutes(recipe) > 0 && (
-                    <p>{formatMinutes(totalMinutes(recipe))}</p>
-                  )}
-                  {recipe.tags.length > 0 && (
-                    <p className="row-detail">{recipe.tags.join(" · ")}</p>
-                  )}
+                  <p className="row-detail">
+                    {[
+                      totalMinutes(recipe) > 0 &&
+                        formatMinutes(totalMinutes(recipe)),
+                      ...recipe.tags,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
                 </div>
               </Link>
             </li>

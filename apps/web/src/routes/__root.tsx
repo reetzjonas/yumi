@@ -55,6 +55,9 @@ function Root() {
           <AppShell
             accountSlot={<AccountSlot me={me} />}
             moreSlot={<MoreAccountEntries me={me} />}
+            householdName={
+              me.households.find((h) => h.id === me.activeHouseholdId)?.name
+            }
           >
             <Outlet />
           </AppShell>

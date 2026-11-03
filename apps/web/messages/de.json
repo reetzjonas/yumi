@@ -327,5 +327,6 @@
   "queue.move_up_short": "Nach oben",
   "queue.move_down_short": "Nach unten",
   "recipes.choose_title": "Wähle ein Rezept",
-  "recipes.choose_description": "Zutaten und Schritte erscheinen hier."
+  "recipes.choose_description": "Zutaten und Schritte erscheinen hier.",
+  "queue.close_menu": "Schließen"
 }

@@ -217,8 +217,15 @@ function MealQueue({
                     },
                     onPointerMove: (event) => {
                       if (!dragRef.current) return;
-                      const scroller =
-                        event.currentTarget.closest<HTMLElement>(".app-main");
+                      const scroller = [".split-main", ".app-main"]
+                        .map((selector) =>
+                          event.currentTarget.closest<HTMLElement>(selector),
+                        )
+                        .find(
+                          (element) =>
+                            element &&
+                            element.scrollHeight > element.clientHeight,
+                        );
                       if (scroller) {
                         const bounds = scroller.getBoundingClientRect();
                         if (event.clientY < bounds.top + 72)

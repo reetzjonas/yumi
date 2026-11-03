@@ -117,7 +117,7 @@ function Recipe() {
                   </Link>
                 </Button>
                 <Button
-                  variant="ghost"
+                  variant="destructive"
                   disabled={remove.isPending}
                   onClick={() => {
                     if (

@@ -90,7 +90,7 @@ export function ListManager({
               {m["shopping.rename_list"]()}
             </Button>
             <Button
-              variant="ghost"
+              variant="destructive"
               disabled={manage.isPending}
               onClick={() => {
                 if (

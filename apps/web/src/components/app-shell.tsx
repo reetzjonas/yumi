@@ -6,6 +6,7 @@ import {
   ListChecks,
   Plus,
   ShoppingBasket,
+  Users,
 } from "lucide-react";
 import { createContext, type ReactNode, useContext, useEffect } from "react";
 import { ConnectionStatus } from "@/components/pwa-provider";
@@ -26,10 +27,12 @@ export function AppShell({
   children,
   accountSlot,
   moreSlot,
+  householdName,
 }: {
   children: ReactNode;
   accountSlot?: ReactNode;
   moreSlot?: ReactNode;
+  householdName?: string;
 }) {
   useDesktopShortcuts();
   return (
@@ -43,6 +46,12 @@ export function AppShell({
             <CookingPot aria-hidden="true" strokeWidth={1.8} />
             <span>yumi</span>
           </Link>
+          {householdName && (
+            <Link to="/more/household" className="household-chip">
+              <Users aria-hidden="true" size={18} />
+              <span>{householdName}</span>
+            </Link>
+          )}
         </header>
         <nav className="app-navigation" aria-label={m.nav_main()}>
           {destinations.map(({ to, label, icon: Icon }) => (
