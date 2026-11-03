@@ -10,33 +10,90 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ListRouteImport } from './routes/list'
+import { Route as PlanRouteImport } from './routes/plan'
+import { Route as RecipesRouteImport } from './routes/recipes'
+import { Route as MoreIndexRouteImport } from './routes/more.index'
+import { Route as MoreSettingsRouteImport } from './routes/more.settings'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ListRoute = ListRouteImport.update({
+  id: '/list',
+  path: '/list',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanRoute = PlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecipesRoute = RecipesRouteImport.update({
+  id: '/recipes',
+  path: '/recipes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MoreIndexRoute = MoreIndexRouteImport.update({
+  id: '/more/',
+  path: '/more/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MoreSettingsRoute = MoreSettingsRouteImport.update({
+  id: '/more/settings',
+  path: '/more/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/list': typeof ListRoute
+  '/plan': typeof PlanRoute
+  '/recipes': typeof RecipesRoute
+  '/more/settings': typeof MoreSettingsRoute
+  '/more/': typeof MoreIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/list': typeof ListRoute
+  '/plan': typeof PlanRoute
+  '/recipes': typeof RecipesRoute
+  '/more/settings': typeof MoreSettingsRoute
+  '/more': typeof MoreIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/list': typeof ListRoute
+  '/plan': typeof PlanRoute
+  '/recipes': typeof RecipesRoute
+  '/more/settings': typeof MoreSettingsRoute
+  '/more/': typeof MoreIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/list' | '/plan' | '/recipes' | '/more/settings' | '/more/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/list' | '/plan' | '/recipes' | '/more/settings' | '/more'
+  id:
+    | '__root__'
+    | '/'
+    | '/list'
+    | '/plan'
+    | '/recipes'
+    | '/more/settings'
+    | '/more/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ListRoute: typeof ListRoute
+  PlanRoute: typeof PlanRoute
+  RecipesRoute: typeof RecipesRoute
+  MoreSettingsRoute: typeof MoreSettingsRoute
+  MoreIndexRoute: typeof MoreIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +105,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/list': {
+      id: '/list'
+      path: '/list'
+      fullPath: '/list'
+      preLoaderRoute: typeof ListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plan': {
+      id: '/plan'
+      path: '/plan'
+      fullPath: '/plan'
+      preLoaderRoute: typeof PlanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recipes': {
+      id: '/recipes'
+      path: '/recipes'
+      fullPath: '/recipes'
+      preLoaderRoute: typeof RecipesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/more/': {
+      id: '/more/'
+      path: '/more'
+      fullPath: '/more/'
+      preLoaderRoute: typeof MoreIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/more/settings': {
+      id: '/more/settings'
+      path: '/more/settings'
+      fullPath: '/more/settings'
+      preLoaderRoute: typeof MoreSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ListRoute: ListRoute,
+  PlanRoute: PlanRoute,
+  RecipesRoute: RecipesRoute,
+  MoreSettingsRoute: MoreSettingsRoute,
+  MoreIndexRoute: MoreIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

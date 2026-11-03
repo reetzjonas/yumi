@@ -5,6 +5,14 @@ import { createRoot } from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 
+if (
+  import.meta.env.DEV &&
+  import.meta.env.VITE_DISABLE_REACT_DEVTOOLS !== "1"
+) {
+  void import("react-grab");
+  void import("react-scan");
+}
+
 const queryClient = new QueryClient();
 const router = createRouter({ routeTree, context: { queryClient } });
 
