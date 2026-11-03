@@ -1,7 +1,11 @@
-import { text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { customType, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { organization } from "./auth";
 
 export const id = () => uuid().primaryKey().defaultRandom();
+
+export const bytea = customType<{ data: Uint8Array; driverData: Uint8Array }>({
+  dataType: () => "bytea",
+});
 
 export const householdId = () =>
   text()

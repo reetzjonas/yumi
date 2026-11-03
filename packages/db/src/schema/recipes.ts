@@ -14,7 +14,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 import { ingredient } from "./catalog";
-import { householdId, id, timestamps } from "./common";
+import { bytea, householdId, id, timestamps } from "./common";
 
 export const recipe = pgTable(
   "recipe",
@@ -35,6 +35,18 @@ export const recipe = pgTable(
   },
   (t) => [index("recipe_household_idx").on(t.householdId)],
 );
+
+/** Resized WebP variants of a recipe's photo, stored in PostgreSQL (ADR 0011). */
+export const recipeImage = pgTable("recipe_image", {
+  id: id(),
+  recipeId: uuid()
+    .notNull()
+    .unique()
+    .references(() => recipe.id, { onDelete: "cascade" }),
+  thumb: bytea().notNull(),
+  full: bytea().notNull(),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+});
 
 export const recipeIngredient = pgTable(
   "recipe_ingredient",

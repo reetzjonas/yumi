@@ -14,7 +14,8 @@ export function client(cookie = ""): Client {
     request: async (path, init = {}) => {
       const headers = new Headers(init.headers);
       headers.set("origin", ORIGIN);
-      if (init.body) headers.set("content-type", "application/json");
+      if (typeof init.body === "string")
+        headers.set("content-type", "application/json");
       if (c.cookie) headers.set("cookie", c.cookie);
       const res = await app.request(path, { ...init, headers });
       const setCookies = res.headers.getSetCookie();

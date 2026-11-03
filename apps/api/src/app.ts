@@ -9,6 +9,7 @@ import { env } from "./env";
 import { ingredients } from "./routes/ingredients";
 import { householdInvites, invites } from "./routes/invites";
 import { me } from "./routes/me";
+import { recipes } from "./routes/recipes";
 
 const api = new Hono<AppEnv>()
   .on(["GET", "POST"], "/auth/*", (c) => auth.handler(c.req.raw))
@@ -19,7 +20,8 @@ const api = new Hono<AppEnv>()
   .route("/me", me)
   .route("/household/invites", householdInvites)
   .route("/invites", invites)
-  .route("/ingredients", ingredients);
+  .route("/ingredients", ingredients)
+  .route("/recipes", recipes);
 
 export const app = new Hono()
   .use(process.env.NODE_ENV === "test" ? (_c, next) => next() : logger())

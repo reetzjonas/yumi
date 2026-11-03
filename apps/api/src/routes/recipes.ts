@@ -1,0 +1,327 @@
+import {
+  ingredient,
+  recipe,
+  recipeImage,
+  recipeIngredient,
+  recipeStep,
+} from "@yumi/db/schema";
+import {
+  type RecipeInput,
+  recipeInputSchema,
+  recipeListQuerySchema,
+} from "@yumi/shared";
+import {
+  and,
+  arrayContains,
+  asc,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  or,
+  sql,
+} from "drizzle-orm";
+import { Hono } from "hono";
+import { HTTPException } from "hono/http-exception";
+import type { z } from "zod";
+import { visibleTo } from "../catalog";
+import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
+import { db } from "../db";
+
+type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+type ParsedRecipe = z.output<typeof recipeInputSchema>;
+
+const ID = "/:id{[0-9a-f-]{36}}";
+
+const summaryColumns = {
+  id: recipe.id,
+  title: recipe.title,
+  tags: recipe.tags,
+  servings: recipe.servings,
+  prepMinutes: recipe.prepMinutes,
+  cookMinutes: recipe.cookMinutes,
+  imageKey: recipe.imageKey,
+  updatedAt: recipe.updatedAt,
+};
+
+function escapeLike(text: string) {
+  return text.replace(/[\\%_]/g, (ch) => `\\${ch}`);
+}
+
+async function assertIngredientsVisible(
+  householdId: string,
+  input: ParsedRecipe,
+) {
+  const ids = [
+    ...new Set(input.ingredients.flatMap((i) => i.ingredientId ?? [])),
+  ];
+  if (ids.length === 0) return;
+  const rows = await db
+    .select({ id: ingredient.id })
+    .from(ingredient)
+    .where(and(inArray(ingredient.id, ids), visibleTo(householdId)));
+  if (rows.length !== ids.length)
+    throw new HTTPException(400, { message: "invalid_ingredient" });
+}
+
+async function insertChildren(tx: Tx, recipeId: string, input: ParsedRecipe) {
+  if (input.ingredients.length > 0) {
+    await tx.insert(recipeIngredient).values(
+      input.ingredients.map((line, position) => ({
+        ...line,
+        recipeId,
+        position,
+      })),
+    );
+  }
+  if (input.steps.length > 0) {
+    await tx.insert(recipeStep).values(
+      input.steps.map((step, position) => ({
+        text: step.text,
+        recipeId,
+        position,
+      })),
+    );
+  }
+}
+
+function recipeFields({ ingredients: _i, steps: _s, ...fields }: ParsedRecipe) {
+  return fields;
+}
+
+async function loadRecipe(householdId: string, id: string) {
+  const [row] = await db
+    .select()
+    .from(recipe)
+    .where(and(eq(recipe.id, id), eq(recipe.householdId, householdId)))
+    .limit(1);
+  if (!row) throw new HTTPException(404, { message: "not_found" });
+  const [ingredients, steps] = await Promise.all([
+    db
+      .select({
+        id: recipeIngredient.id,
+        section: recipeIngredient.section,
+        rawText: recipeIngredient.rawText,
+        quantity: recipeIngredient.quantity,
+        unit: recipeIngredient.unit,
+        note: recipeIngredient.note,
+        optional: recipeIngredient.optional,
+        ingredientId: recipeIngredient.ingredientId,
+        ingredient: {
+          nameDe: ingredient.nameDe,
+          nameEn: ingredient.nameEn,
+          categoryId: ingredient.categoryId,
+        },
+      })
+      .from(recipeIngredient)
+      .leftJoin(ingredient, eq(ingredient.id, recipeIngredient.ingredientId))
+      .where(eq(recipeIngredient.recipeId, id))
+      .orderBy(asc(recipeIngredient.position)),
+    db
+      .select({ id: recipeStep.id, text: recipeStep.text })
+      .from(recipeStep)
+      .where(eq(recipeStep.recipeId, id))
+      .orderBy(asc(recipeStep.position)),
+  ]);
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    servings: row.servings,
+    prepMinutes: row.prepMinutes,
+    cookMinutes: row.cookMinutes,
+    sourceUrl: row.sourceUrl,
+    tags: row.tags,
+    imageKey: row.imageKey,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+    ingredients: ingredients.map(({ ingredient: linked, ...line }) => ({
+      ...line,
+      ingredient: line.ingredientId ? linked : null,
+    })),
+    steps,
+  };
+}
+
+export type RecipeDetail = Awaited<ReturnType<typeof loadRecipe>>;
+
+async function parseInput(householdId: string, body: RecipeInput) {
+  const input = recipeInputSchema.parse(body);
+  await assertIngredientsVisible(householdId, input);
+  return input;
+}
+
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+const IMAGE_VARIANTS = { thumb: 400, full: 1200 } as const;
+
+async function resizeImage(bytes: Uint8Array, width: number) {
+  return new Bun.Image(bytes)
+    .resize(width, width * 2, { fit: "inside", withoutEnlargement: true })
+    .webp({ quality: 80 })
+    .bytes();
+}
+
+async function assertRecipeOwned(householdId: string, id: string) {
+  const [row] = await db
+    .select({ id: recipe.id })
+    .from(recipe)
+    .where(and(eq(recipe.id, id), eq(recipe.householdId, householdId)))
+    .limit(1);
+  if (!row) throw new HTTPException(404, { message: "not_found" });
+}
+
+export const recipes = new Hono<HouseholdEnv>()
+  .use(requireAuth, requireHousehold)
+  .get("/", async (c) => {
+    const { q, tag } = recipeListQuerySchema.parse(c.req.query());
+    const householdId = c.get("householdId");
+    const rows = await db
+      .select(summaryColumns)
+      .from(recipe)
+      .where(
+        and(
+          eq(recipe.householdId, householdId),
+          q
+            ? or(
+                ilike(recipe.title, `%${escapeLike(q)}%`),
+                sql`word_similarity(${q}, ${recipe.title}) >= 0.4`,
+              )
+            : undefined,
+          tag ? arrayContains(recipe.tags, [tag]) : undefined,
+        ),
+      )
+      .orderBy(desc(recipe.updatedAt));
+    return c.json(rows);
+  })
+  .get("/tags", async (c) => {
+    const rows = await db.execute<{ tag: string }>(
+      sql`select distinct unnest(${recipe.tags}) as tag from ${recipe}
+          where ${recipe.householdId} = ${c.get("householdId")} order by tag`,
+    );
+    return c.json(rows.map((r) => r.tag));
+  })
+  .get(ID, async (c) =>
+    c.json(await loadRecipe(c.get("householdId"), c.req.param("id"))),
+  )
+  .post("/", async (c) => {
+    const householdId = c.get("householdId");
+    const input = await parseInput(householdId, await c.req.json());
+    const id = await db.transaction(async (tx) => {
+      const [row] = await tx
+        .insert(recipe)
+        .values({
+          ...recipeFields(input),
+          householdId,
+          createdBy: c.get("user").id,
+        })
+        .returning({ id: recipe.id });
+      if (!row) throw new Error("recipe insert returned no row");
+      await insertChildren(tx, row.id, input);
+      return row.id;
+    });
+    return c.json(await loadRecipe(householdId, id), 201);
+  })
+  .put(ID, async (c) => {
+    const householdId = c.get("householdId");
+    const id = c.req.param("id");
+    const input = await parseInput(householdId, await c.req.json());
+    await db.transaction(async (tx) => {
+      const updated = await tx
+        .update(recipe)
+        .set(recipeFields(input))
+        .where(and(eq(recipe.id, id), eq(recipe.householdId, householdId)))
+        .returning({ id: recipe.id });
+      if (updated.length === 0)
+        throw new HTTPException(404, { message: "not_found" });
+      await tx
+        .delete(recipeIngredient)
+        .where(eq(recipeIngredient.recipeId, id));
+      await tx.delete(recipeStep).where(eq(recipeStep.recipeId, id));
+      await insertChildren(tx, id, input);
+    });
+    return c.json(await loadRecipe(householdId, id));
+  })
+  .delete(ID, async (c) => {
+    const deleted = await db
+      .delete(recipe)
+      .where(
+        and(
+          eq(recipe.id, c.req.param("id")),
+          eq(recipe.householdId, c.get("householdId")),
+        ),
+      )
+      .returning({ id: recipe.id });
+    if (deleted.length === 0)
+      throw new HTTPException(404, { message: "not_found" });
+    return c.body(null, 204);
+  })
+  .put(`${ID}/image`, async (c) => {
+    const householdId = c.get("householdId");
+    const id = c.req.param("id");
+    await assertRecipeOwned(householdId, id);
+    const form = await c.req.formData().catch(() => null);
+    const file = form?.get("image");
+    if (!(file instanceof File))
+      throw new HTTPException(400, { message: "invalid_image" });
+    if (file.size > MAX_IMAGE_BYTES)
+      throw new HTTPException(413, { message: "image_too_large" });
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const [thumb, full] = await Promise.all([
+      resizeImage(bytes, IMAGE_VARIANTS.thumb),
+      resizeImage(bytes, IMAGE_VARIANTS.full),
+    ]).catch(() => {
+      throw new HTTPException(400, { message: "invalid_image" });
+    });
+    const imageKey = await db.transaction(async (tx) => {
+      const [image] = await tx
+        .insert(recipeImage)
+        .values({ recipeId: id, thumb, full })
+        .onConflictDoUpdate({
+          target: recipeImage.recipeId,
+          set: {
+            id: sql`gen_random_uuid()`,
+            thumb,
+            full,
+            createdAt: sql`now()`,
+          },
+        })
+        .returning({ id: recipeImage.id });
+      if (!image) throw new Error("image upsert returned no row");
+      await tx
+        .update(recipe)
+        .set({ imageKey: image.id })
+        .where(eq(recipe.id, id));
+      return image.id;
+    });
+    return c.json({ imageKey });
+  })
+  .delete(`${ID}/image`, async (c) => {
+    const householdId = c.get("householdId");
+    const id = c.req.param("id");
+    await assertRecipeOwned(householdId, id);
+    await db.transaction(async (tx) => {
+      await tx.delete(recipeImage).where(eq(recipeImage.recipeId, id));
+      await tx.update(recipe).set({ imageKey: null }).where(eq(recipe.id, id));
+    });
+    return c.body(null, 204);
+  })
+  .get(`${ID}/image/:variant{thumb|full}`, async (c) => {
+    const variant = c.req.param("variant") as keyof typeof IMAGE_VARIANTS;
+    const [row] = await db
+      .select({ data: recipeImage[variant] })
+      .from(recipeImage)
+      .innerJoin(recipe, eq(recipe.id, recipeImage.recipeId))
+      .where(
+        and(
+          eq(recipeImage.recipeId, c.req.param("id")),
+          eq(recipe.householdId, c.get("householdId")),
+        ),
+      )
+      .limit(1);
+    if (!row) throw new HTTPException(404, { message: "not_found" });
+    // URLs carry ?v=<imageKey>, which changes on every upload.
+    return c.body(new Uint8Array(row.data).buffer, 200, {
+      "content-type": "image/webp",
+      "cache-control": "private, max-age=31536000, immutable",
+    });
+  });
