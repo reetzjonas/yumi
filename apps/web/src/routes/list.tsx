@@ -6,11 +6,13 @@ import { EmptyState, PageHeader } from "@/components/page";
 import { ItemForm } from "@/components/shopping/item-form";
 import { ListManager } from "@/components/shopping/list-manager";
 import { ShoppingItems } from "@/components/shopping/shopping-items";
+import { StoreSelect } from "@/components/shopping/store-select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
 import { ensureOk, errorMessage } from "@/lib/api-error";
 import { useMe } from "@/lib/session";
 import { useShoppingCategories, useShoppingLists } from "@/lib/shopping";
+import { useStores } from "@/lib/stores";
 import { m } from "@/paraglide/messages";
 
 export const Route = createFileRoute("/list")({ component: List });
@@ -24,6 +26,7 @@ function HouseholdLists() {
   const householdId = useMe()?.activeHouseholdId;
   const lists = useShoppingLists();
   const categories = useShoppingCategories();
+  const stores = useStores();
   const [selectedId, setSelectedId] = useState("");
   const listId = lists.data?.some((list) => list.id === selectedId)
     ? selectedId
@@ -63,6 +66,13 @@ function HouseholdLists() {
                   {errorMessage(categories.error)}
                 </p>
               )}
+              {detail.data && (
+                <StoreSelect
+                  listId={listId}
+                  storeId={detail.data.defaultStoreId}
+                  stores={stores.data ?? []}
+                />
+              )}
               <section className="section">
                 <h2>{m["shopping.add_item"]()}</h2>
                 <ItemForm
@@ -83,6 +93,11 @@ function HouseholdLists() {
                     key={listId}
                     list={detail.data}
                     categories={categories.data ?? []}
+                    categoryOrder={
+                      stores.data?.find(
+                        (store) => store.id === detail.data.defaultStoreId,
+                      )?.categoryOrder
+                    }
                   />
                 )
               )}

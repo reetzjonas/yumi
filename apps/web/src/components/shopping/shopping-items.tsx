@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { mergeShoppingItems } from "@yumi/shared";
+import { mergeShoppingItems, orderCategories } from "@yumi/shared";
 import { ShoppingBasket } from "lucide-react";
 import { useState } from "react";
 import { EmptyState } from "@/components/page";
@@ -41,9 +41,11 @@ function RecipeSources({
 export function ShoppingItems({
   list,
   categories,
+  categoryOrder,
 }: {
   list: ShoppingList;
   categories: Category[];
+  categoryOrder?: string[] | null;
 }) {
   const events = useShoppingEvents(list.id);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -63,7 +65,7 @@ export function ShoppingItems({
     .filter((item) => item.checked)
     .map((item) => item.id);
   const groups = [
-    ...[...categories].sort((a, b) => a.defaultPosition - b.defaultPosition),
+    ...orderCategories(categories, categoryOrder),
     { id: null, nameDe: "", nameEn: "", icon: null },
   ];
   if (!rows.length)

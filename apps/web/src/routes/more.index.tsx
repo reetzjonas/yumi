@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Settings } from "lucide-react";
+import { ChevronRight, Settings, Store } from "lucide-react";
 import { MoreSlot } from "@/components/app-shell";
 import { PageHeader } from "@/components/page";
 import { InstallHint } from "@/components/pwa-provider";
@@ -15,6 +15,11 @@ function More() {
         <Link to="/more/settings" className="settings-link">
           <Settings aria-hidden="true" size={22} />
           <span>{m.settings_title()}</span>
+          <ChevronRight aria-hidden="true" size={20} />
+        </Link>
+        <Link to="/more/stores" className="settings-link">
+          <Store aria-hidden="true" size={22} />
+          <span>{m["stores.title"]()}</span>
           <ChevronRight aria-hidden="true" size={20} />
         </Link>
       </div>

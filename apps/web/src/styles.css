@@ -928,3 +928,48 @@ select:focus-visible {
     animation: none;
   }
 }
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: underline;
+}
+.store-list {
+  list-style: none;
+  padding: 0;
+}
+.store-entry,
+.store-editor {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.store-editor {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.store-order-heading h3 {
+  font-weight: 600;
+}
+.store-order {
+  list-style: none;
+  padding: 0;
+}
+.store-order-row {
+  gap: 4px;
+  cursor: grab;
+}
+.store-order-row[data-dragging="true"] {
+  opacity: 0.5;
+}
+.store-order-row .row-main {
+  overflow-wrap: anywhere;
+}
+.store-grip {
+  flex-shrink: 0;
+  color: var(--muted-foreground);
+}

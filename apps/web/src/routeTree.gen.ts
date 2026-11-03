@@ -20,6 +20,7 @@ import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as MoreIndexRouteImport } from './routes/more.index'
 import { Route as MoreHouseholdRouteImport } from './routes/more.household'
 import { Route as MoreSettingsRouteImport } from './routes/more.settings'
+import { Route as MoreStoresRouteImport } from './routes/more.stores'
 import { Route as RecipesIdRouteImport } from './routes/recipes_.$id'
 import { Route as RecipesNewRouteImport } from './routes/recipes_.new'
 import { Route as RecipesIdEditRouteImport } from './routes/recipes_.$id_.edit'
@@ -79,6 +80,11 @@ const MoreSettingsRoute = MoreSettingsRouteImport.update({
   path: '/more/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MoreStoresRoute = MoreStoresRouteImport.update({
+  id: '/more/stores',
+  path: '/more/stores',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RecipesIdRoute = RecipesIdRouteImport.update({
   id: '/recipes_/$id',
   path: '/recipes/$id',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/invite/$token': typeof InviteTokenRoute
   '/more/household': typeof MoreHouseholdRoute
   '/more/settings': typeof MoreSettingsRoute
+  '/more/stores': typeof MoreStoresRoute
   '/recipes/$id': typeof RecipesIdRoute
   '/recipes/new': typeof RecipesNewRoute
   '/more/': typeof MoreIndexRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/invite/$token': typeof InviteTokenRoute
   '/more/household': typeof MoreHouseholdRoute
   '/more/settings': typeof MoreSettingsRoute
+  '/more/stores': typeof MoreStoresRoute
   '/recipes/$id': typeof RecipesIdRoute
   '/recipes/new': typeof RecipesNewRoute
   '/more': typeof MoreIndexRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/invite/$token': typeof InviteTokenRoute
   '/more/household': typeof MoreHouseholdRoute
   '/more/settings': typeof MoreSettingsRoute
+  '/more/stores': typeof MoreStoresRoute
   '/recipes_/$id': typeof RecipesIdRoute
   '/recipes_/new': typeof RecipesNewRoute
   '/more/': typeof MoreIndexRoute
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/more/household'
     | '/more/settings'
+    | '/more/stores'
     | '/recipes/$id'
     | '/recipes/new'
     | '/more/'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/more/household'
     | '/more/settings'
+    | '/more/stores'
     | '/recipes/$id'
     | '/recipes/new'
     | '/more'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/more/household'
     | '/more/settings'
+    | '/more/stores'
     | '/recipes_/$id'
     | '/recipes_/new'
     | '/more/'
@@ -206,6 +218,7 @@ export interface RootRouteChildren {
   InviteTokenRoute: typeof InviteTokenRoute
   MoreHouseholdRoute: typeof MoreHouseholdRoute
   MoreSettingsRoute: typeof MoreSettingsRoute
+  MoreStoresRoute: typeof MoreStoresRoute
   RecipesIdRoute: typeof RecipesIdRoute
   RecipesNewRoute: typeof RecipesNewRoute
   MoreIndexRoute: typeof MoreIndexRoute
@@ -291,6 +304,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MoreSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/more/stores': {
+      id: '/more/stores'
+      path: '/more/stores'
+      fullPath: '/more/stores'
+      preLoaderRoute: typeof MoreStoresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recipes_/$id': {
       id: '/recipes_/$id'
       path: '/recipes/$id'
@@ -326,6 +346,7 @@ const rootRouteChildren: RootRouteChildren = {
   InviteTokenRoute: InviteTokenRoute,
   MoreHouseholdRoute: MoreHouseholdRoute,
   MoreSettingsRoute: MoreSettingsRoute,
+  MoreStoresRoute: MoreStoresRoute,
   RecipesIdRoute: RecipesIdRoute,
   RecipesNewRoute: RecipesNewRoute,
   MoreIndexRoute: MoreIndexRoute,

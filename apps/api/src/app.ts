@@ -11,6 +11,7 @@ import { householdInvites, invites } from "./routes/invites";
 import { me } from "./routes/me";
 import { recipes } from "./routes/recipes";
 import { shopping } from "./routes/shopping";
+import { listStore, stores } from "./routes/stores";
 
 const api = new Hono<AppEnv>()
   .on(["GET", "POST"], "/auth/*", (c) => auth.handler(c.req.raw))
@@ -23,7 +24,9 @@ const api = new Hono<AppEnv>()
   .route("/invites", invites)
   .route("/ingredients", ingredients)
   .route("/recipes", recipes)
-  .route("/shopping", shopping);
+  .route("/shopping", shopping)
+  .route("/shopping", listStore)
+  .route("/stores", stores);
 
 export const app = new Hono()
   .use(process.env.NODE_ENV === "test" ? (_c, next) => next() : logger())
