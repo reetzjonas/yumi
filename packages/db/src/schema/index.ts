@@ -1,2 +1,5 @@
-// Tables are added per feature (see docs/data-model.md).
-export {};
+export * from "./auth";
+export * from "./catalog";
+export * from "./planning";
+export * from "./recipes";
+export * from "./shopping";
