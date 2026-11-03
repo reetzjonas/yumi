@@ -4,10 +4,12 @@ import {
   CookingPot,
   Ellipsis,
   ListChecks,
+  Plus,
   ShoppingBasket,
 } from "lucide-react";
 import { createContext, type ReactNode, useContext } from "react";
 import { ConnectionStatus } from "@/components/pwa-provider";
+import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { m } from "@/paraglide/messages";
 
@@ -54,6 +56,14 @@ export function AppShell({
             </Link>
           ))}
         </nav>
+        <div className="shell-action">
+          <Button asChild variant="outline">
+            <Link to="/recipes/new">
+              <Plus aria-hidden="true" size={20} />
+              {m["recipes.new"]()}
+            </Link>
+          </Button>
+        </div>
         {accountSlot && <div className="account-slot">{accountSlot}</div>}
         <main id="main" tabIndex={-1} className="app-main">
           <div className="page-content">

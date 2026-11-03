@@ -85,11 +85,11 @@ Quantities and timers use `tabular-nums`. Inputs never go below 16 px.
 
 ## 6. Layout and breakpoints
 
-| Width      | Navigation                                                        | Content                       |
-| ---------- | ----------------------------------------------------------------- | ----------------------------- |
-| < 768      | Top bar (page title + household chip), bottom tabs with labels    | One column                    |
-| 768 - 1199 | 88 px navigation rail, icon above label                           | One column, max 760 px        |
-| >= 1200    | 256 px sidebar: household switcher, tabs, "Neues Rezept", account | Two panes per section (below) |
+| Width      | Navigation                                                                  | Content                       |
+| ---------- | --------------------------------------------------------------------------- | ----------------------------- |
+| < 768      | Top bar (page title + household chip), bottom tabs with labels              | One column                    |
+| 768 - 1199 | 88 px navigation rail, icon above label                                     | One column, max 760 px        |
+| >= 1200    | 256 px sidebar: household switcher, tabs, "Neues Rezept" (outline), account | Two panes per section (below) |
 
 Two-pane layouts at >= 1200 px:
 
