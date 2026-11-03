@@ -121,28 +121,36 @@ export async function applyShoppingEvents(
   ctx: { listId: string; householdId: string; userId: string },
   events: Event[],
 ) {
-  const applied = await db.transaction(async (tx) => {
-    const storeIdsInEvents = [
-      ...new Set(events.flatMap((e) => (e.storeId ? [e.storeId] : []))),
-    ];
-    const stores = storeIdsInEvents.length
-      ? await tx
-          .select({ id: store.id })
-          .from(store)
-          .where(
-            and(
-              inArray(store.id, storeIdsInEvents),
-              eq(store.householdId, ctx.householdId),
-            ),
-          )
-      : [];
-    const full = { ...ctx, storeIds: new Set(stores.map((s) => s.id)) };
-    const ids: string[] = [];
-    for (const event of events) {
-      if (await applyEvent(tx, full, event)) ids.push(event.id);
-    }
-    return ids;
-  });
+  const applied = await db.transaction((tx) =>
+    applyShoppingEventsInTransaction(tx, ctx, events),
+  );
   if (applied.length) await publishListChange(ctx.householdId, ctx.listId);
   return applied;
+}
+
+export async function applyShoppingEventsInTransaction(
+  tx: Tx,
+  ctx: { listId: string; householdId: string; userId: string },
+  events: Event[],
+) {
+  const storeIdsInEvents = [
+    ...new Set(events.flatMap((e) => (e.storeId ? [e.storeId] : []))),
+  ];
+  const stores = storeIdsInEvents.length
+    ? await tx
+        .select({ id: store.id })
+        .from(store)
+        .where(
+          and(
+            inArray(store.id, storeIdsInEvents),
+            eq(store.householdId, ctx.householdId),
+          ),
+        )
+    : [];
+  const full = { ...ctx, storeIds: new Set(stores.map((s) => s.id)) };
+  const ids: string[] = [];
+  for (const event of events) {
+    if (await applyEvent(tx, full, event)) ids.push(event.id);
+  }
+  return ids;
 }

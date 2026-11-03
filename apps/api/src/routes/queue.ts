@@ -14,7 +14,7 @@ import { db } from "../db";
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
-async function lockQueue(tx: Tx, householdId: string) {
+export async function lockQueue(tx: Tx, householdId: string) {
   await tx
     .select({ id: organization.id })
     .from(organization)

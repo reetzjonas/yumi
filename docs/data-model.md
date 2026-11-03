@@ -27,6 +27,8 @@ Alpha sketch, the Drizzle schema is the source of truth once it exists. Every ho
 - `meal_queue_entry`: recipe_id, servings, position, planned_for (date, nullable), status (queued | cooked | skipped).
 - The queue shows queued entries in position order; the same recipe can appear more than once with different servings or dates. Reordering replaces the complete active order within the household.
 - Marking an entry cooked atomically changes its status and writes one `cook_log` with the acting user. Cooked and skipped entries remain stored but leave the active queue.
+- Selected queue entries can be previewed as scaled, merged shopping ingredients, with pantry staples separated. Confirmation checks the preview version and records idempotent shopping events; storage keeps each queue contribution separate with both queue and recipe source references.
+- Removing a queued entry can keep its shopping contributions or remove just its linked items across household lists. Other queue entries and manual contributions remain intact even when the shopping UI merges them into one ingredient row.
 
 ## Shopping
 

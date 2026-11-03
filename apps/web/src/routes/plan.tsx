@@ -5,12 +5,14 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { EmptyState, PageHeader } from "@/components/page";
 import { MealQueueEntry } from "@/components/queue/queue-entry";
+import { QueueShoppingPreview } from "@/components/queue/shopping-preview";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { errorMessage } from "@/lib/api-error";
 import {
   type QueueEntryUpdate,
   queueKey,
+  removeQueueEntry,
   reorderQueue,
   updateQueueEntry,
   useQueue,
@@ -37,6 +39,9 @@ function MealQueue({
   );
   const dragRef = useRef<typeof drag>(null);
   const [announcement, setAnnouncement] = useState("");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [shoppingPending, setShoppingPending] = useState(false);
+  const [shoppingAdded, setShoppingAdded] = useState<number | null>(null);
   const refresh = () =>
     queryClient.invalidateQueries({ queryKey: queueKey(householdId) });
   const update = useMutation({
@@ -55,8 +60,27 @@ function MealQueue({
     onSuccess: () => setAnnouncement(m["queue.reordered"]()),
     onSettled: refresh,
   });
+  const remove = useMutation({
+    mutationFn: ({ id, removeItems }: { id: string; removeItems: boolean }) =>
+      removeQueueEntry(id, removeItems),
+    onSuccess: () => toast.success(m["queue.removed"]()),
+    onSettled: async () => {
+      await refresh();
+      await queryClient.invalidateQueries({
+        queryKey: ["shopping", householdId],
+      });
+    },
+  });
   const entries = query.data ?? [];
-  const busy = update.isPending || reorder.isPending || query.isFetching;
+  const selectedEntries = entries.filter((entry) =>
+    selectedIds.includes(entry.id),
+  );
+  const busy =
+    update.isPending ||
+    reorder.isPending ||
+    remove.isPending ||
+    query.isFetching ||
+    shoppingPending;
 
   function move(id: string, targetId: string) {
     if (busy || id === targetId) return;
@@ -73,7 +97,10 @@ function MealQueue({
     <>
       <div className="recipe-list-heading">
         <PageHeader title={m.nav_plan()} />
-        <Button asChild>
+        <Button
+          asChild
+          variant={selectedEntries.length ? "secondary" : "default"}
+        >
           <Link to="/recipes">{m["queue.add_meal"]()}</Link>
         </Button>
       </div>
@@ -108,6 +135,46 @@ function MealQueue({
         </EmptyState>
       ) : (
         <>
+          <label className="queue-checkbox queue-select-all">
+            <input
+              type="checkbox"
+              checked={selectedEntries.length === entries.length}
+              ref={(input) => {
+                if (input)
+                  input.indeterminate =
+                    selectedEntries.length > 0 &&
+                    selectedEntries.length < entries.length;
+              }}
+              disabled={busy}
+              onChange={(event) => {
+                setSelectedIds(
+                  event.target.checked ? entries.map((entry) => entry.id) : [],
+                );
+                setShoppingAdded(null);
+              }}
+            />
+            <span>{m["queue.select_all"]()}</span>
+          </label>
+          <QueueShoppingPreview
+            key={selectedEntries
+              .map((entry) => `${entry.id}:${entry.servings}`)
+              .join(",")}
+            entries={selectedEntries}
+            disabled={busy}
+            onPendingChange={setShoppingPending}
+            onAdded={(added) => {
+              setSelectedIds([]);
+              setShoppingAdded(added);
+            }}
+          />
+          {shoppingAdded !== null && (
+            <p className="queue-shopping-result" role="status">
+              {m["shopping.recipe_added"]({ count: shoppingAdded })}{" "}
+              <Link className="text-link" to="/list">
+                {m["queue.open_list"]()}
+              </Link>
+            </p>
+          )}
           <p id="queue-order-hint" className="queue-hint">
             {m["queue.order_hint"]()}
           </p>
@@ -124,6 +191,23 @@ function MealQueue({
                 index={index}
                 count={entries.length}
                 disabled={busy}
+                selected={selectedIds.includes(entry.id)}
+                onSelect={(selected) => {
+                  setSelectedIds(
+                    selected
+                      ? [...selectedEntries.map((item) => item.id), entry.id]
+                      : selectedIds.filter((id) => id !== entry.id),
+                  );
+                  setShoppingAdded(null);
+                }}
+                removeError={
+                  remove.isError && remove.variables.id === entry.id
+                    ? errorMessage(remove.error)
+                    : null
+                }
+                onRemove={(removeItems) =>
+                  remove.mutate({ id: entry.id, removeItems })
+                }
                 error={
                   update.isError && update.variables.id === entry.id
                     ? errorMessage(update.error)

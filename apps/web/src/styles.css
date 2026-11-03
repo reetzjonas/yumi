@@ -1055,6 +1055,95 @@ select:focus-visible {
   container-type: inline-size;
   width: 100%;
 }
+.queue-checkbox {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding-block: 8px;
+  cursor: pointer;
+}
+.queue-checkbox input[type="checkbox"] {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--primary);
+}
+.queue-entry-select {
+  flex-shrink: 0;
+  justify-content: center;
+  width: 44px;
+  min-width: 44px;
+}
+.queue-select-all {
+  margin-bottom: 12px;
+}
+.queue-shopping {
+  container: queue-shopping / inline-size;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  padding-block: 16px 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.queue-shopping h2 {
+  font-size: 1.125rem;
+}
+.queue-shopping .button {
+  min-width: 44px;
+  min-height: 44px;
+}
+.queue-shopping-preview,
+.queue-preview-group,
+.queue-remove-panel {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.queue-preview-group h3,
+.queue-remove-panel h3 {
+  font-weight: 700;
+}
+.queue-preview-items {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.queue-preview-items li {
+  display: grid;
+  gap: 4px;
+}
+.queue-preview-staples,
+.queue-remove-panel {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+.queue-shopping-confirm {
+  display: grid;
+  gap: 16px;
+  align-items: end;
+  min-width: 0;
+}
+.queue-shopping-confirm .field,
+.queue-shopping-confirm select {
+  min-width: 0;
+  max-width: 100%;
+}
+.queue-shopping-result {
+  margin-bottom: 24px;
+}
+@container queue-shopping (min-width: 540px) {
+  .queue-shopping-confirm {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
 @container (min-width: 540px) {
   .queue-entry-form {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) auto;

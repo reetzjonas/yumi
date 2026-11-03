@@ -5,6 +5,7 @@ import {
   ChevronUp,
   GripVertical,
   SkipForward,
+  Trash2,
 } from "lucide-react";
 import { type ComponentProps, useId, useState } from "react";
 import { Field } from "@/components/auth-layout";
@@ -19,6 +20,10 @@ export function MealQueueEntry({
   count,
   disabled,
   error,
+  selected,
+  onSelect,
+  removeError,
+  onRemove,
   dragging,
   dropPosition,
   dragProps,
@@ -30,6 +35,10 @@ export function MealQueueEntry({
   count: number;
   disabled: boolean;
   error: string | null;
+  selected: boolean;
+  onSelect: (selected: boolean) => void;
+  removeError: string | null;
+  onRemove: (removeItems: boolean) => void;
   dragging: boolean;
   dropPosition: "before" | "after" | undefined;
   dragProps: ComponentProps<"button">;
@@ -39,6 +48,8 @@ export function MealQueueEntry({
   const id = useId();
   const [servings, setServings] = useState(String(entry.servings));
   const [plannedFor, setPlannedFor] = useState(entry.plannedFor ?? "");
+  const [showRemove, setShowRemove] = useState(false);
+  const [removeItems, setRemoveItems] = useState(false);
   const changed =
     Number(servings) !== entry.servings ||
     (plannedFor || null) !== entry.plannedFor;
@@ -53,6 +64,15 @@ export function MealQueueEntry({
       data-drop={dropPosition}
     >
       <div className="queue-entry-heading">
+        <label className="queue-checkbox queue-entry-select">
+          <input
+            type="checkbox"
+            checked={selected}
+            disabled={disabled}
+            onChange={(event) => onSelect(event.target.checked)}
+          />
+          <span className="sr-only">{m["queue.select_meal"]({ name })}</span>
+        </label>
         <span className="queue-position" aria-hidden="true">
           {index + 1}
         </span>
@@ -174,8 +194,67 @@ export function MealQueueEntry({
             <SkipForward size={18} aria-hidden="true" />
             {m["queue.skip"]()}
           </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            disabled={disabled}
+            aria-expanded={showRemove}
+            aria-controls={`${id}-remove`}
+            aria-label={m["queue.remove_meal"]({ name })}
+            onClick={() => setShowRemove(!showRemove)}
+          >
+            <Trash2 size={18} aria-hidden="true" />
+            {m["queue.remove"]()}
+          </Button>
         </div>
       </div>
+      {showRemove && (
+        <section
+          id={`${id}-remove`}
+          className="queue-remove-panel"
+          aria-labelledby={`${id}-remove-title`}
+        >
+          <h3 id={`${id}-remove-title`}>
+            {m["queue.remove_confirm"]({ name })}
+          </h3>
+          <p>{m["queue.remove_hint"]()}</p>
+          <label className="queue-checkbox">
+            <input
+              type="checkbox"
+              checked={removeItems}
+              disabled={disabled}
+              onChange={(event) => setRemoveItems(event.target.checked)}
+            />
+            <span>{m["queue.remove_items"]()}</span>
+          </label>
+          <div className="recipe-actions">
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={disabled}
+              onClick={() => onRemove(removeItems)}
+            >
+              {m["queue.remove"]()}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={disabled}
+              onClick={() => {
+                setShowRemove(false);
+                setRemoveItems(false);
+              }}
+            >
+              {m["queue.cancel"]()}
+            </Button>
+          </div>
+          {removeError && (
+            <p className="form-error" role="alert">
+              {removeError}
+            </p>
+          )}
+        </section>
+      )}
       {error && (
         <p className="form-error" role="alert">
           {error}

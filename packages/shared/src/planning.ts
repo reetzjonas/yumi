@@ -20,3 +20,23 @@ export const queueEntryUpdateSchema = z
 export const queueOrderSchema = z.object({
   ids: z.array(z.uuid()).refine((ids) => new Set(ids).size === ids.length),
 });
+
+export const queueShoppingPreviewSchema = z.object({
+  ids: z
+    .array(z.uuid())
+    .min(1)
+    .max(100)
+    .refine((ids) => new Set(ids).size === ids.length),
+  locale: z.enum(["de", "en"]).default("de"),
+});
+
+export const queueShoppingInputSchema = queueShoppingPreviewSchema.extend({
+  listId: z.uuid(),
+  version: z.string().regex(/^[0-9a-f]{64}$/),
+  requestId: z.uuid(),
+  includeStaples: z.boolean().default(false),
+});
+
+export const queueRemovalSchema = z.object({
+  removeItems: z.enum(["true", "false"]).default("false"),
+});

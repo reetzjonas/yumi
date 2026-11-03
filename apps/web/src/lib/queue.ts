@@ -34,3 +34,32 @@ export async function updateQueueEntry(id: string, input: QueueEntryUpdate) {
 export async function reorderQueue(ids: string[]) {
   await ensureOk(await api.queue.order.$put({ json: { ids } }));
 }
+
+export async function previewQueueShopping(
+  input: InferRequestType<
+    (typeof api.queue)["shopping-preview"]["$post"]
+  >["json"],
+) {
+  return (
+    await ensureOk(await api.queue["shopping-preview"].$post({ json: input }))
+  ).json();
+}
+
+export type QueueShoppingInput = InferRequestType<
+  (typeof api.queue)["shopping"]["$post"]
+>["json"];
+
+export async function addQueueShopping(input: QueueShoppingInput) {
+  return (
+    await ensureOk(await api.queue.shopping.$post({ json: input }))
+  ).json();
+}
+
+export async function removeQueueEntry(id: string, removeItems: boolean) {
+  await ensureOk(
+    await api.queue[":id"].$delete({
+      param: { id },
+      query: { removeItems: removeItems ? "true" : "false" },
+    }),
+  );
+}
