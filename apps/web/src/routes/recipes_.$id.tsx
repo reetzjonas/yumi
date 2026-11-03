@@ -4,6 +4,7 @@ import { parseIngredientLine, unitSchema } from "@yumi/shared";
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page";
+import { AddRecipeToQueue } from "@/components/queue/add-recipe";
 import { AddRecipeToList } from "@/components/shopping/add-recipe";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -123,6 +124,11 @@ function Recipe() {
                 {m["recipes.delete"]()}
               </Button>
             </div>
+            <AddRecipeToQueue
+              key={`queue-${householdId}-${id}`}
+              recipeId={id}
+              servings={recipe.servings}
+            />
             <AddRecipeToList
               key={`${householdId}-${id}`}
               recipeId={id}

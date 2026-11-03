@@ -1,6 +1,7 @@
 export * from "./catalog";
 export * from "./health";
 export * from "./ingredient-line";
+export * from "./planning";
 export * from "./recipes";
 export * from "./recurring";
 export * from "./shopping";
