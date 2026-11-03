@@ -20,7 +20,7 @@
   "queue.saved": "Meal saved.",
   "queue.loading": "Loading your meal plan…",
   "queue.retry": "Try again",
-  "queue.order_hint": "Drag a meal by its handle or use the arrows to change the cooking order. Dates do not change this order.",
+  "queue.order_hint": "Drag a meal by its handle, use the arrow keys on the handle, or open its menu to change the cooking order. Dates do not change this order.",
   "queue.drag": "Move {name}",
   "queue.move_up": "Move {name} up",
   "queue.move_down": "Move {name} down",
@@ -319,5 +319,11 @@
   "recipes.import_other": "Import another page",
   "errors.import_no_recipe": "No recipe data was found on this page.",
   "errors.import_failed": "The page could not be loaded. Check the link or try again later.",
-  "errors.import_invalid_url": "This link cannot be imported. Use a public http or https address."
+  "errors.import_invalid_url": "This link cannot be imported. Use a public http or https address.",
+  "queue.servings_one": "1 serving",
+  "queue.servings_count": "{count} servings",
+  "queue.more_actions": "More actions for {name}",
+  "queue.edit": "Edit",
+  "queue.move_up_short": "Move up",
+  "queue.move_down_short": "Move down"
 }

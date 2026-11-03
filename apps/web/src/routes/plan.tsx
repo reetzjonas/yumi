@@ -155,29 +155,6 @@ function MealQueue({
             />
             <span>{m["queue.select_all"]()}</span>
           </label>
-          <QueueShoppingPreview
-            key={selectedEntries
-              .map((entry) => `${entry.id}:${entry.servings}`)
-              .join(",")}
-            entries={selectedEntries}
-            disabled={busy}
-            onPendingChange={setShoppingPending}
-            onAdded={(added) => {
-              setSelectedIds([]);
-              setShoppingAdded(added);
-            }}
-          />
-          {shoppingAdded !== null && (
-            <p className="queue-shopping-result" role="status">
-              {m["shopping.recipe_added"]({ count: shoppingAdded })}{" "}
-              <Link className="text-link" to="/list">
-                {m["queue.open_list"]()}
-              </Link>
-            </p>
-          )}
-          <p id="queue-order-hint" className="queue-hint">
-            {m["queue.order_hint"]()}
-          </p>
           {reorder.isError && (
             <p className="form-error" role="alert">
               {errorMessage(reorder.error)}
@@ -274,6 +251,29 @@ function MealQueue({
               />
             ))}
           </ol>
+          <p id="queue-order-hint" className="queue-hint">
+            {m["queue.order_hint"]()}
+          </p>
+          {shoppingAdded !== null && (
+            <p className="queue-shopping-result" role="status">
+              {m["shopping.recipe_added"]({ count: shoppingAdded })}{" "}
+              <Link className="text-link" to="/list">
+                {m["queue.open_list"]()}
+              </Link>
+            </p>
+          )}
+          <QueueShoppingPreview
+            key={selectedEntries
+              .map((entry) => `${entry.id}:${entry.servings}`)
+              .join(",")}
+            entries={selectedEntries}
+            disabled={busy}
+            onPendingChange={setShoppingPending}
+            onAdded={(added) => {
+              setSelectedIds([]);
+              setShoppingAdded(added);
+            }}
+          />
         </>
       )}
       <p className="sr-only top-0" role="status">

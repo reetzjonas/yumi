@@ -122,7 +122,7 @@ export function QueueShoppingPreview({
       <div className="recipe-actions">
         <Button
           type="button"
-          variant={data ? "secondary" : "default"}
+          variant={data || !entries.length ? "secondary" : "default"}
           disabled={busy || !entries.length}
           onClick={loadPreview}
         >

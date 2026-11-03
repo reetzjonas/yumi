@@ -1,18 +1,23 @@
 import { Link } from "@tanstack/react-router";
 import {
+  ArrowDown,
+  ArrowUp,
   Check,
-  ChevronDown,
-  ChevronUp,
+  Ellipsis,
   GripVertical,
+  Pencil,
   SkipForward,
   Trash2,
 } from "lucide-react";
-import { type ComponentProps, useId, useState } from "react";
+import { type ComponentProps, useId, useRef, useState } from "react";
 import { Field } from "@/components/auth-layout";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/lib/i18n";
 import type { QueueEntry, QueueEntryUpdate } from "@/lib/queue";
 import { formatMinutes, totalMinutes } from "@/lib/recipes";
 import { m } from "@/paraglide/messages";
+
+type Panel = "closed" | "menu" | "edit" | "remove";
 
 export function MealQueueEntry({
   entry,
@@ -46,15 +51,38 @@ export function MealQueueEntry({
   onUpdate: (input: QueueEntryUpdate) => void;
 }) {
   const id = useId();
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const [panel, setPanel] = useState<Panel>("closed");
   const [servings, setServings] = useState(String(entry.servings));
   const [plannedFor, setPlannedFor] = useState(entry.plannedFor ?? "");
-  const [showRemove, setShowRemove] = useState(false);
   const [removeItems, setRemoveItems] = useState(false);
   const changed =
     Number(servings) !== entry.servings ||
     (plannedFor || null) !== entry.plannedFor;
   const minutes = totalMinutes(entry.recipe);
   const name = entry.recipe.title;
+  const meta = [
+    entry.servings === 1
+      ? m["queue.servings_one"]()
+      : m["queue.servings_count"]({ count: entry.servings }),
+    entry.plannedFor &&
+      formatDate(new Date(`${entry.plannedFor}T00:00:00`), {
+        weekday: "short",
+        day: "numeric",
+        month: "numeric",
+      }),
+    minutes > 0 && formatMinutes(minutes),
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  function close() {
+    setPanel("closed");
+    setRemoveItems(false);
+    setServings(String(entry.servings));
+    setPlannedFor(entry.plannedFor ?? "");
+    menuButton.current?.focus();
+  }
 
   return (
     <li
@@ -63,7 +91,7 @@ export function MealQueueEntry({
       data-dragging={dragging}
       data-drop={dropPosition}
     >
-      <div className="queue-entry-heading">
+      <div className="queue-entry-row">
         <label className="queue-checkbox queue-entry-select">
           <input
             type="checkbox"
@@ -73,23 +101,6 @@ export function MealQueueEntry({
           />
           <span className="sr-only">{m["queue.select_meal"]({ name })}</span>
         </label>
-        <span className="queue-position" aria-hidden="true">
-          {index + 1}
-        </span>
-        <div className="row-main">
-          <Link
-            className="queue-recipe-link"
-            to="/recipes/$id"
-            params={{ id: entry.recipeId }}
-          >
-            {name}
-          </Link>
-          {minutes > 0 && (
-            <p className="row-detail">
-              {m["recipes.total_time"]({ time: formatMinutes(minutes) })}
-            </p>
-          )}
-        </div>
         <Button
           type="button"
           variant="ghost"
@@ -109,151 +120,210 @@ export function MealQueueEntry({
             dragProps.onKeyDown?.(event);
           }}
         >
-          <GripVertical size={22} aria-hidden="true" />
+          <GripVertical size={20} aria-hidden="true" />
         </Button>
-      </div>
-      <form
-        className="queue-entry-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          onUpdate({
-            servings: Number(servings),
-            plannedFor: plannedFor || null,
-          });
-        }}
-      >
-        <Field
-          id={`${id}-servings`}
-          label={m["recipes.servings"]()}
-          type="number"
-          min={1}
-          max={100}
-          step={1}
-          required
-          value={servings}
-          disabled={disabled}
-          onChange={(event) => setServings(event.target.value)}
-        />
-        <Field
-          id={`${id}-date`}
-          label={m["queue.planned_for"]()}
-          type="date"
-          value={plannedFor}
-          disabled={disabled}
-          onChange={(event) => setPlannedFor(event.target.value)}
-        />
+        <span className="queue-position" aria-hidden="true">
+          {index + 1}
+        </span>
+        <div className="row-main">
+          <Link
+            className="queue-recipe-link"
+            to="/recipes/$id"
+            params={{ id: entry.recipeId }}
+          >
+            {name}
+          </Link>
+          <p className="row-detail">{meta}</p>
+        </div>
         <Button
-          type="submit"
-          variant="secondary"
-          disabled={disabled || !changed}
+          ref={menuButton}
+          type="button"
+          variant="ghost"
+          className="queue-icon-action queue-menu-button"
+          aria-label={m["queue.more_actions"]({ name })}
+          aria-expanded={panel !== "closed"}
+          aria-controls={`${id}-panel`}
+          onClick={() => (panel === "closed" ? setPanel("menu") : close())}
         >
-          {m["queue.save"]()}
+          <Ellipsis size={20} aria-hidden="true" />
         </Button>
-      </form>
-      <div className="queue-entry-actions">
-        <div className="queue-move-controls">
-          <Button
-            type="button"
-            variant="ghost"
-            className="queue-icon-action"
-            aria-label={m["queue.move_up"]({ name })}
-            disabled={disabled || index === 0}
-            onClick={() => onMove(-1)}
-          >
-            <ChevronUp size={20} aria-hidden="true" />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            className="queue-icon-action"
-            aria-label={m["queue.move_down"]({ name })}
-            disabled={disabled || index === count - 1}
-            onClick={() => onMove(1)}
-          >
-            <ChevronDown size={20} aria-hidden="true" />
-          </Button>
-        </div>
-        <div className="queue-status-controls">
-          <Button
-            type="button"
-            variant="secondary"
-            disabled={disabled}
-            aria-label={m["queue.mark_cooked"]({ name })}
-            onClick={() => onUpdate({ status: "cooked" })}
-          >
-            <Check size={18} aria-hidden="true" />
-            {m["queue.cooked"]()}
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            disabled={disabled}
-            aria-label={m["queue.mark_skipped"]({ name })}
-            onClick={() => onUpdate({ status: "skipped" })}
-          >
-            <SkipForward size={18} aria-hidden="true" />
-            {m["queue.skip"]()}
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            disabled={disabled}
-            aria-expanded={showRemove}
-            aria-controls={`${id}-remove`}
-            aria-label={m["queue.remove_meal"]({ name })}
-            onClick={() => setShowRemove(!showRemove)}
-          >
-            <Trash2 size={18} aria-hidden="true" />
-            {m["queue.remove"]()}
-          </Button>
-        </div>
       </div>
-      {showRemove && (
-        <section
-          id={`${id}-remove`}
-          className="queue-remove-panel"
-          aria-labelledby={`${id}-remove-title`}
+      {panel !== "closed" && (
+        <fieldset
+          id={`${id}-panel`}
+          className="queue-entry-panel"
+          aria-label={m["queue.more_actions"]({ name })}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              event.stopPropagation();
+              close();
+            }
+          }}
         >
-          <h3 id={`${id}-remove-title`}>
-            {m["queue.remove_confirm"]({ name })}
-          </h3>
-          <p>{m["queue.remove_hint"]()}</p>
-          <label className="queue-checkbox">
-            <input
-              type="checkbox"
-              checked={removeItems}
-              disabled={disabled}
-              onChange={(event) => setRemoveItems(event.target.checked)}
-            />
-            <span>{m["queue.remove_items"]()}</span>
-          </label>
-          <div className="recipe-actions">
-            <Button
-              type="button"
-              variant="secondary"
-              disabled={disabled}
-              onClick={() => onRemove(removeItems)}
-            >
-              {m["queue.remove"]()}
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              disabled={disabled}
-              onClick={() => {
-                setShowRemove(false);
-                setRemoveItems(false);
+          {panel === "menu" && (
+            <ul className="queue-menu">
+              <li>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={disabled}
+                  aria-label={m["queue.mark_cooked"]({ name })}
+                  onClick={() => onUpdate({ status: "cooked" })}
+                >
+                  <Check size={18} aria-hidden="true" />
+                  {m["queue.cooked"]()}
+                </Button>
+              </li>
+              <li>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={disabled}
+                  aria-label={m["queue.mark_skipped"]({ name })}
+                  onClick={() => onUpdate({ status: "skipped" })}
+                >
+                  <SkipForward size={18} aria-hidden="true" />
+                  {m["queue.skip"]()}
+                </Button>
+              </li>
+              <li>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={disabled}
+                  onClick={() => setPanel("edit")}
+                >
+                  <Pencil size={18} aria-hidden="true" />
+                  {m["queue.edit"]()}
+                </Button>
+              </li>
+              <li>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={disabled || index === 0}
+                  aria-label={m["queue.move_up"]({ name })}
+                  onClick={() => onMove(-1)}
+                >
+                  <ArrowUp size={18} aria-hidden="true" />
+                  {m["queue.move_up_short"]()}
+                </Button>
+              </li>
+              <li>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={disabled || index === count - 1}
+                  aria-label={m["queue.move_down"]({ name })}
+                  onClick={() => onMove(1)}
+                >
+                  <ArrowDown size={18} aria-hidden="true" />
+                  {m["queue.move_down_short"]()}
+                </Button>
+              </li>
+              <li>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={disabled}
+                  aria-label={m["queue.remove_meal"]({ name })}
+                  onClick={() => setPanel("remove")}
+                >
+                  <Trash2 size={18} aria-hidden="true" />
+                  {m["queue.remove"]()}
+                </Button>
+              </li>
+            </ul>
+          )}
+          {panel === "edit" && (
+            <form
+              className="queue-entry-form"
+              onSubmit={(event) => {
+                event.preventDefault();
+                onUpdate({
+                  servings: Number(servings),
+                  plannedFor: plannedFor || null,
+                });
               }}
             >
-              {m["queue.cancel"]()}
-            </Button>
-          </div>
-          {removeError && (
-            <p className="form-error" role="alert">
-              {removeError}
-            </p>
+              <Field
+                id={`${id}-servings`}
+                label={m["recipes.servings"]()}
+                type="number"
+                min={1}
+                max={100}
+                step={1}
+                required
+                value={servings}
+                disabled={disabled}
+                onChange={(event) => setServings(event.target.value)}
+              />
+              <Field
+                id={`${id}-date`}
+                label={m["queue.planned_for"]()}
+                type="date"
+                value={plannedFor}
+                disabled={disabled}
+                onChange={(event) => setPlannedFor(event.target.value)}
+              />
+              <div className="recipe-actions">
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  disabled={disabled || !changed}
+                >
+                  {m["queue.save"]()}
+                </Button>
+                <Button type="button" variant="ghost" onClick={close}>
+                  {m["queue.cancel"]()}
+                </Button>
+              </div>
+            </form>
           )}
-        </section>
+          {panel === "remove" && (
+            <section
+              className="queue-remove-panel"
+              aria-labelledby={`${id}-remove-title`}
+            >
+              <h3 id={`${id}-remove-title`}>
+                {m["queue.remove_confirm"]({ name })}
+              </h3>
+              <p>{m["queue.remove_hint"]()}</p>
+              <label className="queue-checkbox">
+                <input
+                  type="checkbox"
+                  checked={removeItems}
+                  disabled={disabled}
+                  onChange={(event) => setRemoveItems(event.target.checked)}
+                />
+                <span>{m["queue.remove_items"]()}</span>
+              </label>
+              <div className="recipe-actions">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={disabled}
+                  onClick={() => onRemove(removeItems)}
+                >
+                  {m["queue.remove"]()}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={disabled}
+                  onClick={close}
+                >
+                  {m["queue.cancel"]()}
+                </Button>
+              </div>
+              {removeError && (
+                <p className="form-error" role="alert">
+                  {removeError}
+                </p>
+              )}
+            </section>
+          )}
+        </fieldset>
       )}
       {error && (
         <p className="form-error" role="alert">

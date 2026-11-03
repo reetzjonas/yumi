@@ -20,7 +20,7 @@
   "queue.saved": "Gericht gespeichert.",
   "queue.loading": "Dein Essensplan wird geladen …",
   "queue.retry": "Erneut versuchen",
-  "queue.order_hint": "Ziehe ein Gericht am Griff oder nutze die Pfeile, um die Kochreihenfolge zu ändern. Das Datum ist unabhängig davon.",
+  "queue.order_hint": "Ziehe ein Gericht am Griff, nutze die Pfeiltasten auf dem Griff oder öffne sein Menü, um die Kochreihenfolge zu ändern. Das Datum ist unabhängig davon.",
   "queue.drag": "{name} verschieben",
   "queue.move_up": "{name} nach oben",
   "queue.move_down": "{name} nach unten",
@@ -319,5 +319,11 @@
   "recipes.import_other": "Andere Seite importieren",
   "errors.import_no_recipe": "Auf dieser Seite wurden keine Rezeptdaten gefunden.",
   "errors.import_failed": "Die Seite konnte nicht geladen werden. Bitte prüfe den Link oder versuche es später erneut.",
-  "errors.import_invalid_url": "Dieser Link kann nicht importiert werden. Verwende eine öffentliche http- oder https-Adresse."
+  "errors.import_invalid_url": "Dieser Link kann nicht importiert werden. Verwende eine öffentliche http- oder https-Adresse.",
+  "queue.servings_one": "1 Portion",
+  "queue.servings_count": "{count} Portionen",
+  "queue.more_actions": "Weitere Aktionen für {name}",
+  "queue.edit": "Bearbeiten",
+  "queue.move_up_short": "Nach oben",
+  "queue.move_down_short": "Nach unten"
 }
