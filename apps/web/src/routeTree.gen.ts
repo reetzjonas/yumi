@@ -11,9 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ListRouteImport } from './routes/list'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PlanRouteImport } from './routes/plan'
 import { Route as RecipesRouteImport } from './routes/recipes'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as MoreIndexRouteImport } from './routes/more.index'
+import { Route as MoreHouseholdRouteImport } from './routes/more.household'
 import { Route as MoreSettingsRouteImport } from './routes/more.settings'
 
 const IndexRoute = IndexRouteImport.update({
@@ -26,6 +31,16 @@ const ListRoute = ListRouteImport.update({
   path: '/list',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlanRoute = PlanRouteImport.update({
   id: '/plan',
   path: '/plan',
@@ -36,9 +51,24 @@ const RecipesRoute = RecipesRouteImport.update({
   path: '/recipes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InviteTokenRoute = InviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MoreIndexRoute = MoreIndexRouteImport.update({
   id: '/more/',
   path: '/more/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MoreHouseholdRoute = MoreHouseholdRouteImport.update({
+  id: '/more/household',
+  path: '/more/household',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MoreSettingsRoute = MoreSettingsRouteImport.update({
@@ -50,16 +80,26 @@ const MoreSettingsRoute = MoreSettingsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/list': typeof ListRoute
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
   '/recipes': typeof RecipesRoute
+  '/signup': typeof SignupRoute
+  '/invite/$token': typeof InviteTokenRoute
+  '/more/household': typeof MoreHouseholdRoute
   '/more/settings': typeof MoreSettingsRoute
   '/more/': typeof MoreIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/list': typeof ListRoute
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
   '/recipes': typeof RecipesRoute
+  '/signup': typeof SignupRoute
+  '/invite/$token': typeof InviteTokenRoute
+  '/more/household': typeof MoreHouseholdRoute
   '/more/settings': typeof MoreSettingsRoute
   '/more': typeof MoreIndexRoute
 }
@@ -67,22 +107,54 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/list': typeof ListRoute
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
   '/recipes': typeof RecipesRoute
+  '/signup': typeof SignupRoute
+  '/invite/$token': typeof InviteTokenRoute
+  '/more/household': typeof MoreHouseholdRoute
   '/more/settings': typeof MoreSettingsRoute
   '/more/': typeof MoreIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/list' | '/plan' | '/recipes' | '/more/settings' | '/more/'
+  fullPaths:
+    | '/'
+    | '/list'
+    | '/login'
+    | '/onboarding'
+    | '/plan'
+    | '/recipes'
+    | '/signup'
+    | '/invite/$token'
+    | '/more/household'
+    | '/more/settings'
+    | '/more/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/list' | '/plan' | '/recipes' | '/more/settings' | '/more'
+  to:
+    | '/'
+    | '/list'
+    | '/login'
+    | '/onboarding'
+    | '/plan'
+    | '/recipes'
+    | '/signup'
+    | '/invite/$token'
+    | '/more/household'
+    | '/more/settings'
+    | '/more'
   id:
     | '__root__'
     | '/'
     | '/list'
+    | '/login'
+    | '/onboarding'
     | '/plan'
     | '/recipes'
+    | '/signup'
+    | '/invite/$token'
+    | '/more/household'
     | '/more/settings'
     | '/more/'
   fileRoutesById: FileRoutesById
@@ -90,8 +162,13 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ListRoute: typeof ListRoute
+  LoginRoute: typeof LoginRoute
+  OnboardingRoute: typeof OnboardingRoute
   PlanRoute: typeof PlanRoute
   RecipesRoute: typeof RecipesRoute
+  SignupRoute: typeof SignupRoute
+  InviteTokenRoute: typeof InviteTokenRoute
+  MoreHouseholdRoute: typeof MoreHouseholdRoute
   MoreSettingsRoute: typeof MoreSettingsRoute
   MoreIndexRoute: typeof MoreIndexRoute
 }
@@ -112,6 +189,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ListRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/plan': {
       id: '/plan'
       path: '/plan'
@@ -126,11 +217,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RecipesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/more/': {
       id: '/more/'
       path: '/more'
       fullPath: '/more/'
       preLoaderRoute: typeof MoreIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/more/household': {
+      id: '/more/household'
+      path: '/more/household'
+      fullPath: '/more/household'
+      preLoaderRoute: typeof MoreHouseholdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/more/settings': {
@@ -146,8 +258,13 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ListRoute: ListRoute,
+  LoginRoute: LoginRoute,
+  OnboardingRoute: OnboardingRoute,
   PlanRoute: PlanRoute,
   RecipesRoute: RecipesRoute,
+  SignupRoute: SignupRoute,
+  InviteTokenRoute: InviteTokenRoute,
+  MoreHouseholdRoute: MoreHouseholdRoute,
   MoreSettingsRoute: MoreSettingsRoute,
   MoreIndexRoute: MoreIndexRoute,
 }

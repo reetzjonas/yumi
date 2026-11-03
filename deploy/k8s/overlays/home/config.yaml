@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yumi-config
+data:
+  # Match the origin users open through the internal gateway.
+  BETTER_AUTH_URL: https://yumi.reetz.me

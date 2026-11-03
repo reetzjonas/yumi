@@ -58,6 +58,23 @@ AI is disabled.
 
 ## Deployment
 
-- GitHub Actions builds `web` (static, served by the API or a small nginx) and `api` images to GHCR.
-- Kustomize base + overlay for the home cluster: API deployment, PostgreSQL, ingress, secrets.
-- PostgreSQL: CloudNativePG if available in the cluster (backups), otherwise a plain StatefulSet + pg_dump CronJob.
+- GitHub Actions checks PRs and pushes to `main` with Bun 1.4.2. A multi-stage Docker build
+  packages the web assets and API together; production static serving and SPA fallback live in
+  `apps/api/src/index.ts`. Successful `main` builds publish `ghcr.io/reetzjonas/yumi` with the
+  full commit SHA and `latest` tags.
+- `deploy/k8s/base` and `overlays/home` define namespace `yumi`, a single app replica,
+  PostgreSQL 18 on a 10 GiB `local-path` PVC, Vault External Secrets and default-deny networking.
+  CloudNativePG is not installed. App, migration and DB containers run without root,
+  capabilities or a writable root filesystem; Postgres has writable data, socket and temp volumes.
+- The app's init container runs `bun packages/db/src/migrate.ts` from the same image before the
+  server starts. `Recreate` prevents overlapping migration runners during upgrades and causes
+  brief downtime. Keep one replica. Images include generated `packages/db/migrations`.
+- The home overlay exposes the ClusterIP service through an HTTPRoute on the existing
+  `homelab/traefik-gateway` LAN/VPN listener, like rpg's internal path. It has no Ingress,
+  new certificate resources or public VPS gateway attachment. `yumi.reetz.me` is inferred
+  from rpg's domain; internal DNS must point it at the LAN/VPN gateway.
+- `BETTER_AUTH_URL` comes from `yumi-config`. Keel polls the GHCR `latest` tag hourly and
+  automatically recreates the app on image changes, matching existing cluster annotations.
+  SHA tags remain available for pinned releases with Keel removed.
+- PostgreSQL backups are not automated by these manifests. A PVC is node-local storage,
+  not a backup. See [deployment.md](deployment.md) for prerequisites, secrets and rollout.
