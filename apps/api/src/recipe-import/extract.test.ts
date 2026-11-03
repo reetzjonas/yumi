@@ -39,6 +39,39 @@ describe("structured recipe extraction", () => {
     expect(recipeInputSchema.safeParse(result.draft).success).toBe(true);
   });
 
+  test.each([
+    [
+      "an @id reference to an ImageObject in the graph",
+      `<script type="application/ld+json">${JSON.stringify({
+        "@graph": [
+          {
+            "@type": "Recipe",
+            name: "Curry",
+            image: { "@id": `${source}#primaryimage` },
+          },
+          {
+            "@type": "ImageObject",
+            "@id": `${source}#primaryimage`,
+            url: "https://img.example/curry.jpg",
+          },
+        ],
+      })}</script>`,
+      "https://img.example/curry.jpg",
+    ],
+    [
+      "the page's og:image when the recipe names none",
+      `<meta property="og:image" content="https://img.example/og.jpg"><script type="application/ld+json">{"@type":"Recipe","name":"Curry"}</script>`,
+      "https://img.example/og.jpg",
+    ],
+    [
+      "the recipe image before the page's og:image",
+      `<meta property="og:image" content="https://img.example/og.jpg"><script type="application/ld+json">{"@type":"Recipe","name":"Curry","image":"https://img.example/own.jpg"}</script>`,
+      "https://img.example/own.jpg",
+    ],
+  ])("selects %s as the image", (_case, html, expected) => {
+    expect(extractRecipe(html, source).imageUrl).toBe(expected);
+  });
+
   test("finds arrays and graphs after malformed JSON-LD and preserves section titles", async () => {
     const result = extractRecipe(await fixture("bbc-graph"), source);
     expect(result.draft.servings).toBe(6);

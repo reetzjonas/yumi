@@ -115,9 +115,16 @@ function steps(value: unknown, depth = 0): { text: string }[] {
   });
 }
 
-function image(value: unknown, sourceUrl: string): string | null {
+function image(
+  value: unknown,
+  sourceUrl: string,
+  ids: ReadonlyMap<string, Data>,
+): string | null {
   for (const entry of values(value)) {
-    const data = object(entry);
+    const reference = object(entry)?.["@id"];
+    const data =
+      (typeof reference === "string" ? ids.get(reference) : undefined) ??
+      object(entry);
     const candidate =
       typeof entry === "string" ? entry : (data?.contentUrl ?? data?.url);
     if (typeof candidate !== "string" || !candidate.trim()) continue;
@@ -134,6 +141,7 @@ function mapRecipe(
   data: Data,
   method: ExtractedRecipe["method"],
   sourceUrl: string,
+  ids: ReadonlyMap<string, Data> = new Map(),
 ): ExtractedRecipe | null {
   const title = text(data.name);
   if (!title) return null;
@@ -171,13 +179,14 @@ function mapRecipe(
         draft: parsed.data,
         method,
         sourceUrl,
-        imageUrl: image(data.image, sourceUrl),
+        imageUrl: image(data.image, sourceUrl, ids),
       }
     : null;
 }
 
-function jsonRecipes(root: HtmlNode): Data[] {
+function jsonRecipes(root: HtmlNode) {
   const recipes: Data[] = [];
+  const ids = new Map<string, Data>();
   for (const node of nodes(root)) {
     if (
       node.tag !== "script" ||
@@ -202,6 +211,9 @@ function jsonRecipes(root: HtmlNode): Data[] {
         const data = object(current);
         if (!data) continue;
         if (isType(data["@type"], "Recipe")) recipes.push(data);
+        const id = data["@id"];
+        if (typeof id === "string" && Object.keys(data).length > 1)
+          ids.set(id, data);
         const children = Object.values(data);
         for (let index = children.length - 1; index >= 0; index--) {
           if (children[index] && typeof children[index] === "object")
@@ -210,7 +222,7 @@ function jsonRecipes(root: HtmlNode): Data[] {
       }
     }
   }
-  return recipes;
+  return { recipes, ids };
 }
 
 function microdata(node: HtmlNode, depth = 0): Data {
@@ -249,12 +261,27 @@ export function extractRecipe(html: string, inputUrl: string): ExtractedRecipe {
   if (Buffer.byteLength(html) > 2 * 1024 * 1024)
     throw new RecipeImportError("response_too_large");
   const root = parseHtml(html);
+  const pageImage = image(
+    nodes(root).find(
+      (node) =>
+        node.tag === "meta" &&
+        node.attrs.property?.toLowerCase() === "og:image" &&
+        node.attrs.content,
+    )?.attrs.content,
+    sourceUrl,
+    new Map(),
+  );
+  const withImage = (result: ExtractedRecipe) => ({
+    ...result,
+    imageUrl: result.imageUrl ?? pageImage,
+  });
   let found = false;
-  for (const data of jsonRecipes(root)) {
+  const { recipes, ids } = jsonRecipes(root);
+  for (const data of recipes) {
     found = true;
     try {
-      const result = mapRecipe(data, "jsonld", sourceUrl);
-      if (result) return result;
+      const result = mapRecipe(data, "jsonld", sourceUrl, ids);
+      if (result) return withImage(result);
     } catch (error) {
       if (
         !(error instanceof RecipeImportError) ||
@@ -272,7 +299,7 @@ export function extractRecipe(html: string, inputUrl: string): ExtractedRecipe {
     found = true;
     try {
       const result = mapRecipe(microdata(node), "microdata", sourceUrl);
-      if (result) return result;
+      if (result) return withImage(result);
     } catch (error) {
       if (
         !(error instanceof RecipeImportError) ||
