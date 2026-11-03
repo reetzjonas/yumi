@@ -1,6 +1,8 @@
 import {
   boolean,
+  date,
   index,
+  integer,
   jsonb,
   pgEnum,
   pgTable,
@@ -107,4 +109,30 @@ export const pantryItem = pgTable(
       t.ingredientId,
     ),
   ],
+);
+
+/** Item that reappears on a list every `intervalWeeks` weeks on `weekday` (0 = Sunday). */
+export const recurringItem = pgTable(
+  "recurring_item",
+  {
+    id: id(),
+    householdId: householdId(),
+    listId: uuid()
+      .notNull()
+      .references(() => shoppingList.id, { onDelete: "cascade" }),
+    ingredientId: uuid().references(() => ingredient.id, {
+      onDelete: "set null",
+    }),
+    label: text().notNull(),
+    quantity: real(),
+    unit: text(),
+    categoryId: uuid().references(() => ingredientCategory.id, {
+      onDelete: "set null",
+    }),
+    weekday: integer().notNull(),
+    intervalWeeks: integer().notNull().default(1),
+    nextDue: date({ mode: "string" }).notNull(),
+    ...timestamps,
+  },
+  (t) => [index("recurring_item_list_idx").on(t.listId, t.nextDue)],
 );

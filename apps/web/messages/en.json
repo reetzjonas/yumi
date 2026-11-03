@@ -237,5 +237,16 @@
   "pantry.check_hint": "These staples were not added to the list.",
   "pantry.add_anyway": "Add anyway",
   "pantry.add_all": "Add all",
-  "pantry.all_at_home": "All at home"
+  "pantry.all_at_home": "All at home",
+  "recurring.title": "Recurring items",
+  "recurring.description": "These items go back on this list on their day when the list is opened. If the last one is still open, it is not added twice.",
+  "recurring.add": "Add recurring item",
+  "recurring.weekday": "Day",
+  "recurring.interval": "Repeat",
+  "recurring.weekly": "Every week",
+  "recurring.every_weeks": "Every {count} weeks",
+  "recurring.every_week": "Every week on {day}",
+  "recurring.every_n_weeks": "Every {count} weeks on {day}",
+  "recurring.next": "next {date}",
+  "recurring.remove": "Stop repeating {name}"
 }

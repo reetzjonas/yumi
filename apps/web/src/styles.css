@@ -1061,3 +1061,11 @@ select:focus-visible {
 .staple-check h3 {
   font-weight: 600;
 }
+
+.recurring-items {
+  display: grid;
+  gap: 16px;
+}
+.recurring-items h3 {
+  font-weight: 600;
+}

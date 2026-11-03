@@ -7,6 +7,7 @@ import { ItemForm } from "@/components/shopping/item-form";
 import { ItemTiles } from "@/components/shopping/item-tiles";
 import { ListManager } from "@/components/shopping/list-manager";
 import { QuickAdd } from "@/components/shopping/quick-add";
+import { RecurringItems } from "@/components/shopping/recurring-items";
 import { ShoppingItems } from "@/components/shopping/shopping-items";
 import { StoreSelect } from "@/components/shopping/store-select";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -114,6 +115,7 @@ function HouseholdLists() {
                   />
                 )
               )}
+              <RecurringItems key={`recurring-${listId}`} listId={listId} />
             </>
           )}
         </>

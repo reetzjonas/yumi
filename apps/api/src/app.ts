@@ -11,6 +11,7 @@ import { householdInvites, invites } from "./routes/invites";
 import { me } from "./routes/me";
 import { pantry } from "./routes/pantry";
 import { recipes } from "./routes/recipes";
+import { recurring } from "./routes/recurring";
 import { shopping } from "./routes/shopping";
 import { listStore, stores } from "./routes/stores";
 
@@ -28,6 +29,7 @@ const api = new Hono<AppEnv>()
   .route("/pantry", pantry)
   .route("/shopping", shopping)
   .route("/shopping", listStore)
+  .route("/shopping", recurring)
   .route("/stores", stores);
 
 export const app = new Hono()

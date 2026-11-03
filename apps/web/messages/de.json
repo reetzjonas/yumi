@@ -237,5 +237,16 @@
   "pantry.check_hint": "Diese Vorratsartikel wurden nicht auf die Liste gesetzt.",
   "pantry.add_anyway": "Trotzdem hinzufügen",
   "pantry.add_all": "Alle hinzufügen",
-  "pantry.all_at_home": "Alles da"
+  "pantry.all_at_home": "Alles da",
+  "recurring.title": "Wiederkehrende Artikel",
+  "recurring.description": "Diese Artikel kommen an ihrem Tag wieder auf diese Liste, sobald sie geöffnet wird. Ist der letzte noch offen, wird er nicht doppelt hinzugefügt.",
+  "recurring.add": "Wiederkehrenden Artikel hinzufügen",
+  "recurring.weekday": "Tag",
+  "recurring.interval": "Wiederholen",
+  "recurring.weekly": "Jede Woche",
+  "recurring.every_weeks": "Alle {count} Wochen",
+  "recurring.every_week": "Jede Woche am {day}",
+  "recurring.every_n_weeks": "Alle {count} Wochen am {day}",
+  "recurring.next": "nächstes Mal {date}",
+  "recurring.remove": "{name} nicht mehr wiederholen"
 }

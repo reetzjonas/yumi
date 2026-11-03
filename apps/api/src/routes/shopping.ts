@@ -24,6 +24,7 @@ import { validator } from "hono/validator";
 import { z } from "zod";
 import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
 import { db } from "../db";
+import { applyDueRecurring } from "../recurring";
 import { applyShoppingEvents } from "../shopping-events";
 import { loadShoppingList } from "../shopping-list-data";
 
@@ -166,14 +167,13 @@ export const shopping = new Hono<HouseholdEnv>()
       throw new HTTPException(404, { message: "not_found" });
     return c.body(null, 204);
   })
-  .get(LIST, async (c) =>
-    c.json(
-      await loadShoppingList(
-        c.get("householdId"),
-        z.uuid().parse(c.req.param("id")),
-      ),
-    ),
-  )
+  .get(LIST, async (c) => {
+    const householdId = c.get("householdId");
+    const listId = z.uuid().parse(c.req.param("id"));
+    await assertListOwned(householdId, listId);
+    await applyDueRecurring({ listId, householdId, userId: c.get("user").id });
+    return c.json(await loadShoppingList(householdId, listId));
+  })
   .post(
     `${LIST}/events`,
     validator("json", (value) => shoppingEventBatchSchema.parse(value)),
