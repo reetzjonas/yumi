@@ -167,6 +167,9 @@ const NOTE_MARKER_RE =
 const OPTIONAL_RE =
   /(?:^|[\s(,])(?:optional|evtl\.?|eventuell|nach belieben|if desired|if you like)(?=$|[\s),.])/i;
 
+/** German recipe sites write optional plural endings as "Möhre(n)" or "Ei(er)". */
+const PLURAL_SUFFIX_RE = /(\p{L})\((?:n|en|e|s|er|es|nen)\)(?=$|[\s,;.)])/gu;
+
 function normalize(line: string) {
   let text = line.normalize("NFC").replace(/⁄/g, "/");
   for (const [glyph, fraction] of Object.entries(FRACTION_GLYPHS)) {
@@ -208,6 +211,7 @@ export function parseIngredientLine(line: string): ParsedIngredientLine {
   let unitText: string | null = null;
 
   const optional = OPTIONAL_RE.test(rest);
+  rest = rest.replace(PLURAL_SUFFIX_RE, "$1");
   rest = rest.replace(/\(([^)]*)\)/g, (_, inner: string) => {
     if (inner.trim()) notes.push(inner.trim());
     return " ";

@@ -29,6 +29,16 @@ const cases: Array<[line: string, expected: Expected]> = [
     { quantity: 1, unit: "can", name: "Tomaten", note: "400 g" },
   ],
   ["2 große Zwiebeln", { quantity: 2, name: "Zwiebeln", note: "große" }],
+  ["2 Möhre(n)", { quantity: 2, name: "Möhre", note: null }],
+  [
+    "1 Zwiebel(n), gewürfelt",
+    { quantity: 1, name: "Zwiebel", note: "gewürfelt" },
+  ],
+  ["3 Ei(er) (Größe M)", { quantity: 3, name: "Ei", note: "Größe M" }],
+  [
+    "250 g Nudeln (kurze)",
+    { quantity: 250, unit: "g", name: "Nudeln", note: "kurze" },
+  ],
   [
     "1 gestr. TL Backpulver",
     { quantity: 1, unit: "tsp", name: "Backpulver", note: "gestr." },
