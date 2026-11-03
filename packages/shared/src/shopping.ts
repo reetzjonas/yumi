@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { ParsedIngredientLine } from "./ingredient-line";
 import {
   type ConversionFactors,
   convertQuantity,
@@ -165,3 +166,40 @@ export const addRecipeToListSchema = z.object({
   servings: z.number().int().min(1).max(100).optional(),
   locale: z.enum(["de", "en"]).default("de"),
 });
+
+export interface QuickAddMatch {
+  id: string;
+  /** display name in the user's locale */
+  name: string;
+  categoryId: string | null;
+}
+
+/**
+ * Turns typed input like "2 Milch" or "500g Hack" into list item fields. A measure
+ * without a unit code ("2 Becher Sahne") stays in the label, so it is not linked.
+ */
+export function quickAddFields(
+  parsed: Pick<
+    ParsedIngredientLine,
+    "raw" | "name" | "quantity" | "quantityMax" | "unit" | "unitText"
+  >,
+  match: QuickAddMatch | null,
+) {
+  const amount = parsed.quantityMax ?? parsed.quantity;
+  const quantity =
+    amount !== null && amount > 0 && amount <= 1_000_000 ? amount : null;
+  const unit = quantity === null ? null : parsed.unit;
+  const name = parsed.name || parsed.raw.trim();
+  const measure = parsed.unitText && !parsed.unit ? parsed.unitText : null;
+  const linked = measure ? null : match;
+  return {
+    label: (linked?.name ?? (measure ? `${measure} ${name}` : name)).slice(
+      0,
+      200,
+    ),
+    ingredientId: linked?.id ?? null,
+    categoryId: linked?.categoryId ?? null,
+    quantity,
+    unit,
+  };
+}

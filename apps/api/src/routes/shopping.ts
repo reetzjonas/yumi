@@ -2,6 +2,7 @@ import {
   ingredient,
   recipe,
   recipeIngredient,
+  shoppingEvent,
   shoppingList,
   shoppingListItem,
 } from "@yumi/db/schema";
@@ -11,10 +12,11 @@ import {
   type ShoppingEvent,
   shoppingEventBatchSchema,
   shoppingEventSchema,
+  shoppingItemFieldsSchema,
   shoppingListInputSchema,
   unitSchema,
 } from "@yumi/shared";
-import { and, asc, count, eq } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray } from "drizzle-orm";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { validator } from "hono/validator";
@@ -38,6 +40,57 @@ async function assertListOwned(householdId: string, id: string) {
     )
     .limit(1);
   if (!row) throw new HTTPException(404, { message: "not_found" });
+}
+
+const RECENT_LIMIT = 12;
+
+/** Items the household added by hand lately, newest first, one per ingredient or label. */
+async function recentItems(householdId: string) {
+  const rows = await db
+    .select({ payload: shoppingEvent.payload })
+    .from(shoppingEvent)
+    .innerJoin(shoppingList, eq(shoppingList.id, shoppingEvent.listId))
+    .where(
+      and(
+        eq(shoppingList.householdId, householdId),
+        eq(shoppingEvent.type, "item_added"),
+      ),
+    )
+    .orderBy(desc(shoppingEvent.serverTs))
+    .limit(300);
+  const seen = new Set<string>();
+  const recent = [];
+  for (const row of rows) {
+    const fields = shoppingItemFieldsSchema.safeParse(row.payload).data;
+    if (!fields || fields.sources.length) continue;
+    const key = fields.ingredientId ?? fields.label.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    recent.push({ key, ...fields });
+    if (recent.length === RECENT_LIMIT) break;
+  }
+  const ids = recent.flatMap((item) =>
+    item.ingredientId ? [item.ingredientId] : [],
+  );
+  const linked = ids.length
+    ? await db
+        .select({
+          id: ingredient.id,
+          nameDe: ingredient.nameDe,
+          nameEn: ingredient.nameEn,
+          icon: ingredient.icon,
+          categoryId: ingredient.categoryId,
+          defaultUnit: ingredient.defaultUnit,
+        })
+        .from(ingredient)
+        .where(inArray(ingredient.id, ids))
+    : [];
+  return recent.map(({ key, label, ingredientId, categoryId }) => ({
+    key,
+    label,
+    categoryId,
+    ingredient: linked.find((row) => row.id === ingredientId) ?? null,
+  }));
 }
 
 const scale = (quantity: number | null, factor: number) =>
@@ -66,6 +119,7 @@ export const shopping = new Hono<HouseholdEnv>()
       .orderBy(asc(shoppingList.createdAt));
     return c.json(rows);
   })
+  .get("/recent", async (c) => c.json(await recentItems(c.get("householdId"))))
   .post("/lists", listBody, async (c) => {
     const input = c.req.valid("json");
     const [row] = await db

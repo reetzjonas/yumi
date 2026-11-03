@@ -216,5 +216,15 @@
   "stores.saved": "Laden gespeichert.",
   "stores.list_store": "Laden",
   "stores.no_store": "Kein Laden (Standard-Reihenfolge)",
-  "stores.manage": "Läden verwalten"
+  "stores.manage": "Läden verwalten",
+  "shopping.quick_label": "Schnell hinzufügen",
+  "shopping.quick_placeholder": "z. B. 2 Milch oder 500g Hack",
+  "shopping.quick_hint": "Gib Menge und Artikel ein und drücke Enter oder wähle einen Vorschlag.",
+  "shopping.add": "Hinzufügen",
+  "shopping.suggestions": "Vorschläge",
+  "shopping.recent": "Zuletzt verwendet",
+  "shopping.browse": "Nach Kategorie stöbern",
+  "shopping.all_categories": "Alle Kategorien",
+  "shopping.on_list": "(schon auf der Liste)",
+  "shopping.more_options": "Weitere Optionen"
 }

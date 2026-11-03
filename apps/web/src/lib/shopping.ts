@@ -40,6 +40,18 @@ export function useShoppingCategories() {
   });
 }
 
+export function addItemEvent(
+  payload: Extract<ShoppingEvent, { type: "item_added" }>["payload"],
+): ShoppingEvent {
+  return {
+    id: crypto.randomUUID(),
+    itemId: crypto.randomUUID(),
+    clientTs: new Date().toISOString(),
+    type: "item_added",
+    payload,
+  };
+}
+
 export function itemEvent(
   itemId: string,
   type: "item_checked" | "item_unchecked" | "item_removed",

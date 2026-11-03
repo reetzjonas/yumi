@@ -8,6 +8,7 @@ import {
 import { and, asc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { z } from "zod";
 import {
   ingredientColumns,
   matchParsedLine,
@@ -42,6 +43,27 @@ export const ingredients = new Hono<HouseholdEnv>()
       })
       .from(ingredientCategory)
       .orderBy(asc(ingredientCategory.defaultPosition));
+    return c.json(rows);
+  })
+  .get("/categories/:id/ingredients", async (c) => {
+    const rows = await db
+      .select({
+        id: ingredient.id,
+        nameDe: ingredient.nameDe,
+        nameEn: ingredient.nameEn,
+        icon: ingredient.icon,
+        categoryId: ingredient.categoryId,
+        defaultUnit: ingredient.defaultUnit,
+      })
+      .from(ingredient)
+      .where(
+        and(
+          eq(ingredient.categoryId, z.uuid().parse(c.req.param("id"))),
+          visibleTo(c.get("householdId")),
+        ),
+      )
+      .orderBy(asc(ingredient.nameDe))
+      .limit(300);
     return c.json(rows);
   })
   .get("/", async (c) => {

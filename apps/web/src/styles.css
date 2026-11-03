@@ -973,3 +973,78 @@ select:focus-visible {
   flex-shrink: 0;
   color: var(--muted-foreground);
 }
+
+.quick-add,
+.item-tiles-panel,
+.item-tiles-group {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+.quick-add label,
+.item-tiles-group h3 {
+  font-weight: 600;
+}
+.quick-add-row {
+  display: flex;
+  gap: 8px;
+}
+.quick-add-input {
+  flex: 1;
+  min-width: 0;
+}
+.quick-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+}
+.item-tiles {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+}
+.item-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 88px;
+  padding: 8px;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  text-align: center;
+  cursor: pointer;
+}
+.item-tile:hover {
+  border-color: var(--border);
+}
+.item-tile:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.item-tile:disabled {
+  cursor: progress;
+}
+.item-tile[data-on-list="true"] {
+  border-color: var(--primary);
+}
+.item-tile-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+.item-tile-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}

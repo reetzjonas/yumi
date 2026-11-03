@@ -1,5 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { type MergeableItem, mergeShoppingItems } from "./shopping";
+import { parseIngredientLine } from "./ingredient-line";
+import {
+  type MergeableItem,
+  mergeShoppingItems,
+  quickAddFields,
+} from "./shopping";
 
 const onion = "00000000-0000-4000-8000-000000000001";
 const milk = "00000000-0000-4000-8000-000000000002";
@@ -82,5 +87,41 @@ describe("mergeShoppingItems", () => {
       item({ id: "c", ingredientId: onion }),
     ]);
     expect(merged.map((m) => m.itemIds)).toEqual([["a"], ["b"], ["c"]]);
+  });
+});
+
+describe("quickAddFields", () => {
+  const milk = { id: crypto.randomUUID(), name: "Milch", categoryId: null };
+
+  test("a count before the name becomes the quantity of the linked ingredient", () => {
+    expect(quickAddFields(parseIngredientLine("2 Milch"), milk)).toEqual({
+      label: "Milch",
+      ingredientId: milk.id,
+      categoryId: null,
+      quantity: 2,
+      unit: null,
+    });
+  });
+
+  test("a glued unit is split off", () => {
+    expect(
+      quickAddFields(parseIngredientLine("500g Hack"), null),
+    ).toMatchObject({
+      label: "Hack",
+      quantity: 500,
+      unit: "g",
+    });
+  });
+
+  test("a measure without a unit code stays in the label and is not linked", () => {
+    expect(
+      quickAddFields(parseIngredientLine("2 Becher Sahne"), milk),
+    ).toMatchObject({ label: "Becher Sahne", ingredientId: null, quantity: 2 });
+  });
+
+  test("a range buys the upper bound", () => {
+    expect(
+      quickAddFields(parseIngredientLine("2-3 Zwiebeln"), null),
+    ).toMatchObject({ label: "Zwiebeln", quantity: 3 });
   });
 });

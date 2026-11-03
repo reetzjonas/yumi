@@ -1,0 +1,119 @@
+import { useQuery } from "@tanstack/react-query";
+import { parseIngredientLine, quickAddFields } from "@yumi/shared";
+import { useId, useState } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { api } from "@/lib/api";
+import { ensureOk, errorMessage } from "@/lib/api-error";
+import { ingredientName } from "@/lib/recipes";
+import { useMe } from "@/lib/session";
+import { addItemEvent, useShoppingEvents } from "@/lib/shopping";
+import { m } from "@/paraglide/messages";
+
+export function QuickAdd({ listId }: { listId: string }) {
+  const id = useId();
+  const householdId = useMe()?.activeHouseholdId;
+  const events = useShoppingEvents(listId);
+  const [text, setText] = useState("");
+  const parsed = parseIngredientLine(text);
+  const q = (parsed.name || text).trim();
+  const suggestions = useQuery({
+    queryKey: ["shopping", householdId, "catalog", q],
+    enabled: !!householdId && q.length > 1,
+    queryFn: async () =>
+      (
+        await ensureOk(await api.ingredients.$get({ query: { q, limit: "6" } }))
+      ).json(),
+  });
+  const [matching, setMatching] = useState(false);
+  const busy = events.isPending || matching;
+  const add = (fields: ReturnType<typeof quickAddFields>) =>
+    events.mutate([addItemEvent(fields)], { onSuccess: () => setText("") });
+  return (
+    <form
+      className="quick-add"
+      onSubmit={async (event) => {
+        event.preventDefault();
+        if (!text.trim()) return;
+        setMatching(true);
+        try {
+          const [line] = await (
+            await ensureOk(
+              await api.ingredients.parse.$post({ json: { lines: [text] } }),
+            )
+          ).json();
+          if (!line) return;
+          add(
+            quickAddFields(
+              line,
+              line.ingredient && {
+                id: line.ingredient.id,
+                name: ingredientName(line.ingredient),
+                categoryId: line.ingredient.categoryId,
+              },
+            ),
+          );
+        } catch (error) {
+          toast.error(errorMessage(error));
+        } finally {
+          setMatching(false);
+        }
+      }}
+    >
+      <label htmlFor={id}>{m["shopping.quick_label"]()}</label>
+      <div className="quick-add-row">
+        <input
+          id={id}
+          className="quick-add-input"
+          value={text}
+          autoComplete="off"
+          enterKeyHint="done"
+          maxLength={200}
+          placeholder={m["shopping.quick_placeholder"]()}
+          aria-describedby={`${id}-hint`}
+          onChange={(event) => setText(event.target.value)}
+        />
+        <Button disabled={busy || !text.trim()}>{m["shopping.add"]()}</Button>
+      </div>
+      <p id={`${id}-hint`} className="row-detail">
+        {m["shopping.quick_hint"]()}
+      </p>
+      {suggestions.isError && (
+        <p className="form-error" role="alert">
+          {errorMessage(suggestions.error)}
+        </p>
+      )}
+      {q.length > 1 && !!suggestions.data?.length && (
+        <ul
+          className="quick-suggestions"
+          aria-label={m["shopping.suggestions"]()}
+        >
+          {suggestions.data.map((ingredient) => (
+            <li key={ingredient.id}>
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={busy}
+                onClick={() =>
+                  add(
+                    quickAddFields(
+                      { ...parsed, unitText: null },
+                      {
+                        id: ingredient.id,
+                        name: ingredientName(ingredient),
+                        categoryId: ingredient.categoryId,
+                      },
+                    ),
+                  )
+                }
+              >
+                {ingredient.icon && `${ingredient.icon} `}
+                {ingredientName(ingredient)}
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </form>
+  );
+}

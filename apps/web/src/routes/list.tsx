@@ -4,7 +4,9 @@ import { ShoppingBasket } from "lucide-react";
 import { useState } from "react";
 import { EmptyState, PageHeader } from "@/components/page";
 import { ItemForm } from "@/components/shopping/item-form";
+import { ItemTiles } from "@/components/shopping/item-tiles";
 import { ListManager } from "@/components/shopping/list-manager";
+import { QuickAdd } from "@/components/shopping/quick-add";
 import { ShoppingItems } from "@/components/shopping/shopping-items";
 import { StoreSelect } from "@/components/shopping/store-select";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -75,11 +77,22 @@ function HouseholdLists() {
               )}
               <section className="section">
                 <h2>{m["shopping.add_item"]()}</h2>
-                <ItemForm
-                  key={listId}
-                  listId={listId}
-                  categories={categories.data ?? []}
-                />
+                <QuickAdd key={listId} listId={listId} />
+                {detail.data && (
+                  <ItemTiles
+                    key={`tiles-${listId}`}
+                    list={detail.data}
+                    categories={categories.data ?? []}
+                  />
+                )}
+                <details className="shopping-catalog">
+                  <summary>{m["shopping.more_options"]()}</summary>
+                  <ItemForm
+                    key={listId}
+                    listId={listId}
+                    categories={categories.data ?? []}
+                  />
+                </details>
               </section>
               {detail.isPending ? (
                 <Skeleton className="h-32 w-full" />
