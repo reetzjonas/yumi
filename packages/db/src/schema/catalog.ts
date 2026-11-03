@@ -30,6 +30,8 @@ export const ingredient = pgTable(
     householdId: text().references(() => organization.id, {
       onDelete: "cascade",
     }),
+    /** stable slug of global seed entries, used to upsert the catalog */
+    key: text().unique(),
     nameDe: text().notNull(),
     nameEn: text().notNull(),
     synonyms: text().array().notNull().default(sql`'{}'::text[]`),

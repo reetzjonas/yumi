@@ -1,56 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { app } from "./app";
-
-const ORIGIN = "http://localhost:5173";
-
-type Client = {
-  cookie: string;
-  request: (path: string, init?: RequestInit) => Promise<Response>;
-};
-
-function client(cookie = ""): Client {
-  const c: Client = {
-    cookie,
-    request: async (path, init = {}) => {
-      const headers = new Headers(init.headers);
-      headers.set("origin", ORIGIN);
-      if (init.body) headers.set("content-type", "application/json");
-      if (c.cookie) headers.set("cookie", c.cookie);
-      const res = await app.request(path, { ...init, headers });
-      const setCookies = res.headers.getSetCookie();
-      if (setCookies.length > 0)
-        c.cookie = setCookies.map((s) => s.split(";")[0]).join("; ");
-      return res;
-    },
-  };
-  return c;
-}
-
-async function signUp(name: string) {
-  const c = client();
-  const res = await c.request("/api/auth/sign-up/email", {
-    method: "POST",
-    body: JSON.stringify({
-      name,
-      email: `${name}@example.com`,
-      password: "correct-horse-battery",
-    }),
-  });
-  expect(res.status).toBe(200);
-  return c;
-}
-
-async function createHousehold(c: Client, name: string) {
-  const res = await c.request("/api/auth/organization/create", {
-    method: "POST",
-    body: JSON.stringify({
-      name,
-      slug: `${name.toLowerCase()}-${crypto.randomUUID().slice(0, 8)}`,
-    }),
-  });
-  expect(res.status).toBe(200);
-  return ((await res.json()) as { id: string }).id;
-}
+import { type Client, client, createHousehold, signUp } from "./test/client";
 
 async function createInvite(c: Client, body: object = {}) {
   const res = await c.request("/api/household/invites", {

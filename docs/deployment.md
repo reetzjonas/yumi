@@ -53,7 +53,8 @@ your gateway, Tailscale HTTPS (`tailscale serve`), or an internal CA trusted by 
 
 ## Operations
 
-- Migrations run in the app's init container on every start. One replica with `Recreate`
+- Migrations and the global ingredient catalog seed (idempotent upsert) run in the app's init
+  container on every start. One replica with `Recreate`
   prevents concurrent migration runs; upgrades have a short downtime.
 - `/api/health` serves the startup, readiness and liveness probes (process only, no DB check yet).
 - Rollback: deploy the previous image tag. Migrations are not rolled back.

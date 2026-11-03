@@ -15,6 +15,13 @@
       "when": 1793705775334,
       "tag": "0001_household_invites",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793710799374,
+      "tag": "0002_ingredient_key",
+      "breakpoints": true
     }
   ]
 }

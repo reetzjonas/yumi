@@ -11,7 +11,8 @@ Alpha sketch, the Drizzle schema is the source of truth once it exists. Every ho
 
 - `ingredient_category`: key, name_de, name_en, icon, default_position.
 - `ingredient`: name_en, name_de, synonyms[], category_id, default_unit, density_g_per_ml?, piece_weight_g?,
-  pack_sizes (jsonb), icon, `household_id` nullable (null = global seed, set = household-specific).
+  pack_sizes (jsonb), icon, `household_id` nullable (null = global seed, set = household-specific),
+  `key` (unique slug of global seed entries; the seed in `packages/db/src/seed` upserts by it).
 
 ## Recipes
 

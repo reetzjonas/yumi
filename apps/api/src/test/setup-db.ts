@@ -1,3 +1,5 @@
+import * as schema from "@yumi/db/schema";
+import { seedCatalog } from "@yumi/db/seed";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
@@ -18,12 +20,14 @@ export async function setupTestDatabase(name: string) {
   const url = new URL(adminUrl);
   url.pathname = `/${dbName}`;
   const client = postgres(url.toString(), { max: 1, onnotice: () => {} });
-  await migrate(drizzle(client), {
+  const db = drizzle(client, { schema, casing: "snake_case" });
+  await migrate(db, {
     migrationsFolder: new URL(
       "../../../../packages/db/migrations",
       import.meta.url,
     ).pathname,
   });
+  await seedCatalog(db);
   await client.end();
   process.env.DATABASE_URL = url.toString();
   return async () => {
