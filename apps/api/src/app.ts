@@ -7,6 +7,7 @@ import { auth } from "./auth";
 import { type AppEnv, loadSession } from "./context";
 import { env } from "./env";
 import { householdInvites, invites } from "./routes/invites";
+import { me } from "./routes/me";
 
 const api = new Hono<AppEnv>()
   .on(["GET", "POST"], "/auth/*", (c) => auth.handler(c.req.raw))
@@ -14,6 +15,7 @@ const api = new Hono<AppEnv>()
     c.json<Health>({ status: "ok", version: env.APP_VERSION }),
   )
   .use(loadSession)
+  .route("/me", me)
   .route("/household/invites", householdInvites)
   .route("/invites", invites);
 

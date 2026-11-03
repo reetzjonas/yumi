@@ -120,6 +120,23 @@ describe("households and invites", () => {
     expect(forbidden.status).toBe(403);
   });
 
+  test("/api/me lists households and the active one", async () => {
+    const u = await signUp("me-user");
+    const before = (await (await u.request("/api/me")).json()) as {
+      households: unknown[];
+      activeHouseholdId: null;
+    };
+    expect(before.households).toEqual([]);
+    expect(before.activeHouseholdId).toBeNull();
+    const id = await createHousehold(u, "Mine");
+    const after = await (await u.request("/api/me")).json();
+    expect(after).toMatchObject({
+      user: { name: "me-user", email: "me-user@example.com" },
+      households: [{ id, name: "Mine", role: "owner" }],
+      activeHouseholdId: id,
+    });
+  });
+
   test("a fresh session starts in the user's household", async () => {
     const owner = await signUp("owner2");
     await createHousehold(owner, "Remembered");
