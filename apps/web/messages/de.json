@@ -307,5 +307,17 @@
   "recurring.every_n_weeks": "Alle {count} Wochen am {day}",
   "recurring.next": "nächstes Mal {date}",
   "recurring.remove": "{name} nicht mehr wiederholen",
-  "shopping.pending_one": "1 Änderung wartet auf Synchronisierung"
+  "shopping.pending_one": "1 Änderung wartet auf Synchronisierung",
+  "recipes.import": "Importieren",
+  "recipes.import_title": "Rezept importieren",
+  "recipes.import_url": "Link zur Rezeptseite",
+  "recipes.import_hint": "Füge den Link einer Rezeptseite ein. Du prüfst den Entwurf, bevor etwas gespeichert wird.",
+  "recipes.import_submit": "Rezept laden",
+  "recipes.importing": "Rezept wird geladen …",
+  "recipes.import_review": "Prüfe den importierten Entwurf und passe ihn bei Bedarf an. Gespeichert wird erst mit „Rezept speichern“.",
+  "recipes.import_image_missing": "Das Bild der Seite konnte nicht übernommen werden. Du kannst selbst eines auswählen.",
+  "recipes.import_other": "Andere Seite importieren",
+  "errors.import_no_recipe": "Auf dieser Seite wurden keine Rezeptdaten gefunden.",
+  "errors.import_failed": "Die Seite konnte nicht geladen werden. Bitte prüfe den Link oder versuche es später erneut.",
+  "errors.import_invalid_url": "Dieser Link kann nicht importiert werden. Verwende eine öffentliche http- oder https-Adresse."
 }

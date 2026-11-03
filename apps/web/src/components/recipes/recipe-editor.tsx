@@ -29,26 +29,31 @@ import { m } from "@/paraglide/messages";
 
 export function RecipeEditor({
   recipe,
+  draft,
+  initialImage,
   householdId,
 }: {
   recipe?: RecipeDetail;
+  draft?: ReturnType<typeof recipeInputSchema.parse>;
+  initialImage?: File;
   householdId: string;
 }) {
+  const source = recipe ?? draft;
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const savedId = useRef(recipe?.id);
   const [ingredients, setIngredients] = useState<IngredientRow[]>(
-    () => recipe?.ingredients.map(storedIngredient) ?? [],
+    () => source?.ingredients.map(storedIngredient) ?? [],
   );
   const [steps, setSteps] = useState<StepRow[]>(
     () =>
-      recipe?.steps.map((step) => ({
+      source?.steps.map((step) => ({
         key: crypto.randomUUID(),
         text: step.text,
       })) ?? [],
   );
   const [image, setImage] = useState<ImageSelection>({
-    file: null,
+    file: initialImage ?? null,
     remove: false,
   });
   const [error, setError] = useState<string | null>(null);
@@ -130,7 +135,7 @@ export function RecipeEditor({
   return (
     <form onSubmit={onSubmit}>
       <fieldset className="recipe-form" disabled={save.isPending}>
-        <RecipeFields recipe={recipe} />
+        <RecipeFields recipe={source} />
         <IngredientEditor
           rows={ingredients}
           setRows={setIngredients}

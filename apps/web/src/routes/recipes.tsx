@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BookOpen, Plus } from "lucide-react";
+import { BookOpen, Download, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { EmptyState, PageHeader } from "@/components/page";
 import { Button } from "@/components/ui/button";
@@ -35,12 +35,20 @@ function Recipes() {
     <>
       <div className="recipe-list-heading">
         <PageHeader title={m.nav_recipes()} />
-        <Button asChild>
-          <Link to="/recipes/new">
-            <Plus aria-hidden="true" size={20} />
-            {m["recipes.new"]()}
-          </Link>
-        </Button>
+        <div className="recipe-actions">
+          <Button asChild variant="secondary">
+            <Link to="/recipes/import">
+              <Download aria-hidden="true" size={20} />
+              {m["recipes.import"]()}
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link to="/recipes/new">
+              <Plus aria-hidden="true" size={20} />
+              {m["recipes.new"]()}
+            </Link>
+          </Button>
+        </div>
       </div>
       <div className="recipe-filters">
         <label className="field">

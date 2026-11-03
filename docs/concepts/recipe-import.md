@@ -14,5 +14,11 @@ Pipeline, cheapest step first:
    match go to the LLM in one batched call, which also proposes new catalog ingredients.
 6. The user always gets a **review screen** before saving.
 
+Status: steps 1-3, 5 and 6 are implemented. `POST /api/recipes/import` (`apps/api/src/routes/recipe-import.ts`,
+core in `apps/api/src/recipe-import/`) returns an unsaved draft with catalog-linked ingredients and the
+image as base64; `/recipes/import` shows it in the regular recipe editor, and nothing is stored until the
+user saves. A page without structured data fails with `import_no_recipe`; the extraction error keeps the
+already fetched readable text for the LLM fallback (step 4).
+
 Entry points: paste URL, Web Share Target (share from the mobile browser into the installed PWA), photo
 (vision LLM, same schema as step 4).

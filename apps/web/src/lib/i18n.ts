@@ -53,6 +53,12 @@ export function translateApiError(
       return m["errors.invalid_image"]({}, options);
     case "image_too_large":
       return m["errors.image_too_large"]({}, options);
+    case "import_no_recipe":
+      return m["errors.import_no_recipe"]({}, options);
+    case "import_failed":
+      return m["errors.import_failed"]({}, options);
+    case "import_invalid_url":
+      return m["errors.import_invalid_url"]({}, options);
     case "internal_error":
       return m["errors.internal_error"]({}, options);
     default:

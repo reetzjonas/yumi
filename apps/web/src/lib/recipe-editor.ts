@@ -83,7 +83,16 @@ export function parsedIngredient(parsed: ParsedLine): IngredientRow {
 }
 
 export function storedIngredient(
-  line: RecipeDetail["ingredients"][number],
+  line: Pick<
+    RecipeDetail["ingredients"][number],
+    | "rawText"
+    | "quantity"
+    | "unit"
+    | "note"
+    | "section"
+    | "optional"
+    | "ingredientId"
+  >,
 ): IngredientRow {
   const parsed = parseIngredientLine(line.rawText);
   const unit = unitSchema.safeParse(line.unit);

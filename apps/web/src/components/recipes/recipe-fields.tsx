@@ -2,7 +2,20 @@ import { Field } from "@/components/auth-layout";
 import type { RecipeDetail } from "@/lib/recipes";
 import { m } from "@/paraglide/messages";
 
-export function RecipeFields({ recipe }: { recipe?: RecipeDetail }) {
+export function RecipeFields({
+  recipe,
+}: {
+  recipe?: Pick<
+    RecipeDetail,
+    | "title"
+    | "description"
+    | "servings"
+    | "prepMinutes"
+    | "cookMinutes"
+    | "sourceUrl"
+    | "tags"
+  >;
+}) {
   return (
     <>
       <Field

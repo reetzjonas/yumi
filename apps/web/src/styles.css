@@ -1377,3 +1377,8 @@ select:focus-visible {
   font-size: 1.125rem;
   font-weight: 650;
 }
+
+.import-form input::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1;
+}

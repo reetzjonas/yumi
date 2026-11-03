@@ -23,6 +23,7 @@ import { Route as MorePantryRouteImport } from './routes/more.pantry'
 import { Route as MoreSettingsRouteImport } from './routes/more.settings'
 import { Route as MoreStoresRouteImport } from './routes/more.stores'
 import { Route as RecipesIdRouteImport } from './routes/recipes_.$id'
+import { Route as RecipesImportRouteImport } from './routes/recipes_.import'
 import { Route as RecipesNewRouteImport } from './routes/recipes_.new'
 import { Route as ShopListIdRouteImport } from './routes/shop.$listId'
 import { Route as RecipesIdEditRouteImport } from './routes/recipes_.$id_.edit'
@@ -97,6 +98,11 @@ const RecipesIdRoute = RecipesIdRouteImport.update({
   path: '/recipes/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecipesImportRoute = RecipesImportRouteImport.update({
+  id: '/recipes_/import',
+  path: '/recipes/import',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RecipesNewRoute = RecipesNewRouteImport.update({
   id: '/recipes_/new',
   path: '/recipes/new',
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/more/settings': typeof MoreSettingsRoute
   '/more/stores': typeof MoreStoresRoute
   '/recipes/$id': typeof RecipesIdRoute
+  '/recipes/import': typeof RecipesImportRoute
   '/recipes/new': typeof RecipesNewRoute
   '/shop/$listId': typeof ShopListIdRoute
   '/more/': typeof MoreIndexRoute
@@ -146,6 +153,7 @@ export interface FileRoutesByTo {
   '/more/settings': typeof MoreSettingsRoute
   '/more/stores': typeof MoreStoresRoute
   '/recipes/$id': typeof RecipesIdRoute
+  '/recipes/import': typeof RecipesImportRoute
   '/recipes/new': typeof RecipesNewRoute
   '/shop/$listId': typeof ShopListIdRoute
   '/more': typeof MoreIndexRoute
@@ -166,6 +174,7 @@ export interface FileRoutesById {
   '/more/settings': typeof MoreSettingsRoute
   '/more/stores': typeof MoreStoresRoute
   '/recipes_/$id': typeof RecipesIdRoute
+  '/recipes_/import': typeof RecipesImportRoute
   '/recipes_/new': typeof RecipesNewRoute
   '/shop/$listId': typeof ShopListIdRoute
   '/more/': typeof MoreIndexRoute
@@ -187,6 +196,7 @@ export interface FileRouteTypes {
     | '/more/settings'
     | '/more/stores'
     | '/recipes/$id'
+    | '/recipes/import'
     | '/recipes/new'
     | '/shop/$listId'
     | '/more/'
@@ -206,6 +216,7 @@ export interface FileRouteTypes {
     | '/more/settings'
     | '/more/stores'
     | '/recipes/$id'
+    | '/recipes/import'
     | '/recipes/new'
     | '/shop/$listId'
     | '/more'
@@ -225,6 +236,7 @@ export interface FileRouteTypes {
     | '/more/settings'
     | '/more/stores'
     | '/recipes_/$id'
+    | '/recipes_/import'
     | '/recipes_/new'
     | '/shop/$listId'
     | '/more/'
@@ -245,6 +257,7 @@ export interface RootRouteChildren {
   MoreSettingsRoute: typeof MoreSettingsRoute
   MoreStoresRoute: typeof MoreStoresRoute
   RecipesIdRoute: typeof RecipesIdRoute
+  RecipesImportRoute: typeof RecipesImportRoute
   RecipesNewRoute: typeof RecipesNewRoute
   ShopListIdRoute: typeof ShopListIdRoute
   MoreIndexRoute: typeof MoreIndexRoute
@@ -351,6 +364,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RecipesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recipes_/import': {
+      id: '/recipes_/import'
+      path: '/recipes/import'
+      fullPath: '/recipes/import'
+      preLoaderRoute: typeof RecipesImportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recipes_/new': {
       id: '/recipes_/new'
       path: '/recipes/new'
@@ -389,6 +409,7 @@ const rootRouteChildren: RootRouteChildren = {
   MoreSettingsRoute: MoreSettingsRoute,
   MoreStoresRoute: MoreStoresRoute,
   RecipesIdRoute: RecipesIdRoute,
+  RecipesImportRoute: RecipesImportRoute,
   RecipesNewRoute: RecipesNewRoute,
   ShopListIdRoute: ShopListIdRoute,
   MoreIndexRoute: MoreIndexRoute,

@@ -307,5 +307,17 @@
   "recurring.every_n_weeks": "Every {count} weeks on {day}",
   "recurring.next": "next {date}",
   "recurring.remove": "Stop repeating {name}",
-  "shopping.pending_one": "1 change waiting to sync"
+  "shopping.pending_one": "1 change waiting to sync",
+  "recipes.import": "Import",
+  "recipes.import_title": "Import recipe",
+  "recipes.import_url": "Recipe page link",
+  "recipes.import_hint": "Paste the link to a recipe page. You review the draft before anything is saved.",
+  "recipes.import_submit": "Load recipe",
+  "recipes.importing": "Loading recipe…",
+  "recipes.import_review": "Review the imported draft and adjust it if needed. Nothing is saved until you choose “Save recipe”.",
+  "recipes.import_image_missing": "The page image could not be imported. You can choose one yourself.",
+  "recipes.import_other": "Import another page",
+  "errors.import_no_recipe": "No recipe data was found on this page.",
+  "errors.import_failed": "The page could not be loaded. Check the link or try again later.",
+  "errors.import_invalid_url": "This link cannot be imported. Use a public http or https address."
 }
