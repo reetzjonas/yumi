@@ -1,0 +1,15 @@
+# Decisions (ADRs)
+
+Alpha: every decision may be revisited. Superseded ADRs stay, marked `Superseded by NNNN`.
+
+| ADR                                     | Title                                                 | Status   |
+| --------------------------------------- | ----------------------------------------------------- | -------- |
+| [0001](0001-typescript-monorepo.md)     | TypeScript monorepo with Bun workspaces               | Accepted |
+| [0002](0002-react-vite-spa.md)          | React + Vite SPA as PWA                               | Accepted |
+| [0003](0003-postgres-drizzle.md)        | PostgreSQL with Drizzle ORM                           | Accepted |
+| [0004](0004-auth-households.md)         | Better Auth, households as organizations              | Accepted |
+| [0005](0005-shopping-event-log-sync.md) | Shopping list sync via event log, SSE, offline outbox | Accepted |
+| [0006](0006-ai-provider.md)             | AI via OpenRouter by default, provider-agnostic       | Accepted |
+| [0007](0007-self-host-k8s.md)           | Self-hosting on the home Kubernetes (k3s) cluster     | Accepted |
+| [0008](0008-language-i18n.md)           | English for code and docs, German and English UI      | Accepted |
+| [0009](0009-tooling-hooks.md)           | Biome and lefthook for formatting, linting, git hooks | Accepted |
