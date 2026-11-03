@@ -24,5 +24,8 @@ Low-confidence or unmatched ingredient lines are sent in one batch to the ingred
 failed or incomplete batches retain the rule-based results. Catalog linking always runs server-side
 against the active household, and no AI response creates catalog entries automatically.
 
-Entry points: paste URL, Web Share Target (share from the mobile browser into the installed PWA), photo
-(vision LLM, same schema as step 4).
+URL entry points: paste a URL or share it from a mobile browser into the installed PWA.
+The manifest registers a GET Web Share Target at `/recipes/import`; the landing page validates URLs
+from the share `url`, Android `text`, or a URL-only `title`. Login, signup and household creation
+preserve the source URL. Loading the page does not fetch or save a recipe; the user starts the import.
+Photo import is planned separately (vision LLM, same schema as step 4).

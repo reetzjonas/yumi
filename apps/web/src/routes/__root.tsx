@@ -35,7 +35,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         !me.activeHouseholdId &&
         !matches(location.pathname, [...PUBLIC_PATHS, ...HOUSEHOLDLESS_PATHS])
       ) {
-        throw redirect({ to: "/onboarding" });
+        throw redirect({
+          to: "/onboarding",
+          search: { redirect: location.href },
+        });
       }
     },
     component: Root,

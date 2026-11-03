@@ -16,6 +16,12 @@ export const pwaOptions = {
     orientation: "any",
     theme_color: "#fcfaf5",
     background_color: "#fcfaf5",
+    share_target: {
+      action: "/recipes/import",
+      method: "GET",
+      enctype: "application/x-www-form-urlencoded",
+      params: { url: "url", text: "text", title: "title" },
+    },
     icons: [
       {
         src: "/icons/icon-192.png",

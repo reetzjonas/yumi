@@ -5,10 +5,15 @@ import { AuthLayout, Field, FormError } from "@/components/auth-layout";
 import { Button } from "@/components/ui/button";
 import { translateAuthError } from "@/lib/api-error";
 import { authClient } from "@/lib/auth-client";
-import { resetClientState, useMe } from "@/lib/session";
+import { resetClientState, safeRedirect, useMe } from "@/lib/session";
 import { m } from "@/paraglide/messages";
 
-export const Route = createFileRoute("/onboarding")({ component: Onboarding });
+export const Route = createFileRoute("/onboarding")({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
+    redirect: safeRedirect(search.redirect),
+  }),
+  component: Onboarding,
+});
 
 function slugify(name: string) {
   const base = name
@@ -21,6 +26,7 @@ function slugify(name: string) {
 }
 
 function Onboarding() {
+  const { redirect } = Route.useSearch();
   const me = useMe();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -45,7 +51,7 @@ function Onboarding() {
       return;
     }
     await resetClientState(queryClient);
-    await router.navigate({ to: "/" });
+    await router.navigate({ to: redirect ?? "/" });
   }
 
   return (

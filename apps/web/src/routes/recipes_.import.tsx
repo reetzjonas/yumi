@@ -9,11 +9,18 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import { ensureOk, errorMessage } from "@/lib/api-error";
 import { useMe } from "@/lib/session";
+import { shareTargetSearch } from "@/lib/share-target";
 import { m } from "@/paraglide/messages";
 
 export const Route = createFileRoute("/recipes_/import")({
-  component: ImportRecipe,
+  validateSearch: shareTargetSearch,
+  component: ImportRecipePage,
 });
+
+function ImportRecipePage() {
+  const { url } = Route.useSearch();
+  return <ImportRecipe key={url} sharedUrl={url} />;
+}
 
 function imageFile(image: { mimeType: string; dataBase64: string }) {
   const bytes = Uint8Array.from(atob(image.dataBase64), (char) =>
@@ -23,7 +30,7 @@ function imageFile(image: { mimeType: string; dataBase64: string }) {
   return new File([bytes], `import.${extension}`, { type: image.mimeType });
 }
 
-function ImportRecipe() {
+function ImportRecipe({ sharedUrl }: { sharedUrl?: string }) {
   const id = useId();
   const householdId = useMe()?.activeHouseholdId;
   const load = useMutation({
@@ -80,6 +87,7 @@ function ImportRecipe() {
             type="url"
             inputMode="url"
             placeholder="https://"
+            defaultValue={sharedUrl ?? ""}
             required
             maxLength={2000}
             aria-describedby={`${id}-hint`}
