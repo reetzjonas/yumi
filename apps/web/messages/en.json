@@ -64,7 +64,7 @@
   "shopping.delete_list": "Delete list",
   "shopping.delete_confirm": "Delete \"{name}\" and all its items?",
   "shopping.no_lists": "Your first shopping list",
-  "shopping.no_lists_hint": "Create a list above to start shopping together.",
+  "shopping.no_lists_hint": "Create a list to start shopping together.",
   "shopping.empty_hint": "Add an item above or add ingredients from a recipe.",
   "shopping.add_item": "Add item",
   "shopping.item_label": "Item",
@@ -328,5 +328,8 @@
   "queue.move_down_short": "Move down",
   "recipes.choose_title": "Pick a recipe",
   "recipes.choose_description": "Its ingredients and steps appear here.",
-  "queue.close_menu": "Close"
+  "queue.close_menu": "Close",
+  "sheet.close": "Close",
+  "shopping.new_list": "New list",
+  "shopping.list_actions": "Actions for list \"{name}\""
 }

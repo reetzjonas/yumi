@@ -64,7 +64,7 @@
   "shopping.delete_list": "Liste löschen",
   "shopping.delete_confirm": "„{name}“ und alle Einträge löschen?",
   "shopping.no_lists": "Deine erste Einkaufsliste",
-  "shopping.no_lists_hint": "Lege oben eine Liste an, um gemeinsam einzukaufen.",
+  "shopping.no_lists_hint": "Lege eine Liste an, um gemeinsam einzukaufen.",
   "shopping.empty_hint": "Füge oben einen Eintrag oder die Zutaten eines Rezepts hinzu.",
   "shopping.add_item": "Eintrag hinzufügen",
   "shopping.item_label": "Eintrag",
@@ -328,5 +328,8 @@
   "queue.move_down_short": "Nach unten",
   "recipes.choose_title": "Wähle ein Rezept",
   "recipes.choose_description": "Zutaten und Schritte erscheinen hier.",
-  "queue.close_menu": "Schließen"
+  "queue.close_menu": "Schließen",
+  "sheet.close": "Schließen",
+  "shopping.new_list": "Neue Liste",
+  "shopping.list_actions": "Aktionen für Liste „{name}“"
 }

@@ -1163,16 +1163,22 @@ select:focus-visible {
   .list-split-add {
     grid-column: 2;
     grid-row: 1;
+    padding-bottom: 0;
+    border-bottom: 0;
   }
   .list-split-items {
     grid-column: 1;
-    grid-row: 1 / span 2;
+    grid-row: 1 / span 3;
     min-width: 0;
     padding-block: 24px;
   }
-  .list-split-recurring {
+  .list-split-browse {
     grid-column: 2;
     grid-row: 2;
+  }
+  .list-split-recurring {
+    grid-column: 2;
+    grid-row: 3;
   }
   .more-split {
     grid-template-columns: 240px minmax(0, 640px);
@@ -1406,6 +1412,53 @@ select:focus-visible {
   text-align: start;
   padding-inline: 12px;
   font-weight: 500;
+}
+.sheet-content > .section {
+  padding-block: 0;
+  border-bottom: 0;
+}
+.icon-action {
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px;
+}
+.list-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  margin-bottom: 8px;
+}
+.list-heading .page-header {
+  margin: 0;
+}
+.list-toolbar {
+  display: flex;
+  flex: 1 1 100%;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.list-select {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+@media (min-width: 768px) {
+  .list-heading .page-header {
+    margin-right: auto;
+  }
+  .list-toolbar {
+    flex: 0 1 360px;
+  }
+  .list-start {
+    order: 1;
+  }
+}
+.list-select select {
+  width: 100%;
+  min-width: 0;
 }
 .queue-entry-form {
   display: grid;

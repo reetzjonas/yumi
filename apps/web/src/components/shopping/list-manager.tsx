@@ -1,148 +1,257 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { toast } from "sonner";
-import { Field } from "@/components/auth-layout";
+import { Ellipsis, Pencil, Plus, Trash2 } from "lucide-react";
+import { type ReactNode, useId, useRef, useState } from "react";
+import { Field, FormError } from "@/components/auth-layout";
 import { Button } from "@/components/ui/button";
+import { Sheet } from "@/components/ui/sheet";
 import { api } from "@/lib/api";
 import { ensureOk, errorMessage } from "@/lib/api-error";
 import { useMe } from "@/lib/session";
 import { useShoppingLists } from "@/lib/shopping";
 import { m } from "@/paraglide/messages";
 
-export function ListManager({
-  selectedId,
-  onSelect,
-}: {
-  selectedId: string;
-  onSelect: (id: string) => void;
-}) {
+type Panel = "menu" | "create" | "rename" | "delete";
+
+type ListAction =
+  | { type: "create"; name: string }
+  | { type: "rename"; id: string; name: string }
+  | { type: "delete"; id: string };
+
+function useListAction(onSelect: (id: string) => void, onDone?: () => void) {
   const householdId = useMe()?.activeHouseholdId;
   const queryClient = useQueryClient();
-  const lists = useShoppingLists();
-  const selected = lists.data?.find((list) => list.id === selectedId);
-  const [name, setName] = useState("");
-  const [renaming, setRenaming] = useState(false);
-  const manage = useMutation({
-    mutationFn: async (action: "create" | "rename" | "delete") => {
-      if (action === "create") {
+  return useMutation({
+    mutationFn: async (action: ListAction) => {
+      if (action.type === "create") {
         const list = await (
           await ensureOk(
-            await api.shopping.lists.$post({ json: { name: name.trim() } }),
+            await api.shopping.lists.$post({ json: { name: action.name } }),
           )
         ).json();
         onSelect(list.id);
-      } else if (action === "rename") {
+      } else if (action.type === "rename") {
         await ensureOk(
           await api.shopping.lists[":id"].$patch({
-            param: { id: selectedId },
-            json: { name: name.trim() },
+            param: { id: action.id },
+            json: { name: action.name },
           }),
         );
       } else {
         await ensureOk(
           await api.shopping.lists[":id"].$delete({
-            param: { id: selectedId },
+            param: { id: action.id },
           }),
         );
         onSelect("");
       }
     },
     onSuccess: async () => {
-      setName("");
-      setRenaming(false);
+      onDone?.();
       await queryClient.invalidateQueries({
         queryKey: ["shopping", householdId],
       });
     },
-    onError: (error) => toast.error(errorMessage(error)),
   });
+}
+
+function ListNameForm({
+  initial = "",
+  submitLabel,
+  pending,
+  onSubmit,
+  onCancel,
+}: {
+  initial?: string;
+  submitLabel: string;
+  pending: boolean;
+  onSubmit: (name: string) => void;
+  onCancel?: () => void;
+}) {
+  const id = useId();
+  const [name, setName] = useState(initial);
   return (
-    <section className="section shopping-manager">
-      {!!lists.data?.length && (
-        <>
-          <div className="field">
-            <label htmlFor="shopping-list">{m["shopping.choose_list"]()}</label>
-            <select
-              id="shopping-list"
-              value={selectedId}
-              onChange={(event) => {
-                onSelect(event.target.value);
-                setRenaming(false);
-                setName("");
-              }}
-            >
-              {lists.data.map((list) => (
-                <option key={list.id} value={list.id}>
-                  {list.name} ({list.openCount})
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="recipe-actions">
-            <Button
-              variant="secondary"
-              disabled={manage.isPending}
-              onClick={() => {
-                setName(selected?.name ?? "");
-                setRenaming(true);
-              }}
-            >
-              {m["shopping.rename_list"]()}
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={manage.isPending}
-              onClick={() => {
-                if (
-                  selected &&
-                  window.confirm(
-                    m["shopping.delete_confirm"]({ name: selected.name }),
-                  )
-                )
-                  manage.mutate("delete");
-              }}
-            >
-              {m["shopping.delete_list"]()}
-            </Button>
-          </div>
-        </>
-      )}
-      <form
-        className="shopping-list-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (name.trim()) manage.mutate(renaming ? "rename" : "create");
+    <form
+      className="shopping-list-form"
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (name.trim()) onSubmit(name.trim());
+      }}
+    >
+      <Field
+        id={`${id}-name`}
+        label={m["shopping.list_name"]()}
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+        required
+        maxLength={60}
+      />
+      <div className="recipe-actions">
+        <Button disabled={pending || !name.trim()}>{submitLabel}</Button>
+        {onCancel && (
+          <Button type="button" variant="ghost" onClick={onCancel}>
+            {m["recipes.cancel"]()}
+          </Button>
+        )}
+      </div>
+    </form>
+  );
+}
+
+export function CreateListForm({
+  onSelect,
+}: {
+  onSelect: (id: string) => void;
+}) {
+  const action = useListAction(onSelect);
+  return (
+    <>
+      <ListNameForm
+        submitLabel={m["shopping.create_list"]()}
+        pending={action.isPending}
+        onSubmit={(name) => action.mutate({ type: "create", name })}
+      />
+      <FormError message={action.isError ? errorMessage(action.error) : null} />
+    </>
+  );
+}
+
+export function ListManager({
+  selectedId,
+  onSelect,
+  store,
+}: {
+  selectedId: string;
+  onSelect: (id: string) => void;
+  store?: ReactNode;
+}) {
+  const lists = useShoppingLists();
+  const selected = lists.data?.find((list) => list.id === selectedId);
+  const sheet = useRef<HTMLDialogElement>(null);
+  const [panel, setPanel] = useState<Panel>("menu");
+  const action = useListAction(onSelect, () => sheet.current?.close());
+  if (!selected) return null;
+  const name = selected.name;
+
+  return (
+    <div className="list-toolbar">
+      <div className="field list-select">
+        <label htmlFor="shopping-list" className="sr-only">
+          {m["shopping.choose_list"]()}
+        </label>
+        <select
+          id="shopping-list"
+          value={selectedId}
+          onChange={(event) => onSelect(event.target.value)}
+        >
+          {lists.data?.map((list) => (
+            <option key={list.id} value={list.id}>
+              {list.name} ({list.openCount})
+            </option>
+          ))}
+        </select>
+      </div>
+      <Button
+        type="button"
+        variant="ghost"
+        className="icon-action"
+        aria-label={m["shopping.list_actions"]({ name })}
+        title={m["shopping.list_actions"]({ name })}
+        aria-haspopup="dialog"
+        onClick={() => {
+          setPanel("menu");
+          action.reset();
+          sheet.current?.showModal();
         }}
       >
-        <Field
-          id="shopping-list-name"
-          label={m["shopping.list_name"]()}
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          required
-          maxLength={60}
+        <Ellipsis size={20} aria-hidden="true" />
+      </Button>
+      <Sheet ref={sheet} title={name} onClose={() => setPanel("menu")}>
+        {panel === "menu" && (
+          <>
+            <ul className="queue-menu">
+              <li>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setPanel("create")}
+                >
+                  <Plus size={18} aria-hidden="true" />
+                  {m["shopping.new_list"]()}
+                </Button>
+              </li>
+              <li>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setPanel("rename")}
+                >
+                  <Pencil size={18} aria-hidden="true" />
+                  {m["shopping.rename_list"]()}
+                </Button>
+              </li>
+            </ul>
+            {store}
+            <ul className="queue-menu">
+              <li>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => setPanel("delete")}
+                >
+                  <Trash2 size={18} aria-hidden="true" />
+                  {m["shopping.delete_list"]()}
+                </Button>
+              </li>
+            </ul>
+          </>
+        )}
+        {panel === "create" && (
+          <ListNameForm
+            submitLabel={m["shopping.create_list"]()}
+            pending={action.isPending}
+            onSubmit={(next) => action.mutate({ type: "create", name: next })}
+            onCancel={() => setPanel("menu")}
+          />
+        )}
+        {panel === "rename" && (
+          <ListNameForm
+            initial={name}
+            submitLabel={m["shopping.save"]()}
+            pending={action.isPending}
+            onSubmit={(next) =>
+              action.mutate({ type: "rename", id: selected.id, name: next })
+            }
+            onCancel={() => setPanel("menu")}
+          />
+        )}
+        {panel === "delete" && (
+          <section className="queue-remove-panel">
+            <h3>{m["shopping.delete_confirm"]({ name })}</h3>
+            <div className="recipe-actions">
+              <Button
+                type="button"
+                variant="destructive"
+                disabled={action.isPending}
+                onClick={() =>
+                  action.mutate({ type: "delete", id: selected.id })
+                }
+              >
+                {m["shopping.delete_list"]()}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setPanel("menu")}
+              >
+                {m["recipes.cancel"]()}
+              </Button>
+            </div>
+          </section>
+        )}
+        <FormError
+          message={action.isError ? errorMessage(action.error) : null}
         />
-        <div className="recipe-actions">
-          <Button
-            variant={selectedId ? "secondary" : "default"}
-            disabled={manage.isPending || !name.trim()}
-          >
-            {renaming ? m["shopping.save"]() : m["shopping.create_list"]()}
-          </Button>
-          {renaming && (
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => {
-                setRenaming(false);
-                setName("");
-              }}
-            >
-              {m["recipes.cancel"]()}
-            </Button>
-          )}
-        </div>
-      </form>
-    </section>
+      </Sheet>
+    </div>
   );
 }
