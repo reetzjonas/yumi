@@ -11,7 +11,8 @@
       "**",
       "!**/routeTree.gen.ts",
       "!**/migrations",
-      "!deploy/helm/**/templates"
+      "!deploy/helm/**/templates",
+      "!docs/design"
     ]
   },
   "formatter": {
