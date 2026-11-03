@@ -1,19 +1,5 @@
-import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import { setupTestDatabase } from "./test/setup-db";
-
-let app: typeof import("./app").app;
-let teardown: () => Promise<void>;
-
-beforeAll(async () => {
-  teardown = await setupTestDatabase("households");
-  ({ app } = await import("./app"));
-});
-
-afterAll(async () => {
-  const { db } = await import("./db");
-  await db.$client.end();
-  await teardown();
-});
+import { describe, expect, test } from "bun:test";
+import { app } from "./app";
 
 const ORIGIN = "http://localhost:5173";
 

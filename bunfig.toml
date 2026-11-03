@@ -1,0 +1,3 @@
+[test]
+# Creates one migrated, disposable database per test run before any module reads DATABASE_URL.
+preload = ["./apps/api/src/test/preload.ts"]
