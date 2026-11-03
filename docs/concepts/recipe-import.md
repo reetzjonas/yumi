@@ -14,11 +14,15 @@ Pipeline, cheapest step first:
    match go to the LLM in one batched call, which also proposes new catalog ingredients.
 6. The user always gets a **review screen** before saving.
 
-Status: steps 1-3, 5 and 6 are implemented. `POST /api/recipes/import` (`apps/api/src/routes/recipe-import.ts`,
+Status: steps 1-6 are implemented. `POST /api/recipes/import` (`apps/api/src/routes/recipe-import.ts`,
 core in `apps/api/src/recipe-import/`) returns an unsaved draft with catalog-linked ingredients and the
 image as base64; `/recipes/import` shows it in the regular recipe editor, and nothing is stored until the
-user saves. A page without structured data fails with `import_no_recipe`; the extraction error keeps the
-already fetched readable text for the LLM fallback (step 4).
+user saves. If structured extraction fails, the AI module receives at most 60,000 characters of readable
+text and returns a validated recipe draft. Pages without a recipe, unavailable AI and failed AI calls
+retain `import_no_recipe`, allowing manual entry. Structured imports do not need the recipe AI feature.
+Low-confidence or unmatched ingredient lines are sent in one batch to the ingredient parsing feature;
+failed or incomplete batches retain the rule-based results. Catalog linking always runs server-side
+against the active household, and no AI response creates catalog entries automatically.
 
 Entry points: paste URL, Web Share Target (share from the mobile browser into the installed PWA), photo
 (vision LLM, same schema as step 4).

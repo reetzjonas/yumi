@@ -1,10 +1,10 @@
-import { parseIngredientLine } from "@yumi/shared";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { validator } from "hono/validator";
 import { z } from "zod";
-import { matchParsedLine } from "../catalog";
+import { ai } from "../ai";
 import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
+import { parseIngredientLines } from "../ingredient-parsing";
 import {
   importRecipe,
   RecipeImportError,
@@ -42,23 +42,31 @@ export async function importRecipeDraft(
   householdId: string,
   url: string,
   transport?: RecipeHttpTransport,
+  client: typeof ai = ai,
 ) {
   let imported: Awaited<ReturnType<typeof importRecipe>>;
   try {
-    imported = await importRecipe(url, transport);
+    imported = await importRecipe(url, transport, client);
   } catch (error) {
     if (error instanceof RecipeImportError) throw apiError(error.code);
     throw error;
   }
-  const ingredients = await Promise.all(
-    imported.draft.ingredients.map(async (line) => {
-      const match = await matchParsedLine(
-        householdId,
-        parseIngredientLine(line.rawText),
-      );
-      return { ...line, ingredientId: match.ingredient?.id ?? null };
-    }),
+  const parsed = await parseIngredientLines(
+    householdId,
+    imported.draft.ingredients.map((line) => line.rawText),
+    client,
   );
+  const ingredients = imported.draft.ingredients.map((line, index) => {
+    const match = parsed[index];
+    return {
+      ...line,
+      quantity: match?.quantity ?? line.quantity,
+      unit: match?.unit ?? line.unit,
+      note: match?.note ?? line.note,
+      optional: match?.optional ?? line.optional,
+      ingredientId: match?.ingredient?.id ?? null,
+    };
+  });
   return {
     draft: { ...imported.draft, ingredients },
     method: imported.method,

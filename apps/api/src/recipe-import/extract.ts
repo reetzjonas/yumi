@@ -16,7 +16,7 @@ export type RecipeImportDraft = ReturnType<typeof recipeInputSchema.parse>;
 
 export interface ExtractedRecipe {
   draft: RecipeImportDraft;
-  method: "jsonld" | "microdata";
+  method: "jsonld" | "microdata" | "ai";
   sourceUrl: string;
   /** Not fetched until it has passed the same URL/DNS/redirect policy. */
   imageUrl: string | null;

@@ -1,5 +1,7 @@
 import { TextDecoder } from "node:util";
-import { RecipeImportError } from "./errors";
+import { ai } from "../ai";
+import { extractWithAi } from "./ai";
+import { RecipeExtractionError, RecipeImportError } from "./errors";
 import { type ExtractedRecipe, extractRecipe } from "./extract";
 import { fetchResource, type RecipeHttpTransport } from "./transport";
 
@@ -64,6 +66,7 @@ export async function downloadRecipeImage(
 export async function importRecipe(
   url: string,
   transport?: RecipeHttpTransport,
+  client: typeof ai = ai,
 ): Promise<ImportedRecipe> {
   const resource = await fetchResource(
     url,
@@ -91,7 +94,14 @@ export async function importRecipe(
   } catch {
     throw new RecipeImportError("unsupported_content");
   }
-  const { imageUrl, ...extracted } = extractRecipe(html, resource.sourceUrl);
+  let result: ExtractedRecipe;
+  try {
+    result = extractRecipe(html, resource.sourceUrl);
+  } catch (error) {
+    if (!(error instanceof RecipeExtractionError)) throw error;
+    result = await extractWithAi(error, client);
+  }
+  const { imageUrl, ...extracted } = result;
   let image: ImportedRecipeImage | null = null;
   const warnings: string[] = [];
   if (imageUrl) {

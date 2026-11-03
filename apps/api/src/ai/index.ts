@@ -85,6 +85,7 @@ export function createAi(
         model: resolveModel(config, available.model),
         output: Output.object({ schema }),
         prompt: typeof prompt === "string" ? prompt : [...prompt],
+        allowSystemInMessages: true,
         maxRetries: config.maxRetries,
         abortSignal: controller.signal,
         experimental_include: { requestBody: false, responseBody: false },
