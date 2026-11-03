@@ -11,8 +11,16 @@ Guidance for coding agents (and humans) working on yumi. Keep this file short; i
 
 ## Setup and checks
 
-- `bun install` also installs the git hooks (lefthook). Pre-commit runs Biome (format + lint) on staged files.
-- `bun run lint` checks everything, `bun run format` fixes. Never bypass hooks with `--no-verify`.
+- `bun install` also installs the git hooks (lefthook). Pre-commit runs Biome (format + lint) on staged files and the typecheck.
+- `bun run db:up` starts local PostgreSQL (docker compose, port 55433); copy `.env.example` to `.env`.
+- `bun run dev` starts API (port 3000) and web (Vite, port 5173, proxies `/api`).
+- `bun run check` = lint + typecheck + tests. `bun run format` fixes formatting. Never bypass hooks with `--no-verify`.
+- Layout: `apps/web` (React PWA), `apps/api` (Hono, exports `AppType` for the typed client), `packages/shared` (Zod schemas, pure logic), `packages/db` (Drizzle schema, migrations).
+
+## Workflow
+
+- One GitHub issue per unit of work. In the main checkout commit directly on `main` with `Closes #n` and push.
+- Deploying to the cluster requires the owner's explicit go-ahead.
 
 ## Where things live
 

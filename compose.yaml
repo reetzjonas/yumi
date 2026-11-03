@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: yumi
+      POSTGRES_PASSWORD: yumi
+      POSTGRES_DB: yumi
+    ports:
+      - "55433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+volumes:
+  pgdata:
