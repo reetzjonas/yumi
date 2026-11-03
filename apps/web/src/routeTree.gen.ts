@@ -20,6 +20,9 @@ import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as MoreIndexRouteImport } from './routes/more.index'
 import { Route as MoreHouseholdRouteImport } from './routes/more.household'
 import { Route as MoreSettingsRouteImport } from './routes/more.settings'
+import { Route as RecipesIdRouteImport } from './routes/recipes_.$id'
+import { Route as RecipesNewRouteImport } from './routes/recipes_.new'
+import { Route as RecipesIdEditRouteImport } from './routes/recipes_.$id_.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -76,6 +79,21 @@ const MoreSettingsRoute = MoreSettingsRouteImport.update({
   path: '/more/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecipesIdRoute = RecipesIdRouteImport.update({
+  id: '/recipes_/$id',
+  path: '/recipes/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecipesNewRoute = RecipesNewRouteImport.update({
+  id: '/recipes_/new',
+  path: '/recipes/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecipesIdEditRoute = RecipesIdEditRouteImport.update({
+  id: '/recipes_/$id_/edit',
+  path: '/recipes/$id/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -88,7 +106,10 @@ export interface FileRoutesByFullPath {
   '/invite/$token': typeof InviteTokenRoute
   '/more/household': typeof MoreHouseholdRoute
   '/more/settings': typeof MoreSettingsRoute
+  '/recipes/$id': typeof RecipesIdRoute
+  '/recipes/new': typeof RecipesNewRoute
   '/more/': typeof MoreIndexRoute
+  '/recipes/$id/edit': typeof RecipesIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -101,7 +122,10 @@ export interface FileRoutesByTo {
   '/invite/$token': typeof InviteTokenRoute
   '/more/household': typeof MoreHouseholdRoute
   '/more/settings': typeof MoreSettingsRoute
+  '/recipes/$id': typeof RecipesIdRoute
+  '/recipes/new': typeof RecipesNewRoute
   '/more': typeof MoreIndexRoute
+  '/recipes/$id/edit': typeof RecipesIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -115,7 +139,10 @@ export interface FileRoutesById {
   '/invite/$token': typeof InviteTokenRoute
   '/more/household': typeof MoreHouseholdRoute
   '/more/settings': typeof MoreSettingsRoute
+  '/recipes_/$id': typeof RecipesIdRoute
+  '/recipes_/new': typeof RecipesNewRoute
   '/more/': typeof MoreIndexRoute
+  '/recipes_/$id_/edit': typeof RecipesIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -130,7 +157,10 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/more/household'
     | '/more/settings'
+    | '/recipes/$id'
+    | '/recipes/new'
     | '/more/'
+    | '/recipes/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -143,7 +173,10 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/more/household'
     | '/more/settings'
+    | '/recipes/$id'
+    | '/recipes/new'
     | '/more'
+    | '/recipes/$id/edit'
   id:
     | '__root__'
     | '/'
@@ -156,7 +189,10 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/more/household'
     | '/more/settings'
+    | '/recipes_/$id'
+    | '/recipes_/new'
     | '/more/'
+    | '/recipes_/$id_/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -170,7 +206,10 @@ export interface RootRouteChildren {
   InviteTokenRoute: typeof InviteTokenRoute
   MoreHouseholdRoute: typeof MoreHouseholdRoute
   MoreSettingsRoute: typeof MoreSettingsRoute
+  RecipesIdRoute: typeof RecipesIdRoute
+  RecipesNewRoute: typeof RecipesNewRoute
   MoreIndexRoute: typeof MoreIndexRoute
+  RecipesIdEditRoute: typeof RecipesIdEditRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -252,6 +291,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MoreSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recipes_/$id': {
+      id: '/recipes_/$id'
+      path: '/recipes/$id'
+      fullPath: '/recipes/$id'
+      preLoaderRoute: typeof RecipesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recipes_/new': {
+      id: '/recipes_/new'
+      path: '/recipes/new'
+      fullPath: '/recipes/new'
+      preLoaderRoute: typeof RecipesNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recipes_/$id_/edit': {
+      id: '/recipes_/$id_/edit'
+      path: '/recipes/$id/edit'
+      fullPath: '/recipes/$id/edit'
+      preLoaderRoute: typeof RecipesIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -266,7 +326,10 @@ const rootRouteChildren: RootRouteChildren = {
   InviteTokenRoute: InviteTokenRoute,
   MoreHouseholdRoute: MoreHouseholdRoute,
   MoreSettingsRoute: MoreSettingsRoute,
+  RecipesIdRoute: RecipesIdRoute,
+  RecipesNewRoute: RecipesNewRoute,
   MoreIndexRoute: MoreIndexRoute,
+  RecipesIdEditRoute: RecipesIdEditRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

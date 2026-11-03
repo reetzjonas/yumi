@@ -5,11 +5,7 @@ import {
   recipeIngredient,
   recipeStep,
 } from "@yumi/db/schema";
-import {
-  type RecipeInput,
-  recipeInputSchema,
-  recipeListQuerySchema,
-} from "@yumi/shared";
+import { recipeInputSchema, recipeListQuerySchema } from "@yumi/shared";
 import {
   and,
   arrayContains,
@@ -23,7 +19,8 @@ import {
 } from "drizzle-orm";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
-import type { z } from "zod";
+import { validator } from "hono/validator";
+import { z } from "zod";
 import { visibleTo } from "../catalog";
 import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
 import { db } from "../db";
@@ -31,7 +28,7 @@ import { db } from "../db";
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 type ParsedRecipe = z.output<typeof recipeInputSchema>;
 
-const ID = "/:id{[0-9a-f-]{36}}";
+const ID = "/:id";
 
 const summaryColumns = {
   id: recipe.id,
@@ -145,11 +142,7 @@ async function loadRecipe(householdId: string, id: string) {
 
 export type RecipeDetail = Awaited<ReturnType<typeof loadRecipe>>;
 
-async function parseInput(householdId: string, body: RecipeInput) {
-  const input = recipeInputSchema.parse(body);
-  await assertIngredientsVisible(householdId, input);
-  return input;
-}
+const recipeBody = validator("json", (value) => recipeInputSchema.parse(value));
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 const IMAGE_VARIANTS = { thumb: 400, full: 1200 } as const;
@@ -172,27 +165,31 @@ async function assertRecipeOwned(householdId: string, id: string) {
 
 export const recipes = new Hono<HouseholdEnv>()
   .use(requireAuth, requireHousehold)
-  .get("/", async (c) => {
-    const { q, tag } = recipeListQuerySchema.parse(c.req.query());
-    const householdId = c.get("householdId");
-    const rows = await db
-      .select(summaryColumns)
-      .from(recipe)
-      .where(
-        and(
-          eq(recipe.householdId, householdId),
-          q
-            ? or(
-                ilike(recipe.title, `%${escapeLike(q)}%`),
-                sql`word_similarity(${q}, ${recipe.title}) >= 0.4`,
-              )
-            : undefined,
-          tag ? arrayContains(recipe.tags, [tag]) : undefined,
-        ),
-      )
-      .orderBy(desc(recipe.updatedAt));
-    return c.json(rows);
-  })
+  .get(
+    "/",
+    validator("query", (value) => recipeListQuerySchema.parse(value)),
+    async (c) => {
+      const { q, tag } = c.req.valid("query");
+      const householdId = c.get("householdId");
+      const rows = await db
+        .select(summaryColumns)
+        .from(recipe)
+        .where(
+          and(
+            eq(recipe.householdId, householdId),
+            q
+              ? or(
+                  ilike(recipe.title, `%${escapeLike(q)}%`),
+                  sql`word_similarity(${q}, ${recipe.title}) >= 0.4`,
+                )
+              : undefined,
+            tag ? arrayContains(recipe.tags, [tag]) : undefined,
+          ),
+        )
+        .orderBy(desc(recipe.updatedAt));
+      return c.json(rows);
+    },
+  )
   .get("/tags", async (c) => {
     const rows = await db.execute<{ tag: string }>(
       sql`select distinct unnest(${recipe.tags}) as tag from ${recipe}
@@ -201,11 +198,14 @@ export const recipes = new Hono<HouseholdEnv>()
     return c.json(rows.map((r) => r.tag));
   })
   .get(ID, async (c) =>
-    c.json(await loadRecipe(c.get("householdId"), c.req.param("id"))),
+    c.json(
+      await loadRecipe(c.get("householdId"), z.uuid().parse(c.req.param("id"))),
+    ),
   )
-  .post("/", async (c) => {
+  .post("/", recipeBody, async (c) => {
     const householdId = c.get("householdId");
-    const input = await parseInput(householdId, await c.req.json());
+    const input = c.req.valid("json");
+    await assertIngredientsVisible(householdId, input);
     const id = await db.transaction(async (tx) => {
       const [row] = await tx
         .insert(recipe)
@@ -221,10 +221,11 @@ export const recipes = new Hono<HouseholdEnv>()
     });
     return c.json(await loadRecipe(householdId, id), 201);
   })
-  .put(ID, async (c) => {
+  .put(ID, recipeBody, async (c) => {
     const householdId = c.get("householdId");
-    const id = c.req.param("id");
-    const input = await parseInput(householdId, await c.req.json());
+    const id = z.uuid().parse(c.req.param("id"));
+    const input = c.req.valid("json");
+    await assertIngredientsVisible(householdId, input);
     await db.transaction(async (tx) => {
       const updated = await tx
         .update(recipe)
@@ -246,7 +247,7 @@ export const recipes = new Hono<HouseholdEnv>()
       .delete(recipe)
       .where(
         and(
-          eq(recipe.id, c.req.param("id")),
+          eq(recipe.id, z.uuid().parse(c.req.param("id"))),
           eq(recipe.householdId, c.get("householdId")),
         ),
       )
@@ -257,7 +258,7 @@ export const recipes = new Hono<HouseholdEnv>()
   })
   .put(`${ID}/image`, async (c) => {
     const householdId = c.get("householdId");
-    const id = c.req.param("id");
+    const id = z.uuid().parse(c.req.param("id"));
     await assertRecipeOwned(householdId, id);
     const form = await c.req.formData().catch(() => null);
     const file = form?.get("image");
@@ -297,7 +298,7 @@ export const recipes = new Hono<HouseholdEnv>()
   })
   .delete(`${ID}/image`, async (c) => {
     const householdId = c.get("householdId");
-    const id = c.req.param("id");
+    const id = z.uuid().parse(c.req.param("id"));
     await assertRecipeOwned(householdId, id);
     await db.transaction(async (tx) => {
       await tx.delete(recipeImage).where(eq(recipeImage.recipeId, id));
@@ -305,15 +306,15 @@ export const recipes = new Hono<HouseholdEnv>()
     });
     return c.body(null, 204);
   })
-  .get(`${ID}/image/:variant{thumb|full}`, async (c) => {
-    const variant = c.req.param("variant") as keyof typeof IMAGE_VARIANTS;
+  .get(`${ID}/image/:variant`, async (c) => {
+    const variant = z.enum(["thumb", "full"]).parse(c.req.param("variant"));
     const [row] = await db
       .select({ data: recipeImage[variant] })
       .from(recipeImage)
       .innerJoin(recipe, eq(recipe.id, recipeImage.recipeId))
       .where(
         and(
-          eq(recipeImage.recipeId, c.req.param("id")),
+          eq(recipeImage.recipeId, z.uuid().parse(c.req.param("id"))),
           eq(recipe.householdId, c.get("householdId")),
         ),
       )

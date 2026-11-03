@@ -45,6 +45,14 @@ export function translateApiError(
       return m["errors.invite_invalid"]({}, options);
     case "invalid_input":
       return m["errors.invalid_input"]({}, options);
+    case "invalid_ingredient":
+      return m["errors.invalid_ingredient"]({}, options);
+    case "invalid_category":
+      return m["errors.invalid_category"]({}, options);
+    case "invalid_image":
+      return m["errors.invalid_image"]({}, options);
+    case "image_too_large":
+      return m["errors.image_too_large"]({}, options);
     case "internal_error":
       return m["errors.internal_error"]({}, options);
     default:
