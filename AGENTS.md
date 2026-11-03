@@ -6,6 +6,7 @@ Guidance for coding agents (and humans) working on yumi. Keep this file short; i
 
 - **Alpha phase**: every decision is provisional. Any ADR, concept, or issue may be challenged and replaced when there is a good reason. When you overturn a decision, mark the old ADR `Superseded by NNNN` instead of deleting it.
 - **English everywhere** in code, DB, API, commits, issues, and docs. The app UI ships German and English (i18n).
+- UI messages live in `apps/web/messages/{de,en}.json`; every UI string needs both de and en.
 - **Work is tracked in GitHub issues** (`reetzjonas/yumi`), grouped by milestones and `area:*` labels. Do not keep TODO lists in docs; link issues instead.
 - Communicate with the owner in German.
 

@@ -2,8 +2,16 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { m } from "@/paraglide/messages";
+import { getLocale, getTextDirection } from "@/paraglide/runtime";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
+
+document.documentElement.lang = getLocale();
+document.documentElement.dir = getTextDirection();
+document
+  .querySelector('meta[name="description"]')
+  ?.setAttribute("content", m.app_description());
 
 if (
   import.meta.env.DEV &&

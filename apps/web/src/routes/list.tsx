@@ -2,20 +2,21 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ShoppingBasket } from "lucide-react";
 import { EmptyState, PageHeader } from "@/components/page";
 import { Button } from "@/components/ui/button";
+import { m } from "@/paraglide/messages";
 
 export const Route = createFileRoute("/list")({ component: List });
 
 function List() {
   return (
     <>
-      <PageHeader title="List" />
+      <PageHeader title={m.nav_list()} />
       <EmptyState
         icon={ShoppingBasket}
-        title="Nothing on the list yet"
-        description="Ingredients for your planned meals will have a place here. Your meal plan is the starting point."
+        title={m.list_empty_title()}
+        description={m.list_empty_description()}
       >
         <Button asChild>
-          <Link to="/plan">Open meal plan</Link>
+          <Link to="/plan">{m.list_plan_link()}</Link>
         </Button>
       </EmptyState>
     </>

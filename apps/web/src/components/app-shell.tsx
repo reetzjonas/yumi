@@ -8,12 +8,13 @@ import {
 } from "lucide-react";
 import { createContext, type ReactNode, useContext } from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { m } from "@/paraglide/messages";
 
 const destinations = [
-  { to: "/recipes", label: "Recipes", icon: BookOpen },
-  { to: "/plan", label: "Plan", icon: ListChecks },
-  { to: "/list", label: "List", icon: ShoppingBasket },
-  { to: "/more", label: "More", icon: Ellipsis },
+  { to: "/recipes", label: m.nav_recipes, icon: BookOpen },
+  { to: "/plan", label: m.nav_plan, icon: ListChecks },
+  { to: "/list", label: m.nav_list, icon: ShoppingBasket },
+  { to: "/more", label: m.nav_more, icon: Ellipsis },
 ] as const;
 
 const MoreSlotContext = createContext<ReactNode>(null);
@@ -31,7 +32,7 @@ export function AppShell({
     <MoreSlotContext value={moreSlot}>
       <div className="app-shell">
         <a className="skip-link" href="#main">
-          Skip to content
+          {m.skip_content()}
         </a>
         <header className="brand-row">
           <Link to="/recipes" className="brand" aria-label="yumi">
@@ -39,7 +40,7 @@ export function AppShell({
             <span>yumi</span>
           </Link>
         </header>
-        <nav className="app-navigation" aria-label="Main navigation">
+        <nav className="app-navigation" aria-label={m.nav_main()}>
           {destinations.map(({ to, label, icon: Icon }) => (
             <Link
               key={to}
@@ -48,7 +49,7 @@ export function AppShell({
               activeProps={{ className: "is-active", "aria-current": "page" }}
             >
               <Icon aria-hidden="true" size={22} strokeWidth={1.8} />
-              <span>{label}</span>
+              <span>{label()}</span>
             </Link>
           ))}
         </nav>
