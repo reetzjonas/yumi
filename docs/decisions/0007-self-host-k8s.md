@@ -1,6 +1,6 @@
 # 0007: Self-hosting on the home Kubernetes (k3s) cluster
 
-- Status: Accepted (alpha)
+- Status: Partly superseded by [0010](0010-helm-chart.md) (manifests); image strategy still accepted
 - Date: 2026-11-03
 
 ## Context

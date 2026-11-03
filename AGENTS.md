@@ -24,7 +24,7 @@ Guidance for coding agents (and humans) working on yumi. Keep this file short; i
 ## Workflow
 
 - One GitHub issue per unit of work. In the main checkout commit directly on `main` with `Closes #n` and push.
-- Deploying to the cluster requires the owner's explicit go-ahead.
+- Deployment: generic Helm chart in `deploy/helm/yumi` (see `docs/deployment.md`). Cluster-specific values never go into the repo; the owner's live in git-ignored `deploy/local/`. Deploying requires the owner's explicit go-ahead.
 
 ## Where things live
 

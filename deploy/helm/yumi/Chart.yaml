@@ -1,0 +1,9 @@
+apiVersion: v2
+name: yumi
+description: Self-hosted meal planner for households (recipes, meal queue, shared shopping list).
+type: application
+version: 0.1.0
+appVersion: "latest"
+home: https://github.com/reetzjonas/yumi
+sources:
+  - https://github.com/reetzjonas/yumi

@@ -13,3 +13,4 @@ Alpha: every decision may be revisited. Superseded ADRs stay, marked `Superseded
 | [0007](0007-self-host-k8s.md)           | Self-hosting on the home Kubernetes (k3s) cluster     | Accepted |
 | [0008](0008-language-i18n.md)           | English for code and docs, German and English UI      | Accepted |
 | [0009](0009-tooling-hooks.md)           | Biome and lefthook for formatting, linting, git hooks | Accepted |
+| [0010](0010-helm-chart.md)              | Generic Helm chart for deployment                     | Accepted |

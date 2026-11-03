@@ -18,7 +18,7 @@ apps/web        React PWA
 apps/api        Hono API server
 packages/shared Zod schemas, types, unit conversion, ingredient line parser
 packages/db     Drizzle schema and migrations
-deploy/         Kubernetes manifests (kustomize)
+deploy/helm    Helm chart (generic, cluster specifics in values)
 docs/           this documentation
 ```
 
@@ -26,18 +26,18 @@ Bun workspaces; one TypeScript toolchain across all packages.
 
 ## Stack
 
-| Concern  | Choice                                                                 |
-| -------- | ---------------------------------------------------------------------- |
-| Language | TypeScript everywhere                                                  |
-| Frontend | React, Vite, TanStack Router + Query, Tailwind, shadcn/ui              |
-| PWA      | vite-plugin-pwa (Workbox), Dexie (IndexedDB)                           |
-| API      | Hono on Bun, Zod validation, Hono RPC client                           |
-| DB       | PostgreSQL, Drizzle ORM, pg_trgm for fuzzy ingredient search           |
-| Auth     | Better Auth with organization plugin (= households)                    |
-| Realtime | Server-Sent Events per household                                       |
-| i18n     | Paraglide JS (de, en)                                                  |
-| AI       | Vercel AI SDK, provider configurable; default OpenRouter               |
-| Deploy   | Container images on GHCR, kustomize manifests for the home k3s cluster |
+| Concern  | Choice                                                       |
+| -------- | ------------------------------------------------------------ |
+| Language | TypeScript everywhere                                        |
+| Frontend | React, Vite, TanStack Router + Query, Tailwind, shadcn/ui    |
+| PWA      | vite-plugin-pwa (Workbox), Dexie (IndexedDB)                 |
+| API      | Hono on Bun, Zod validation, Hono RPC client                 |
+| DB       | PostgreSQL, Drizzle ORM, pg_trgm for fuzzy ingredient search |
+| Auth     | Better Auth with organization plugin (= households)          |
+| Realtime | Server-Sent Events per household                             |
+| i18n     | Paraglide JS (de, en)                                        |
+| AI       | Vercel AI SDK, provider configurable; default OpenRouter     |
+| Deploy   | Container image on GHCR, generic Helm chart                  |
 
 ## Offline and sync
 
@@ -58,23 +58,10 @@ AI is disabled.
 
 ## Deployment
 
-- GitHub Actions checks PRs and pushes to `main` with Bun 1.4.2. A multi-stage Docker build
-  packages the web assets and API together; production static serving and SPA fallback live in
-  `apps/api/src/index.ts`. Successful `main` builds publish `ghcr.io/reetzjonas/yumi` with the
-  full commit SHA and `latest` tags.
-- `deploy/k8s/base` and `overlays/home` define namespace `yumi`, a single app replica,
-  PostgreSQL 18 on a 10 GiB `local-path` PVC, Vault External Secrets and default-deny networking.
-  CloudNativePG is not installed. App, migration and DB containers run without root,
-  capabilities or a writable root filesystem; Postgres has writable data, socket and temp volumes.
-- The app's init container runs `bun packages/db/src/migrate.ts` from the same image before the
-  server starts. `Recreate` prevents overlapping migration runners during upgrades and causes
-  brief downtime. Keep one replica. Images include generated `packages/db/migrations`.
-- The home overlay exposes the ClusterIP service through an HTTPRoute on the existing
-  `homelab/traefik-gateway` LAN/VPN listener, like rpg's internal path. It has no Ingress,
-  new certificate resources or public VPS gateway attachment. `yumi.reetz.me` is inferred
-  from rpg's domain; internal DNS must point it at the LAN/VPN gateway.
-- `BETTER_AUTH_URL` comes from `yumi-config`. Keel polls the GHCR `latest` tag hourly and
-  automatically recreates the app on image changes, matching existing cluster annotations.
-  SHA tags remain available for pinned releases with Keel removed.
-- PostgreSQL backups are not automated by these manifests. A PVC is node-local storage,
-  not a backup. See [deployment.md](deployment.md) for prerequisites, secrets and rollout.
+- GitHub Actions checks PRs and pushes to `main`. A multi-stage Docker build packages web assets
+  and API together; production static serving and SPA fallback live in `apps/api/src/index.ts`.
+  `main` builds publish `ghcr.io/reetzjonas/yumi` with the commit SHA and `latest`.
+- `deploy/helm/yumi` deploys one app replica (`Recreate`), an init container running the Drizzle
+  migrations, and optionally a bundled PostgreSQL 18 StatefulSet. Containers run as non-root with
+  read-only root filesystems. Exposure, storage, secrets and network policies are values.
+- Details, values and the HTTPS requirement for the PWA: [deployment.md](deployment.md).

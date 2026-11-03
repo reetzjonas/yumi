@@ -1,0 +1,14 @@
+yumi is installed as release {{ .Release.Name }} in namespace {{ .Release.Namespace }}.
+
+Open {{ .Values.baseUrl }} and create the first account.
+{{- if not (or .Values.ingress.enabled .Values.httpRoute.enabled) }}
+
+No Ingress or HTTPRoute is enabled. For a quick test:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "yumi.fullname" . }} 3000:{{ .Values.service.port }}
+(baseUrl must then be http://localhost:3000)
+{{- end }}
+{{- if and .Values.postgresql.enabled (not .Values.secrets.existingSecret) }}
+
+Generated credentials live in Secret {{ include "yumi.fullname" . }} (kept on uninstall).
+{{- end }}
+Back up the PostgreSQL volume regularly.

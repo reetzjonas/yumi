@@ -1,0 +1,108 @@
+# Default values for yumi. Only `baseUrl` is required.
+
+# Public origin users open in the browser (scheme + host, no trailing slash).
+# Used for auth cookies and CSRF checks. A PWA needs HTTPS (or localhost).
+baseUrl: ""
+
+image:
+  repository: ghcr.io/reetzjonas/yumi
+  # Defaults to the chart's appVersion. Prefer an immutable commit SHA tag.
+  tag: ""
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+
+# Extra environment variables for the app, e.g. AI provider settings.
+extraEnv: []
+# Extra envFrom sources, e.g. a Secret with OPENROUTER_API_KEY.
+extraEnvFrom: []
+
+secrets:
+  # Use an existing Secret with keys DATABASE_URL and BETTER_AUTH_SECRET.
+  # When empty, the chart manages a Secret: BETTER_AUTH_SECRET (and the bundled
+  # PostgreSQL password) are generated once and kept across upgrades.
+  existingSecret: ""
+
+database:
+  # External PostgreSQL connection string, used when postgresql.enabled=false
+  # and secrets.existingSecret is empty.
+  url: ""
+
+postgresql:
+  # Run a single-instance PostgreSQL StatefulSet next to the app.
+  enabled: true
+  image:
+    repository: postgres
+    tag: 18-alpine
+    pullPolicy: IfNotPresent
+  database: yumi
+  username: yumi
+  auth:
+    # Existing Secret holding the password under POSTGRES_PASSWORD. When empty
+    # the password is generated (see secrets.existingSecret). If you set
+    # secrets.existingSecret, set this too so both use the same password.
+    existingSecret: ""
+  persistence:
+    size: 10Gi
+    # Empty uses the cluster's default StorageClass.
+    storageClass: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 1Gi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: yumi.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# Gateway API route, as an alternative to Ingress.
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs: []
+  #  - name: gateway
+  #    namespace: gateway-system
+  #    sectionName: https
+  hostnames: []
+
+networkPolicy:
+  # Restrict app ingress to `ingressFrom` peers, app egress to DNS, PostgreSQL
+  # and public HTTPS (AI providers), PostgreSQL ingress to the app.
+  enabled: false
+  # Peers allowed to reach the app, e.g. your ingress controller's namespace.
+  ingressFrom: []
+  #  - namespaceSelector:
+  #      matchLabels:
+  #        kubernetes.io/metadata.name: ingress-nginx
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    memory: 512Mi
+
+deploymentAnnotations: {}
+podAnnotations: {}
+podLabels: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Arbitrary extra manifests (templated), e.g. an ExternalSecret.
+extraObjects: []

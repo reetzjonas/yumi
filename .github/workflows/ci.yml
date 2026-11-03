@@ -42,6 +42,14 @@ jobs:
       - run: bun run test
       - run: bun run build
 
+  chart:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: azure/setup-helm@v4
+      - run: helm lint deploy/helm/yumi --set baseUrl=https://yumi.example.com
+      - run: helm template yumi deploy/helm/yumi --set baseUrl=https://yumi.example.com --set ingress.enabled=true --set networkPolicy.enabled=true > /dev/null
+
   image:
     needs: check
     runs-on: ubuntu-latest
