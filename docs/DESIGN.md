@@ -1,124 +1,146 @@
-# yumi design system
+# yumi design line
 
-## 1. Atmosphere and identity
+The binding summary of how yumi looks and behaves. The visual reference is the
+design draft in [`design/yumi-draft.html`](design/yumi-draft.html) (open it in a
+browser; boards 1-6). When the draft and this file disagree, this file wins and
+the draft is fixed later. Why this line: [ADR 0012](decisions/0012-design-line.md).
 
-A shared kitchen notebook: warm paper, dark olive ink, and terracotta actions.
-Content has room to breathe. The identity comes from the warm palette and a
-small cooking-pot mark, without decorative panels or invented recipe content.
-Consumer navigation borrows the clear labels and generous targets of the Airbnb
-reference; primitives use shadcn/ui Radix anatomy.
+## 1. Identity
 
-## 2. Color
+A shared kitchen notebook: cream paper, olive ink, rust for the one thing you
+should tap. A calm utility; recipes and list items are the decoration. No stock
+imagery, gradients, blur, decorative accent borders or promotional copy.
 
-| CSS role             | Light   | Dark    |
-| -------------------- | ------- | ------- |
-| background           | #fcfaf5 | #1a1e18 |
-| foreground           | #292e24 | #f4f1e8 |
-| card / popover       | #ffffff | #242a21 |
-| primary              | #a43d28 | #f2aa8f |
-| primary-foreground   | #ffffff | #381b12 |
-| primary-hover        | #85301f | #ffc1a8 |
-| secondary / muted    | #f1ece2 | #2e352a |
-| secondary-foreground | #424c3a | #e3e8da |
-| muted-foreground     | #64675b | #b8c0ad |
-| accent               | #e8eddf | #35432d |
-| accent-foreground    | #35482d | #e2edda |
-| border / input       | #858778 | #858f79 |
-| ring                 | #93412b | #efae91 |
-| destructive          | #ac2928 | #ffb0a9 |
+## 2. Rules for every screen
 
-Every role has a matching Tailwind color. Browser selection, caret, scrollbar,
-focus, and theme-color metadata use these roles. Decorative surface dividers may
-use the border role at low alpha; input boundaries retain full contrast.
+1. **One primary action per view.** Exactly one filled rust button. Everything
+   else is outline, ghost or a text link. Row actions are never rust.
+2. **Color carries meaning.** Rust = do, olive = fine / done / info, amber =
+   waiting, red = gone. Status is never hue alone: it always has an icon or a
+   word ("wartet", "fällig", "abgehakt von Anna"). Sync pending is never red.
+3. **No placeholders for unbuilt features.** No disabled "kommt bald" buttons,
+   no empty "Nährwerte" rows. A feature appears when it works.
+4. **Lists are scannable.** A row is one or two lines. Secondary actions live in
+   an overflow menu or the edit sheet. At 390x844 the queue shows at least five
+   rows.
+5. **AI always has a manual path** that is visible next to the AI entry point;
+   with AI disabled the manual path becomes the primary one.
+6. **Borders separate, shadows lift.** Only floating surfaces (sheets, dialogs,
+   menus, toasts) get a shadow.
+7. **Copy:** German first, informal "du"; destructive dialogs name the object
+   ("Liste „Wocheneinkauf“ löschen?").
 
-## 3. Typography
+## 3. Color
 
-Use the system sans-serif stack: no font download blocks the shell.
-Page titles: 32px mobile / 40px desktop, 700, line-height 1.2, -0.025em tracking.
-Section / empty-state headings: 24px, 650, line-height 1.3.
-Body: 16px, 400, line-height 1.6. Labels: 16px, 600.
-Secondary small text: 14px, line-height 1.5, secondary ink.
-Mobile navigation: 12px, 600, line-height 1.5.
-Wordmark: 32px, 750, -0.04em. Long prose has a 68ch maximum.
+| Token (CSS var)              | Light             | Dark              | Use                                       |
+| ---------------------------- | ----------------- | ----------------- | ----------------------------------------- |
+| background                   | #fcfaf5           | #1a1e18           | Page paper                                |
+| foreground                   | #292e24           | #f4f1e8           | Body text, icons                          |
+| card / popover               | #ffffff           | #242a21           | Cards, rows, inputs, floating surfaces    |
+| primary / -foreground        | #a43d28 / #ffffff | #f2aa8f / #381b12 | The one primary action, links, active tab |
+| primary-hover                | #85301f           | #ffc1a8           | Hover of primary                          |
+| primary-soft                 | #f6e3dc           | #4a2c22           | "Vorschlag" badge, selected star          |
+| secondary / muted            | #f1ece2           | #2e352a           | Soft surfaces, skeletons, timer dock      |
+| secondary-foreground         | #424c3a           | #e3e8da           | Text on secondary                         |
+| muted-foreground             | #64675b           | #b8c0ad           | Meta text, hints                          |
+| accent / -foreground         | #e8eddf / #35482d | #35432d / #e2edda | Info notes, tags, active navigation       |
+| border / input               | #858778           | #858f79           | Inputs, steppers, checkboxes (3:1 min)    |
+| line                         | #ddd8cb           | #3a4234           | Decorative dividers and card outlines     |
+| ring                         | #93412b           | #efae91           | Focus ring                                |
+| destructive                  | #ac2928           | #ffb0a9           | Delete, remove, timer alarm               |
+| warning / warning-foreground | #f7ecd6 / #6b470c | #3d3220 / #f2d49b | Offline banner, sync pending, "fällig"    |
+| success                      | #3f6b2e           | #a9cf8f           | Checked items, progress, presence         |
 
-## 4. Spacing and layout
+`line` is decorative only and never the sole boundary of an interactive control.
 
-The spacing scale is 4, 8, 12, 16, 24, 32, 40, 48, 64, 80px.
-Content width: 960px; settings measure: 640px. Sidebar: 240px.
-Mobile gutter: 24px. Wide gutter: clamp(32px, 5vw, 80px).
-Control minimum height: 48px. Radius: 8px control, 16px surface.
-The layout switches at 768px. Safe-area insets extend header, nav, and sidebar.
+## 4. Typography
 
-Layout: app shell - stable navigation alongside changing content -> fixed-sidenav-shell (https://raw.githubusercontent.com/changeroa/StyleGallery/main/patterns/viewport-shell/fixed-sidenav-shell.md); scroll owner: .app-main; anti-patterns: nested page scrolling, missing min-width:0, navigation covering focused content.
+- **Sans** (system stack) for everything you read while doing something.
+- **Display serif** `ui-serif, "Iowan Old Style", "Palatino Linotype", Georgia,
+  serif` (no web font) for page titles, recipe titles and empty-state headlines.
 
-Below 768px the same shell has a top brand row and bottom navigation. Only the
-main region scrolls. Navigation follows source order before main, with a skip
-link directly to main. The bottom safe area is part of navigation.
+| Role      | Size / line height        | Weight    |
+| --------- | ------------------------- | --------- |
+| display   | 28/1.15 (34 at >=1200 px) | serif 600 |
+| title     | 21/1.2                    | serif 600 |
+| heading   | 17/1.3                    | sans 700  |
+| body      | 16/1.5                    | sans 400  |
+| label     | 14/1.3                    | sans 600  |
+| meta      | 13/1.35                   | sans 400  |
+| overline  | 12/1, caps, +0.06em       | sans 700  |
+| cook step | 26 phone -> 34 tablet     | sans 500  |
 
-## 5. Components and screen briefs
+Quantities and timers use `tabular-nums`. Inputs never go below 16 px.
 
-- Button: shadcn/ui Radix Slot + CVA anatomy. Primary, secondary, ghost variants;
-  48px height; 16px gap/padding; disabled, hover, pressed, and visible focus states.
-  Labels retain the same geometry in every state.
-- Native select: labelled HTML select with 48px minimum height and full-contrast
-  boundary. Native keyboard operation and platform selection behavior.
-- Skeleton: shadcn/ui div anatomy, muted fill, gentle opacity pulse; static under
-  reduced motion. Decorative shapes are hidden from assistive technology.
-- Toast: Sonner, themed with semantic roles, close button, explicit action.
-- AppShell: semantic navigation and main, optional `accountSlot` in sidebar and
-  `moreSlot` on More. No authentication assumptions.
-- PageHeader: one h1. EmptyState: a meaningful Lucide outline, h2, explanation,
-  and a real navigation link when the next step exists. No unavailable controls.
-- Settings: native theme and language selects; preference changes apply
-  immediately. Theme supports system/light/dark and persists independently.
+## 5. Spacing, radii, elevation, motion
 
-Recipes: primary action is navigation to the meal plan while capture is outside
-this milestone. Priorities: page identity, honest empty state, related next step.
-Required content: Recipes, no-recipes explanation, Plan link.
-Plan: primary action is Recipes. Priorities: queue identity, empty explanation,
-recipe navigation. Required: Plan, no-plan explanation, Recipes link.
-List: primary action is Plan. Priorities: shopping identity, empty explanation,
-plan navigation. Required: List, no-items explanation, Plan link.
-More: primary action is Settings. Priorities: Settings, installation state,
-optional account/household content. Required: More, Settings link, install hint.
-Settings: primary action is changing a preference. Priorities: language, theme,
-return navigation. Required: heading, More link, language label/options, theme
-label/options, automatic-save explanation.
+- Spacing on a 4 px base: 4, 8, 12, 16, 24, 32, 48. Gutter 16 phone, 24 tablet+.
+  Row height 56 (shopping mode 68). Targets at least 44x44.
+- Radii: 6 badge, 8 base, 10 control, 12 card, 16 sheet. No full pills: chips are
+  10 px rectangles.
+- Elevation: 0 flat with border, 1 sheet/menu, 2 dialog/toast.
+- Motion: 150 ms press/toggle, 200 ms ease-out for sheets and dialogs in, 150 ms
+  out. Checked items in shopping mode stay 600 ms before moving to "Im Wagen".
+  `prefers-reduced-motion` removes movement, keeps state changes.
 
-Left out on purpose: example recipes, counters, cards around empty content,
-unimplemented add buttons, avatar/account placeholders, promotional subtitles.
+## 6. Layout and breakpoints
 
-## 6. Motion and interaction
+| Width      | Navigation                                                        | Content                       |
+| ---------- | ----------------------------------------------------------------- | ----------------------------- |
+| < 768      | Top bar (page title + household chip), bottom tabs with labels    | One column                    |
+| 768 - 1199 | 88 px navigation rail, icon above label                           | One column, max 760 px        |
+| >= 1200    | 256 px sidebar: household switcher, tabs, "Neues Rezept", account | Two panes per section (below) |
 
-Control press scales to 0.98 over 120ms ease-out. Reduced motion removes scale.
-Focus always uses a 2px ring at 3px offset. No page-arrival animation.
-Disabled controls keep dimensions; no hover feedback when disabled.
-The skeleton opacity pulse takes 1.8s and is disabled under reduced motion.
+Two-pane layouts at >= 1200 px:
 
-## 7. Depth and surfaces
+- **Rezepte:** library pane (360 px, compact rows with thumbnail) + recipe
+  detail. Without a selection the detail pane shows a short empty state.
+- **Plan:** queue + 400 px pane with the active shopping list, so "Auf die
+  Liste" shows its result in place.
+- **Liste:** list + side pane with quick-add tiles and due recurring items.
+- **Mehr:** 240 px sub-navigation + content (max 640 px).
 
-Tonal separation for sidebar, active navigation, and empty-state artwork.
-Neutral 1px rules separate settings rows and mobile navigation.
-No blur, gradients, decorative accent borders, or surface shadows.
-Sonner uses its standard raised notification geometry with theme colors.
+Shopping mode and cooking view are full-screen modes outside the shell at every
+size. From 768 px the cooking view uses two columns: ingredients for the step
+left, the step right.
 
-## 8. Accessibility and integration
+Each pane owns its scroll; there is no page scroll behind it and no horizontal
+scroll down to 320 px. Safe-area insets extend bars, rail and sidebar. On
+> = 1200 px, `/` focuses search and `n` starts a new recipe.
 
-Target WCAG 2.2 AA. Every shell target is at least 44px in both dimensions.
-Text and controls retain contrast in both themes. No drag, authentication, or
-repeated-entry flow exists in this shell. Browser testing evidence belongs in
-the delivery report. Device-specific install behavior requires physical-device
-testing in Android Chrome and iOS Safari; desktop emulation does not prove it.
+## 7. Component patterns
 
-## 9. Grounding
+- **Button:** primary (filled rust), outline, ghost, destructive. Fixed geometry
+  in every state; press scales to 0.98.
+- **Queue row:** position, drag handle, thumbnail, title, meta line
+  ("4 Portionen · Do · 40 Min"), overflow menu. The menu holds Gekocht,
+  Überspringen, Bearbeiten (servings, day), Nach oben / Nach unten, Entfernen.
+  Servings and day are edited in a sheet, not inline.
+- **Overflow menu / sheet:** bottom sheet on phones, anchored menu or centered
+  dialog from 768 px.
+- **Cooking view header (phone):** row 1 close + title (two lines max); row 2
+  "Schritt 1 von 6 · 4 Portionen" and the wake-lock state as an icon.
+- **Empty state:** serif headline, one sentence, one primary next action.
+- **Skeleton:** shaped like the content it replaces; static under reduced motion.
 
-Personas: household members checking the shopping list on a phone, planning at
-a desk, or reading a recipe on a tablet. The ideal shell keeps the four main
-destinations reachable, identifies the current page, explains empty data, and
-preserves readable settings in either locale and theme. Product principles
-come from `product.md`; accessibility requirements are WCAG 2.2 AA.
+## 8. Cross-cutting states
 
-The starter had no reusable UI, navigation, themes, or preference persistence.
-The milestone closes those gaps with the AppShell, primitives, and Settings.
-The before capture is `/tmp/yumi-frontend/before-390.png`; the final report
-records the route/theme/language matrix and computed browser checks.
+Offline (banner under the top bar: what works, what waits), sync pending (cloud
+icon + count), AI disabled (manual path first), empty, loading (skeleton), error
+(human cause + "Erneut versuchen"), no access / no household (route to switcher
+or onboarding), permission denied (camera, notifications, wake lock -> fallback).
+
+## 9. Accessibility
+
+WCAG 2.2 AA. Text contrast at least 4.5:1, control boundaries 3:1, focus ring
+2 px at 3 px offset. Every drag interaction has a non-drag alternative (menu
+items and arrow keys on the handle). Shell targets at least 44 px; shopping-mode
+rows 68 px.
+
+## 10. Changing the design line
+
+- Small refinements: change this file in the same commit as the code.
+- A change to a rule in section 2, the palette, the type families or the
+  breakpoints: new ADR that supersedes 0012, then update this file.
+- The draft is a reference snapshot; update it when a screen changes in a way
+  the text cannot carry.

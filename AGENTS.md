@@ -35,6 +35,7 @@ Read only what the task needs; do not load all docs up front.
 | What the product is, feature scope | `docs/product.md`                                                |
 | System overview, stack, deployment | `docs/architecture.md`                                           |
 | Data model sketch                  | `docs/data-model.md`                                             |
+| UI design line (rules, tokens)     | `docs/DESIGN.md`; visual reference `docs/design/yumi-draft.html` |
 | Why a choice was made              | `docs/decisions/NNNN-*.md` (index in `docs/decisions/README.md`) |
 | Deep dive on a tricky mechanism    | `docs/concepts/*.md`                                             |
 | Open work, priorities              | GitHub milestones and issues                                     |
