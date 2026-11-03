@@ -104,7 +104,9 @@ export function AddRecipeToList({
             value={servings}
             onChange={(event) => setServings(event.target.value)}
           />
-          <Button disabled={add.isPending}>{m["shopping.add_recipe"]()}</Button>
+          <Button variant="secondary" disabled={add.isPending}>
+            {m["shopping.add_recipe"]()}
+          </Button>
         </form>
       )}
       {staples && (

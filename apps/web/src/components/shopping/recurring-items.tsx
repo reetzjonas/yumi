@@ -247,7 +247,9 @@ export function RecurringItems({ listId }: { listId: string }) {
               </select>
             </div>
           </div>
-          <Button disabled={!label.trim()}>{m["recurring.add"]()}</Button>
+          <Button variant="secondary" disabled={!label.trim()}>
+            {m["recurring.add"]()}
+          </Button>
         </fieldset>
       </form>
     </details>

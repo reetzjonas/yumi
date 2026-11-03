@@ -123,7 +123,10 @@ export function ListManager({
           maxLength={60}
         />
         <div className="recipe-actions">
-          <Button disabled={manage.isPending || !name.trim()}>
+          <Button
+            variant={selectedId ? "secondary" : "default"}
+            disabled={manage.isPending || !name.trim()}
+          >
             {renaming ? m["shopping.save"]() : m["shopping.create_list"]()}
           </Button>
           {renaming && (

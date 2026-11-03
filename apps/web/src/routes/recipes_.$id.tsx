@@ -110,7 +110,7 @@ function Recipe() {
                 </a>
               )}
               <div className="recipe-actions">
-                <Button asChild>
+                <Button asChild variant="outline">
                   <Link to="/recipes/$id/edit" params={{ id }}>
                     <Pencil size={18} aria-hidden="true" />
                     {m["recipes.edit"]()}

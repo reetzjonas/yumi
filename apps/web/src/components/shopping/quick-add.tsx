@@ -73,7 +73,9 @@ export function QuickAdd({ listId }: { listId: string }) {
           aria-describedby={`${id}-hint`}
           onChange={(event) => setText(event.target.value)}
         />
-        <Button disabled={busy || !text.trim()}>{m["shopping.add"]()}</Button>
+        <Button variant="secondary" disabled={busy || !text.trim()}>
+          {m["shopping.add"]()}
+        </Button>
       </div>
       <p id={`${id}-hint`} className="row-detail">
         {m["shopping.quick_hint"]()}

@@ -150,7 +150,7 @@ export function ItemForm({
           </select>
         </div>
         <div className="recipe-actions">
-          <Button disabled={!label.trim()}>
+          <Button variant="secondary" disabled={!label.trim()}>
             {item ? m["shopping.save"]() : m["shopping.add_item"]()}
           </Button>
           {item && (
