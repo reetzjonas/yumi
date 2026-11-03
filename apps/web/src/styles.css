@@ -591,6 +591,99 @@ select:focus-visible {
   overflow-wrap: anywhere;
 }
 
+.shopping-manager,
+.shopping-list-form,
+.shopping-item-form,
+.shopping-item-fields,
+.shopping-items,
+.shopping-expanded,
+.shopping-individual,
+.shopping-recipe-form {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+}
+.shopping-item-fields {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.shopping-manager > .field {
+  width: 100%;
+}
+.shopping-amount-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.shopping-catalog summary {
+  cursor: pointer;
+  color: var(--primary);
+  font-weight: 600;
+  padding-block: 8px;
+}
+.shopping-catalog .row-list {
+  list-style: none;
+  margin-top: 12px;
+  padding: 0;
+}
+.shopping-category {
+  width: 100%;
+}
+.shopping-category .row-list {
+  list-style: none;
+  padding: 0;
+}
+.shopping-row {
+  flex-wrap: wrap;
+}
+.shopping-check {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  cursor: pointer;
+}
+.shopping-check input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--primary);
+}
+.shopping-row .row-main {
+  min-width: min(160px, 100%);
+  overflow-wrap: anywhere;
+}
+.shopping-row[data-checked="true"] .row-title {
+  text-decoration: line-through;
+  color: var(--muted-foreground);
+}
+.shopping-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+.shopping-sources a {
+  text-decoration: underline;
+}
+.shopping-expanded {
+  padding: 16px;
+}
+.shopping-individual {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.shopping-individual h3 {
+  font-weight: 600;
+}
+.shopping-item-fields input,
+.shopping-item-fields select,
+.shopping-recipe-form select,
+.shopping-manager select {
+  min-width: 0;
+  max-width: 100%;
+}
 .recipe-form,
 .recipe-detail,
 .recipe-filters,

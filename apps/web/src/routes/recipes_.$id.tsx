@@ -4,6 +4,7 @@ import { parseIngredientLine, unitSchema } from "@yumi/shared";
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page";
+import { AddRecipeToList } from "@/components/shopping/add-recipe";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
@@ -122,6 +123,11 @@ function Recipe() {
                 {m["recipes.delete"]()}
               </Button>
             </div>
+            <AddRecipeToList
+              key={`${householdId}-${id}`}
+              recipeId={id}
+              servings={recipe.servings}
+            />
             <section className="recipe-section">
               <h2>{m["recipes.ingredients"]()}</h2>
               {recipe.ingredients.length === 0 && (
