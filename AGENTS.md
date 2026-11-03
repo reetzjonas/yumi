@@ -17,7 +17,7 @@ Guidance for coding agents (and humans) working on yumi. Keep this file short; i
 - API integration tests need the local PostgreSQL (`bun run db:up`); each test file creates and drops its own `yumi_test_*` database (`apps/api/src/test/setup-db.ts`).
 - Schema change: edit `packages/db/src/schema`, then `bun run db:generate` and `bun run db:migrate`. Never edit a migration that is on `main`.
 - API scoping: household data routes use `requireAuth` + `requireHousehold` (`apps/api/src/context.ts`) and filter every query by `c.get("householdId")`.
-- `bun run check` = `bun run format` fixes formatting. Never bypass hooks with `--no-verify`.
+- `bun run check` = lint + typecheck + tests. `bun run format` fixes formatting. Never bypass hooks with `--no-verify`.
 - Layout: `apps/web` (React PWA), `apps/api` (Hono, exports `AppType` for the typed client), `packages/shared` (Zod schemas, pure logic), `packages/db` (Drizzle schema, migrations).
 
 ## Workflow
