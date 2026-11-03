@@ -20,11 +20,13 @@ import {
 import { and, asc, count, desc, eq, inArray } from "drizzle-orm";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { streamSSE } from "hono/streaming";
 import { validator } from "hono/validator";
 import { z } from "zod";
 import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
 import { db } from "../db";
 import { applyDueRecurring } from "../recurring";
+import { publishListChange, subscribeShopping } from "../shopping-bus";
 import { applyShoppingEvents } from "../shopping-events";
 import { loadShoppingList } from "../shopping-list-data";
 
@@ -121,6 +123,24 @@ export const shopping = new Hono<HouseholdEnv>()
       .orderBy(asc(shoppingList.createdAt));
     return c.json(rows);
   })
+  .get("/stream", (c) => {
+    const householdId = c.get("householdId");
+    return streamSSE(c, async (stream) => {
+      const unsubscribe = await subscribeShopping(householdId, (listId) => {
+        void stream.writeSSE({
+          event: "list",
+          data: JSON.stringify({ listId }),
+        });
+      });
+      stream.onAbort(unsubscribe);
+      await stream.writeSSE({ event: "ready", data: "" });
+      while (!stream.aborted) {
+        await stream.sleep(25_000);
+        await stream.writeSSE({ event: "ping", data: "" });
+      }
+      unsubscribe();
+    });
+  })
   .get("/recent", async (c) => c.json(await recentItems(c.get("householdId"))))
   .post("/lists", listBody, async (c) => {
     const input = c.req.valid("json");
@@ -151,6 +171,7 @@ export const shopping = new Hono<HouseholdEnv>()
         defaultStoreId: shoppingList.defaultStoreId,
       });
     if (!row) throw new HTTPException(404, { message: "not_found" });
+    await publishListChange(c.get("householdId"), row.id);
     return c.json(row);
   })
   .delete(LIST, async (c) => {
@@ -163,8 +184,9 @@ export const shopping = new Hono<HouseholdEnv>()
         ),
       )
       .returning({ id: shoppingList.id });
-    if (deleted.length === 0)
-      throw new HTTPException(404, { message: "not_found" });
+    const [gone] = deleted;
+    if (!gone) throw new HTTPException(404, { message: "not_found" });
+    await publishListChange(c.get("householdId"), gone.id);
     return c.body(null, 204);
   })
   .get(LIST, async (c) => {

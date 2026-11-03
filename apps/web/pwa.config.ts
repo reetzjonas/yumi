@@ -47,6 +47,7 @@ export const pwaOptions = {
         urlPattern: ({ url, sameOrigin }: { url: URL; sameOrigin: boolean }) =>
           sameOrigin &&
           url.pathname.startsWith("/api/") &&
+          url.pathname !== "/api/shopping/stream" &&
           !/^\/api\/auth(?:\/|$)/.test(url.pathname),
         method: "GET",
         handler: "NetworkFirst",

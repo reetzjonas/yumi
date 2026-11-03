@@ -15,4 +15,5 @@ if (process.env.NODE_ENV === "production") {
 
 const port = Number(process.env.PORT ?? 3000);
 
-export default { port, fetch: app.fetch };
+// SSE streams ping every 25 s; Bun closes idle connections after 10 s by default.
+export default { port, fetch: app.fetch, idleTimeout: 60 };

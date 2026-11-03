@@ -1,5 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ShoppingBasket } from "lucide-react";
 import { useState } from "react";
 import { EmptyState, PageHeader } from "@/components/page";
@@ -10,11 +9,17 @@ import { QuickAdd } from "@/components/shopping/quick-add";
 import { RecurringItems } from "@/components/shopping/recurring-items";
 import { ShoppingItems } from "@/components/shopping/shopping-items";
 import { StoreSelect } from "@/components/shopping/store-select";
+import { ShoppingSyncStatus } from "@/components/shopping/sync-status";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/lib/api";
-import { ensureOk, errorMessage } from "@/lib/api-error";
+import { errorMessage } from "@/lib/api-error";
 import { useMe } from "@/lib/session";
-import { useShoppingCategories, useShoppingLists } from "@/lib/shopping";
+import {
+  useShoppingCategories,
+  useShoppingList,
+  useShoppingLists,
+} from "@/lib/shopping";
+import { useShoppingRealtime } from "@/lib/shopping-sync";
 import { useStores } from "@/lib/stores";
 import { m } from "@/paraglide/messages";
 
@@ -26,7 +31,7 @@ function List() {
 }
 
 function HouseholdLists() {
-  const householdId = useMe()?.activeHouseholdId;
+  useShoppingRealtime();
   const lists = useShoppingLists();
   const categories = useShoppingCategories();
   const stores = useStores();
@@ -34,16 +39,7 @@ function HouseholdLists() {
   const listId = lists.data?.some((list) => list.id === selectedId)
     ? selectedId
     : (lists.data?.[0]?.id ?? "");
-  const detail = useQuery({
-    queryKey: ["shopping", householdId, "detail", listId],
-    enabled: !!householdId && !!listId,
-    queryFn: async () =>
-      (
-        await ensureOk(
-          await api.shopping.lists[":id"].$get({ param: { id: listId } }),
-        )
-      ).json(),
-  });
+  const detail = useShoppingList(listId);
   return (
     <>
       <PageHeader title={m.nav_list()} />
@@ -64,6 +60,14 @@ function HouseholdLists() {
             />
           ) : (
             <>
+              <ShoppingSyncStatus listId={listId} />
+              {detail.data && (
+                <Button asChild>
+                  <Link to="/shop/$listId" params={{ listId }}>
+                    {m["shopping.start"]()}
+                  </Link>
+                </Button>
+              )}
               {categories.isError && (
                 <p className="form-error" role="alert">
                   {errorMessage(categories.error)}

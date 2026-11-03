@@ -10,6 +10,7 @@ import { AppShell } from "@/components/app-shell";
 import { PwaProvider } from "@/components/pwa-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { meQuery, useMe } from "@/lib/session";
+import { useShoppingSync } from "@/lib/shopping-sync";
 
 /** Reachable without a session. */
 const PUBLIC_PATHS = ["/login", "/signup"];
@@ -44,6 +45,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function Root() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const me = useMe();
+  useShoppingSync();
   return (
     <ThemeProvider>
       <PwaProvider>

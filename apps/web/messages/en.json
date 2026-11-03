@@ -40,6 +40,19 @@
   "shopping.add_recipe": "Add to shopping list",
   "shopping.recipe_needs_list": "Create a shopping list first, then add this recipe.",
   "shopping.recipe_added": "{count} ingredients added to your shopping list.",
+  "shopping.start": "Start shopping",
+  "shopping.mode": "Shopping",
+  "shopping.exit": "Exit shopping",
+  "shopping.trip_store": "Where are you shopping?",
+  "shopping.offline": "Offline",
+  "shopping.pending": "{count} changes waiting to sync",
+  "shopping.sync_rejected": "Some changes could not be saved. The list may have been deleted or the entries are no longer valid.",
+  "shopping.local_storage_error": "Changes could not be saved on this device. Check that your browser allows local storage and try again.",
+  "shopping.progress": "{checked} of {total}",
+  "shopping.checked_count": "Checked ({count})",
+  "shopping.checked_toast": "{name} checked",
+  "shopping.unchecked_toast": "{name} unchecked",
+  "shopping.undo": "Undo",
   "settings_title": "Settings",
   "settings_language": "Language",
   "settings_theme": "Appearance",
@@ -248,5 +261,6 @@
   "recurring.every_week": "Every week on {day}",
   "recurring.every_n_weeks": "Every {count} weeks on {day}",
   "recurring.next": "next {date}",
-  "recurring.remove": "Stop repeating {name}"
+  "recurring.remove": "Stop repeating {name}",
+  "shopping.pending_one": "1 change waiting to sync"
 }

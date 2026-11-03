@@ -9,7 +9,7 @@ Shopping happens in stores with bad reception; several household members may sho
 
 ## Decision
 
-Only the shopping list is offline-writable at first. Clients write events with client-generated IDs to an IndexedDB outbox, replay them when online; the server applies them idempotently and broadcasts via SSE. Other data is cached read-only offline.
+Only the shopping list is offline-writable at first. Clients write events with client-generated IDs to an IndexedDB outbox, replay them when online; the server applies them idempotently and broadcasts via SSE (`GET /api/shopping/stream`, fanned out through Postgres LISTEN/NOTIFY so it works across API replicas). Other data is cached read-only offline.
 
 ## Consequences
 

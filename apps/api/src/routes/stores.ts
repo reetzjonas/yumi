@@ -7,6 +7,7 @@ import { validator } from "hono/validator";
 import { z } from "zod";
 import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
 import { db } from "../db";
+import { publishListChange } from "../shopping-bus";
 
 const fields = {
   id: store.id,
@@ -104,6 +105,7 @@ export const listStore = new Hono<HouseholdEnv>()
         )
         .returning({ defaultStoreId: shoppingList.defaultStoreId });
       if (!list) throw new HTTPException(404, { message: "not_found" });
+      await publishListChange(householdId, id);
       return c.json(list);
     },
   );

@@ -4,6 +4,7 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { clearOutbox } from "@/lib/outbox";
 import { clearApiCache } from "@/lib/pwa-cache";
 
 async function fetchMe() {
@@ -19,6 +20,7 @@ export const meQuery = queryOptions({
   queryKey: ["me"],
   queryFn: fetchMe,
   staleTime: 60_000,
+  networkMode: "offlineFirst",
 });
 
 export function useMe() {
@@ -30,6 +32,8 @@ export function useMe() {
  * another account or household is shown.
  */
 export async function resetClientState(queryClient: QueryClient) {
+  const me = queryClient.getQueryData(meQuery.queryKey);
+  await clearOutbox(me?.activeHouseholdId ?? undefined);
   await clearApiCache();
   // resetQueries drops cached data and refetches mounted queries (clear() would orphan them)
   await queryClient.resetQueries();

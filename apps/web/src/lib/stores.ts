@@ -11,6 +11,7 @@ export function useStores() {
   return useQuery({
     queryKey: ["stores", householdId],
     enabled: !!householdId,
+    networkMode: "offlineFirst",
     queryFn: async () => (await ensureOk(await api.stores.$get())).json(),
   });
 }

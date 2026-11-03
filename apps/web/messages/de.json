@@ -40,6 +40,19 @@
   "shopping.add_recipe": "Zur Einkaufsliste hinzufügen",
   "shopping.recipe_needs_list": "Lege zuerst eine Einkaufsliste an und füge dann dieses Rezept hinzu.",
   "shopping.recipe_added": "{count} Zutaten zur Einkaufsliste hinzugefügt.",
+  "shopping.start": "Einkauf starten",
+  "shopping.mode": "Einkaufen",
+  "shopping.exit": "Einkauf verlassen",
+  "shopping.trip_store": "Wo kaufst du ein?",
+  "shopping.offline": "Offline",
+  "shopping.pending": "{count} Änderungen warten auf Synchronisierung",
+  "shopping.sync_rejected": "Einige Änderungen konnten nicht gespeichert werden. Die Liste wurde möglicherweise gelöscht oder Einträge sind nicht mehr gültig.",
+  "shopping.local_storage_error": "Änderungen konnten auf diesem Gerät nicht gespeichert werden. Prüfe, ob dein Browser lokalen Speicher erlaubt, und versuche es erneut.",
+  "shopping.progress": "{checked} von {total}",
+  "shopping.checked_count": "Abgehakt ({count})",
+  "shopping.checked_toast": "{name} abgehakt",
+  "shopping.unchecked_toast": "{name} wieder geöffnet",
+  "shopping.undo": "Rückgängig",
   "settings_title": "Einstellungen",
   "settings_language": "Sprache",
   "settings_theme": "Darstellung",
@@ -248,5 +261,6 @@
   "recurring.every_week": "Jede Woche am {day}",
   "recurring.every_n_weeks": "Alle {count} Wochen am {day}",
   "recurring.next": "nächstes Mal {date}",
-  "recurring.remove": "{name} nicht mehr wiederholen"
+  "recurring.remove": "{name} nicht mehr wiederholen",
+  "shopping.pending_one": "1 Änderung wartet auf Synchronisierung"
 }

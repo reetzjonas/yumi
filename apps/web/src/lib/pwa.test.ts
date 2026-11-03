@@ -34,6 +34,7 @@ describe("PWA configuration", () => {
       "/api/auth",
       "/api/auth/session",
       "/api/auth/sign-out",
+      "/api/shopping/stream",
       "/recipes",
       "/apiary",
     ])

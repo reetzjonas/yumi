@@ -10,6 +10,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import type { z } from "zod";
 import { visibleTo } from "./catalog";
 import { db } from "./db";
+import { publishListChange } from "./shopping-bus";
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 type Event = z.output<typeof shoppingEventSchema>;
@@ -120,7 +121,7 @@ export async function applyShoppingEvents(
   ctx: { listId: string; householdId: string; userId: string },
   events: Event[],
 ) {
-  return db.transaction(async (tx) => {
+  const applied = await db.transaction(async (tx) => {
     const storeIdsInEvents = [
       ...new Set(events.flatMap((e) => (e.storeId ? [e.storeId] : []))),
     ];
@@ -136,10 +137,12 @@ export async function applyShoppingEvents(
           )
       : [];
     const full = { ...ctx, storeIds: new Set(stores.map((s) => s.id)) };
-    const applied: string[] = [];
+    const ids: string[] = [];
     for (const event of events) {
-      if (await applyEvent(tx, full, event)) applied.push(event.id);
+      if (await applyEvent(tx, full, event)) ids.push(event.id);
     }
-    return applied;
+    return ids;
   });
+  if (applied.length) await publishListChange(ctx.householdId, ctx.listId);
+  return applied;
 }
