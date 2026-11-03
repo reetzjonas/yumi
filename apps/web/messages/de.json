@@ -331,5 +331,7 @@
   "queue.close_menu": "Schließen",
   "sheet.close": "Schließen",
   "shopping.new_list": "Neue Liste",
-  "shopping.list_actions": "Aktionen für Liste „{name}“"
+  "shopping.list_actions": "Aktionen für Liste „{name}“",
+  "recipes.plan_action": "Einplanen",
+  "recipes.list_action": "Auf die Liste"
 }

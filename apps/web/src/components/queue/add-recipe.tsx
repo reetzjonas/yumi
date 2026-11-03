@@ -31,8 +31,7 @@ export function AddRecipeToQueue({
   });
 
   return (
-    <section className="section queue-add">
-      <h2>{m["queue.add"]()}</h2>
+    <div className="queue-add">
       <p className="section-description">{m["queue.add_hint"]()}</p>
       <form
         className="queue-entry-form"
@@ -83,6 +82,6 @@ export function AddRecipeToQueue({
           </Link>
         </p>
       )}
-    </section>
+    </div>
   );
 }

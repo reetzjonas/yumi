@@ -1487,6 +1487,12 @@ select:focus-visible {
   container-type: inline-size;
   width: 100%;
 }
+.queue-add,
+.shopping-recipe {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
 .queue-checkbox {
   position: relative;
   display: inline-flex;

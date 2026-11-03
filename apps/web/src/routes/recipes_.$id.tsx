@@ -1,13 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { parseIngredientLine, unitSchema } from "@yumi/shared";
-import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  CalendarPlus,
+  ListPlus,
+  Pencil,
+  Trash2,
+} from "lucide-react";
+import { useRef } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page";
 import { AddRecipeToQueue } from "@/components/queue/add-recipe";
 import { RecipeLibrary } from "@/components/recipes/recipe-library";
 import { AddRecipeToList } from "@/components/shopping/add-recipe";
 import { Button } from "@/components/ui/button";
+import { Sheet } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
 import { ensureOk, errorMessage } from "@/lib/api-error";
@@ -28,6 +36,8 @@ function Recipe() {
   const householdId = useMe()?.activeHouseholdId;
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const queueSheet = useRef<HTMLDialogElement>(null);
+  const listSheet = useRef<HTMLDialogElement>(null);
   const query = useQuery({
     queryKey: ["recipes", householdId, "detail", id],
     queryFn: async () =>
@@ -110,6 +120,23 @@ function Recipe() {
                 </a>
               )}
               <div className="recipe-actions">
+                <Button
+                  type="button"
+                  aria-haspopup="dialog"
+                  onClick={() => queueSheet.current?.showModal()}
+                >
+                  <CalendarPlus size={18} aria-hidden="true" />
+                  {m["recipes.plan_action"]()}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  aria-haspopup="dialog"
+                  onClick={() => listSheet.current?.showModal()}
+                >
+                  <ListPlus size={18} aria-hidden="true" />
+                  {m["recipes.list_action"]()}
+                </Button>
                 <Button asChild variant="outline">
                   <Link to="/recipes/$id/edit" params={{ id }}>
                     <Pencil size={18} aria-hidden="true" />
@@ -132,16 +159,28 @@ function Recipe() {
                   {m["recipes.delete"]()}
                 </Button>
               </div>
-              <AddRecipeToQueue
-                key={`queue-${householdId}-${id}`}
-                recipeId={id}
-                servings={recipe.servings}
-              />
-              <AddRecipeToList
-                key={`${householdId}-${id}`}
-                recipeId={id}
-                servings={recipe.servings}
-              />
+              <Sheet
+                ref={queueSheet}
+                title={m["queue.add"]()}
+                meta={recipe.title}
+              >
+                <AddRecipeToQueue
+                  key={`queue-${householdId}-${id}`}
+                  recipeId={id}
+                  servings={recipe.servings}
+                />
+              </Sheet>
+              <Sheet
+                ref={listSheet}
+                title={m["shopping.add_recipe"]()}
+                meta={recipe.title}
+              >
+                <AddRecipeToList
+                  key={`${householdId}-${id}`}
+                  recipeId={id}
+                  servings={recipe.servings}
+                />
+              </Sheet>
               <section className="recipe-section">
                 <h2>{m["recipes.ingredients"]()}</h2>
                 {recipe.ingredients.length === 0 && (

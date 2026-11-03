@@ -54,8 +54,7 @@ export function AddRecipeToList({
     onError: (error) => toast.error(errorMessage(error)),
   });
   return (
-    <section className="section shopping-recipe">
-      <h2>{m["shopping.add_recipe"]()}</h2>
+    <div className="shopping-recipe">
       {lists.isPending ? (
         <p role="status">{m["shopping.loading"]()}</p>
       ) : lists.isError ? (
@@ -104,9 +103,7 @@ export function AddRecipeToList({
             value={servings}
             onChange={(event) => setServings(event.target.value)}
           />
-          <Button variant="secondary" disabled={add.isPending}>
-            {m["shopping.add_recipe"]()}
-          </Button>
+          <Button disabled={add.isPending}>{m["shopping.add_recipe"]()}</Button>
         </form>
       )}
       {staples && (
@@ -120,6 +117,6 @@ export function AddRecipeToList({
           }
         />
       )}
-    </section>
+    </div>
   );
 }
