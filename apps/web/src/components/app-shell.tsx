@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   BookOpen,
   CookingPot,
@@ -7,7 +7,7 @@ import {
   Plus,
   ShoppingBasket,
 } from "lucide-react";
-import { createContext, type ReactNode, useContext } from "react";
+import { createContext, type ReactNode, useContext, useEffect } from "react";
 import { ConnectionStatus } from "@/components/pwa-provider";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
@@ -31,6 +31,7 @@ export function AppShell({
   accountSlot?: ReactNode;
   moreSlot?: ReactNode;
 }) {
+  useDesktopShortcuts();
   return (
     <MoreSlotContext value={moreSlot}>
       <div className="app-shell">
@@ -75,6 +76,39 @@ export function AppShell({
       </div>
     </MoreSlotContext>
   );
+}
+
+function useDesktopShortcuts() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1200px)");
+    function onKeyDown(event: KeyboardEvent) {
+      if (
+        !desktop.matches ||
+        event.defaultPrevented ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.altKey ||
+        (event.target instanceof HTMLElement &&
+          event.target.closest("input, textarea, select, [contenteditable]"))
+      )
+        return;
+      if (event.key === "/") {
+        const search = document.querySelector<HTMLInputElement>(
+          '.app-main input[type="search"]',
+        );
+        if (search) {
+          event.preventDefault();
+          search.focus();
+        }
+      } else if (event.key === "n") {
+        event.preventDefault();
+        void navigate({ to: "/recipes/new" });
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [navigate]);
 }
 
 export function MoreSlot() {

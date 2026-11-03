@@ -80,46 +80,52 @@ function HouseholdLists() {
                   stores={stores.data ?? []}
                 />
               )}
-              <section className="section">
-                <h2>{m["shopping.add_item"]()}</h2>
-                <QuickAdd key={listId} listId={listId} />
-                {detail.data && (
-                  <ItemTiles
-                    key={`tiles-${listId}`}
-                    list={detail.data}
-                    categories={categories.data ?? []}
-                  />
-                )}
-                <details className="shopping-catalog">
-                  <summary>{m["shopping.more_options"]()}</summary>
-                  <ItemForm
-                    key={listId}
-                    listId={listId}
-                    categories={categories.data ?? []}
-                  />
-                </details>
-              </section>
-              {detail.isPending ? (
-                <Skeleton className="h-32 w-full" />
-              ) : detail.isError ? (
-                <p className="form-error" role="alert">
-                  {errorMessage(detail.error)}
-                </p>
-              ) : (
-                detail.data && (
-                  <ShoppingItems
-                    key={listId}
-                    list={detail.data}
-                    categories={categories.data ?? []}
-                    categoryOrder={
-                      stores.data?.find(
-                        (store) => store.id === detail.data.defaultStoreId,
-                      )?.categoryOrder
-                    }
-                  />
-                )
-              )}
-              <RecurringItems key={`recurring-${listId}`} listId={listId} />
+              <div className="list-split">
+                <section className="section list-split-add">
+                  <h2>{m["shopping.add_item"]()}</h2>
+                  <QuickAdd key={listId} listId={listId} />
+                  {detail.data && (
+                    <ItemTiles
+                      key={`tiles-${listId}`}
+                      list={detail.data}
+                      categories={categories.data ?? []}
+                    />
+                  )}
+                  <details className="shopping-catalog">
+                    <summary>{m["shopping.more_options"]()}</summary>
+                    <ItemForm
+                      key={listId}
+                      listId={listId}
+                      categories={categories.data ?? []}
+                    />
+                  </details>
+                </section>
+                <div className="list-split-items">
+                  {detail.isPending ? (
+                    <Skeleton className="h-32 w-full" />
+                  ) : detail.isError ? (
+                    <p className="form-error" role="alert">
+                      {errorMessage(detail.error)}
+                    </p>
+                  ) : (
+                    detail.data && (
+                      <ShoppingItems
+                        key={listId}
+                        list={detail.data}
+                        categories={categories.data ?? []}
+                        categoryOrder={
+                          stores.data?.find(
+                            (store) => store.id === detail.data.defaultStoreId,
+                          )?.categoryOrder
+                        }
+                      />
+                    )
+                  )}
+                </div>
+                <div className="list-split-recurring">
+                  <RecurringItems key={`recurring-${listId}`} listId={listId} />
+                </div>
+              </div>
             </>
           )}
         </>

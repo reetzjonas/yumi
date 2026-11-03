@@ -5,6 +5,7 @@ import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page";
 import { AddRecipeToQueue } from "@/components/queue/add-recipe";
+import { RecipeLibrary } from "@/components/recipes/recipe-library";
 import { AddRecipeToList } from "@/components/shopping/add-recipe";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -44,151 +45,160 @@ function Recipe() {
   });
   const recipe = query.data;
   return (
-    <article className="recipe-detail">
-      <Link to="/recipes" className="back-link">
-        <ArrowLeft size={18} aria-hidden="true" />
-        {m.nav_recipes()}
-      </Link>
-      {query.isPending ? (
-        <Skeleton className="h-32 w-full" />
-      ) : query.isError ? (
-        <p className="form-error" role="alert">
-          {errorMessage(query.error)}
-        </p>
-      ) : (
-        recipe && (
-          <>
-            <PageHeader title={recipe.title} />
-            {recipe.imageKey && (
-              <img
-                className="recipe-image"
-                src={recipeImageUrl(id, recipe.imageKey, "full")}
-                alt={m["recipes.image_alt"]({ title: recipe.title })}
-                width={1200}
-                height={750}
-              />
-            )}
-            {recipe.description && (
-              <p className="recipe-description">{recipe.description}</p>
-            )}
-            <dl className="recipe-meta">
-              <div>
-                <dt>{m["recipes.servings"]()}</dt>
-                <dd>{recipe.servings}</dd>
-              </div>
-              {recipe.prepMinutes !== null && (
-                <div>
-                  <dt>{m["recipes.prep_time"]()}</dt>
-                  <dd>{formatMinutes(recipe.prepMinutes)}</dd>
-                </div>
+    <div className="split recipe-split">
+      <aside
+        className="split-pane split-pane-wide"
+        aria-label={m.nav_recipes()}
+      >
+        <RecipeLibrary />
+      </aside>
+      <article className="recipe-detail">
+        <Link to="/recipes" className="back-link">
+          <ArrowLeft size={18} aria-hidden="true" />
+          {m.nav_recipes()}
+        </Link>
+        {query.isPending ? (
+          <Skeleton className="h-32 w-full" />
+        ) : query.isError ? (
+          <p className="form-error" role="alert">
+            {errorMessage(query.error)}
+          </p>
+        ) : (
+          recipe && (
+            <>
+              <PageHeader title={recipe.title} />
+              {recipe.imageKey && (
+                <img
+                  className="recipe-image"
+                  src={recipeImageUrl(id, recipe.imageKey, "full")}
+                  alt={m["recipes.image_alt"]({ title: recipe.title })}
+                  width={1200}
+                  height={750}
+                />
               )}
-              {recipe.cookMinutes !== null && (
-                <div>
-                  <dt>{m["recipes.cook_time"]()}</dt>
-                  <dd>{formatMinutes(recipe.cookMinutes)}</dd>
-                </div>
+              {recipe.description && (
+                <p className="recipe-description">{recipe.description}</p>
               )}
-            </dl>
-            {recipe.tags.length > 0 && (
-              <p className="row-detail">{recipe.tags.join(" · ")}</p>
-            )}
-            {recipe.sourceUrl && (
-              <a
-                href={recipe.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {m["recipes.source"]()}
-              </a>
-            )}
-            <div className="recipe-actions">
-              <Button asChild>
-                <Link to="/recipes/$id/edit" params={{ id }}>
-                  <Pencil size={18} aria-hidden="true" />
-                  {m["recipes.edit"]()}
-                </Link>
-              </Button>
-              <Button
-                variant="ghost"
-                disabled={remove.isPending}
-                onClick={() => {
-                  if (
-                    window.confirm(
-                      m["recipes.delete_confirm"]({ title: recipe.title }),
+              <dl className="recipe-meta">
+                <div>
+                  <dt>{m["recipes.servings"]()}</dt>
+                  <dd>{recipe.servings}</dd>
+                </div>
+                {recipe.prepMinutes !== null && (
+                  <div>
+                    <dt>{m["recipes.prep_time"]()}</dt>
+                    <dd>{formatMinutes(recipe.prepMinutes)}</dd>
+                  </div>
+                )}
+                {recipe.cookMinutes !== null && (
+                  <div>
+                    <dt>{m["recipes.cook_time"]()}</dt>
+                    <dd>{formatMinutes(recipe.cookMinutes)}</dd>
+                  </div>
+                )}
+              </dl>
+              {recipe.tags.length > 0 && (
+                <p className="row-detail">{recipe.tags.join(" · ")}</p>
+              )}
+              {recipe.sourceUrl && (
+                <a
+                  href={recipe.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {m["recipes.source"]()}
+                </a>
+              )}
+              <div className="recipe-actions">
+                <Button asChild>
+                  <Link to="/recipes/$id/edit" params={{ id }}>
+                    <Pencil size={18} aria-hidden="true" />
+                    {m["recipes.edit"]()}
+                  </Link>
+                </Button>
+                <Button
+                  variant="ghost"
+                  disabled={remove.isPending}
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        m["recipes.delete_confirm"]({ title: recipe.title }),
+                      )
                     )
-                  )
-                    remove.mutate();
-                }}
-              >
-                <Trash2 size={18} aria-hidden="true" />
-                {m["recipes.delete"]()}
-              </Button>
-            </div>
-            <AddRecipeToQueue
-              key={`queue-${householdId}-${id}`}
-              recipeId={id}
-              servings={recipe.servings}
-            />
-            <AddRecipeToList
-              key={`${householdId}-${id}`}
-              recipeId={id}
-              servings={recipe.servings}
-            />
-            <section className="recipe-section">
-              <h2>{m["recipes.ingredients"]()}</h2>
-              {recipe.ingredients.length === 0 && (
-                <p>{m["recipes.no_ingredients"]()}</p>
-              )}
-              {groupBySection(recipe.ingredients).map((group) => (
-                <div key={group.section ?? ""}>
-                  {group.section && <h3>{group.section}</h3>}
-                  <ul className="recipe-ingredient-list">
-                    {group.lines.map((line) => {
-                      const parsed = parseIngredientLine(line.rawText);
-                      const name = line.ingredient
-                        ? ingredientName(line.ingredient)
-                        : parsed.name || line.rawText;
-                      const unit = unitSchema.safeParse(line.unit).data ?? null;
-                      return (
-                        <li key={line.id}>
-                          {line.quantity !== null && (
-                            <strong>
-                              {formatQuantity(line.quantity, unit)}{" "}
-                            </strong>
-                          )}
-                          {parsed.unitText && `${parsed.unitText} `}
-                          {name}
-                          {line.note && (
-                            <span className="row-detail">, {line.note}</span>
-                          )}
-                          {line.optional && (
-                            <span className="row-detail">
-                              {" "}
-                              ({m["recipes.optional"]()})
-                            </span>
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ))}
-            </section>
-            <section className="recipe-section">
-              <h2>{m["recipes.steps"]()}</h2>
-              {recipe.steps.length === 0 ? (
-                <p>{m["recipes.no_steps"]()}</p>
-              ) : (
-                <ol className="recipe-step-list">
-                  {recipe.steps.map((step) => (
-                    <li key={step.id}>{step.text}</li>
-                  ))}
-                </ol>
-              )}
-            </section>
-          </>
-        )
-      )}
-    </article>
+                      remove.mutate();
+                  }}
+                >
+                  <Trash2 size={18} aria-hidden="true" />
+                  {m["recipes.delete"]()}
+                </Button>
+              </div>
+              <AddRecipeToQueue
+                key={`queue-${householdId}-${id}`}
+                recipeId={id}
+                servings={recipe.servings}
+              />
+              <AddRecipeToList
+                key={`${householdId}-${id}`}
+                recipeId={id}
+                servings={recipe.servings}
+              />
+              <section className="recipe-section">
+                <h2>{m["recipes.ingredients"]()}</h2>
+                {recipe.ingredients.length === 0 && (
+                  <p>{m["recipes.no_ingredients"]()}</p>
+                )}
+                {groupBySection(recipe.ingredients).map((group) => (
+                  <div key={group.section ?? ""}>
+                    {group.section && <h3>{group.section}</h3>}
+                    <ul className="recipe-ingredient-list">
+                      {group.lines.map((line) => {
+                        const parsed = parseIngredientLine(line.rawText);
+                        const name = line.ingredient
+                          ? ingredientName(line.ingredient)
+                          : parsed.name || line.rawText;
+                        const unit =
+                          unitSchema.safeParse(line.unit).data ?? null;
+                        return (
+                          <li key={line.id}>
+                            {line.quantity !== null && (
+                              <strong>
+                                {formatQuantity(line.quantity, unit)}{" "}
+                              </strong>
+                            )}
+                            {parsed.unitText && `${parsed.unitText} `}
+                            {name}
+                            {line.note && (
+                              <span className="row-detail">, {line.note}</span>
+                            )}
+                            {line.optional && (
+                              <span className="row-detail">
+                                {" "}
+                                ({m["recipes.optional"]()})
+                              </span>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))}
+              </section>
+              <section className="recipe-section">
+                <h2>{m["recipes.steps"]()}</h2>
+                {recipe.steps.length === 0 ? (
+                  <p>{m["recipes.no_steps"]()}</p>
+                ) : (
+                  <ol className="recipe-step-list">
+                    {recipe.steps.map((step) => (
+                      <li key={step.id}>{step.text}</li>
+                    ))}
+                  </ol>
+                )}
+              </section>
+            </>
+          )
+        )}
+      </article>
+    </div>
   );
 }

@@ -325,5 +325,7 @@
   "queue.more_actions": "More actions for {name}",
   "queue.edit": "Edit",
   "queue.move_up_short": "Move up",
-  "queue.move_down_short": "Move down"
+  "queue.move_down_short": "Move down",
+  "recipes.choose_title": "Pick a recipe",
+  "recipes.choose_description": "Its ingredients and steps appear here."
 }
