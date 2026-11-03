@@ -1,34 +1,21 @@
 import { ingredient, ingredientCategory } from "@yumi/db/schema";
-import { ingredientInputSchema, ingredientSearchSchema } from "@yumi/shared";
-import { and, asc, eq, isNull, or, sql } from "drizzle-orm";
+import {
+  ingredientInputSchema,
+  ingredientSearchSchema,
+  parseIngredientLine,
+  parseLinesSchema,
+} from "@yumi/shared";
+import { and, asc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import {
+  ingredientColumns,
+  matchParsedLine,
+  searchIngredients,
+  visibleTo,
+} from "../catalog";
 import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
 import { db } from "../db";
-
-const MIN_SCORE = 0.3;
-
-const columns = {
-  id: ingredient.id,
-  key: ingredient.key,
-  householdId: ingredient.householdId,
-  nameDe: ingredient.nameDe,
-  nameEn: ingredient.nameEn,
-  synonyms: ingredient.synonyms,
-  categoryId: ingredient.categoryId,
-  defaultUnit: ingredient.defaultUnit,
-  densityGPerMl: ingredient.densityGPerMl,
-  pieceWeightG: ingredient.pieceWeightG,
-  packSizes: ingredient.packSizes,
-  icon: ingredient.icon,
-};
-
-const visibleTo = (householdId: string) =>
-  or(isNull(ingredient.householdId), eq(ingredient.householdId, householdId));
-
-function escapeLike(text: string) {
-  return text.replace(/[\\%_]/g, (ch) => `\\${ch}`);
-}
 
 async function assertCategoryExists(categoryId: string | null) {
   if (!categoryId) return;
@@ -59,39 +46,21 @@ export const ingredients = new Hono<HouseholdEnv>()
   })
   .get("/", async (c) => {
     const { q, limit } = ingredientSearchSchema.parse(c.req.query());
-    const lower = q.toLowerCase();
-    const prefix = `${escapeLike(lower)}%`;
-    // word_similarity scores the best-matching part of each name, so partial input ranks well.
-    const score = sql<number>`greatest(
-      word_similarity(${q}, ${ingredient.nameDe}),
-      word_similarity(${q}, ${ingredient.nameEn}),
-      coalesce((select max(word_similarity(${q}, s)) from unnest(${ingredient.synonyms}) s), 0)
-    )`;
-    const exact = sql`(lower(${ingredient.nameDe}) = ${lower} or lower(${ingredient.nameEn}) = ${lower}
-      or exists (select 1 from unnest(${ingredient.synonyms}) s where lower(s) = ${lower}))`;
-    const startsWith = sql`(lower(${ingredient.nameDe}) like ${prefix} or lower(${ingredient.nameEn}) like ${prefix}
-      or exists (select 1 from unnest(${ingredient.synonyms}) s where lower(s) like ${prefix}))`;
-    const rows = await db
-      .select({ ...columns, score })
-      .from(ingredient)
-      .where(
-        and(
-          visibleTo(c.get("householdId")),
-          or(sql`${score} >= ${MIN_SCORE}`, startsWith),
-        ),
-      )
-      .orderBy(
-        sql`${exact} desc`,
-        sql`${startsWith} desc`,
-        sql`${score} desc`,
-        sql`length(${ingredient.nameDe})`,
-      )
-      .limit(limit);
-    return c.json(rows.map(({ score: _score, ...row }) => row));
+    return c.json(await searchIngredients(c.get("householdId"), q, limit));
+  })
+  .post("/parse", async (c) => {
+    const { lines } = parseLinesSchema.parse(await c.req.json());
+    const householdId = c.get("householdId");
+    const parsed = await Promise.all(
+      lines.map((line) =>
+        matchParsedLine(householdId, parseIngredientLine(line)),
+      ),
+    );
+    return c.json(parsed);
   })
   .get("/:id{[0-9a-f-]{36}}", async (c) => {
     const [row] = await db
-      .select(columns)
+      .select(ingredientColumns)
       .from(ingredient)
       .where(
         and(
@@ -109,7 +78,7 @@ export const ingredients = new Hono<HouseholdEnv>()
     const [row] = await db
       .insert(ingredient)
       .values({ ...input, householdId: c.get("householdId") })
-      .returning(columns);
+      .returning(ingredientColumns);
     return c.json(row, 201);
   })
   .put("/:id{[0-9a-f-]{36}}", async (c) => {
@@ -124,7 +93,7 @@ export const ingredients = new Hono<HouseholdEnv>()
           eq(ingredient.householdId, c.get("householdId")),
         ),
       )
-      .returning(columns);
+      .returning(ingredientColumns);
     if (!row) throw new HTTPException(404, { message: "not_found" });
     return c.json(row);
   })

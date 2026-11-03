@@ -27,3 +27,7 @@ export const ingredientSearchSchema = z.object({
   q: z.string().trim().min(1).max(100),
   limit: z.coerce.number().int().min(1).max(50).default(20),
 });
+
+export const parseLinesSchema = z.object({
+  lines: z.array(z.string().max(500)).min(1).max(100),
+});

@@ -119,4 +119,32 @@ describe("ingredient catalog", () => {
       (await create(c, { nameDe: "X", defaultUnit: "bucket" })).status,
     ).toBe(400);
   });
+
+  test("parse links lines to catalog ingredients", async () => {
+    const c = await householdMember("parse-user");
+    const res = await c.request("/api/ingredients/parse", {
+      method: "POST",
+      body: JSON.stringify({
+        lines: [
+          "200 g Mehl, gesiebt",
+          "2 große Zwiebeln",
+          "3 Zehen Knoblauch",
+          "Omas Geheimzutat",
+        ],
+      }),
+    });
+    expect(res.status).toBe(200);
+    const rows = (await res.json()) as Array<{
+      quantity: number | null;
+      unit: string | null;
+      ingredient: { key: string | null } | null;
+    }>;
+    expect(rows.map((r) => r.ingredient?.key ?? null)).toEqual([
+      "wheat-flour",
+      "onion",
+      "garlic-clove",
+      null,
+    ]);
+    expect(rows[2]).toMatchObject({ quantity: 3, unit: "pcs" });
+  });
 });
