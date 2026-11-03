@@ -7,7 +7,12 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!**/routeTree.gen.ts", "!**/migrations"]
+    "includes": [
+      "**",
+      "!**/routeTree.gen.ts",
+      "!**/migrations",
+      "!deploy/helm/**/templates"
+    ]
   },
   "formatter": {
     "enabled": true,
