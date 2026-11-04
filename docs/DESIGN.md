@@ -163,6 +163,16 @@ On phones, tag filters are one horizontally scrolling strip. Safe-area insets ex
 
 ## 7. Component patterns
 
+Layout: Recipe insights - choose a meal using personal ratings and household
+cooking history -> stack inside the existing library and recipe detail;
+scroll owners: `.split-pane` and `.recipe-detail` on desktop, `.app-main` on
+smaller screens. Avoid a second scroll region for ratings or history.
+Cooking stays the recipe's primary action. Ratings use five secondary star
+controls with an explicit clear action and inline errors. History is collapsed
+under the last-cooked date and names the cooking household member. The library
+offers one suggestion selector for neglected recipes, personal favorites and
+recipes with known preparation plus cooking time of at most 30 minutes.
+
 Layout: Photo import - choose a link or ordered cookbook pages, then review the
 draft in the existing recipe editor -> stack inside the import section; scroll
 owner: `.app-main`; avoid nested scrolling and fixed-width file names.

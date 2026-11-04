@@ -4,7 +4,9 @@ import {
   recipe,
   recipeImage,
   recipeIngredient,
+  recipeRating,
   recipeStep,
+  user,
 } from "@yumi/db/schema";
 import {
   matchStepIngredientPositions,
@@ -18,6 +20,7 @@ import {
   asc,
   desc,
   eq,
+  gte,
   ilike,
   inArray,
   or,
@@ -30,6 +33,7 @@ import { z } from "zod";
 import { visibleTo } from "../catalog";
 import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
 import { db } from "../db";
+import { recipeInsights } from "../recipe-insights";
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 type ParsedRecipe = z.output<typeof recipeInputSchema>;
@@ -124,9 +128,15 @@ function recipeFields({ ingredients: _i, steps: _s, ...fields }: ParsedRecipe) {
   return fields;
 }
 
-async function loadRecipe(householdId: string, id: string) {
+async function loadRecipe(householdId: string, id: string, userId: string) {
   const [row] = await db
-    .select()
+    .select({
+      ...summaryColumns,
+      ...recipeInsights(householdId, userId),
+      description: recipe.description,
+      sourceUrl: recipe.sourceUrl,
+      createdAt: recipe.createdAt,
+    })
     .from(recipe)
     .where(and(eq(recipe.id, id), eq(recipe.householdId, householdId)))
     .limit(1);
@@ -179,6 +189,8 @@ async function loadRecipe(householdId: string, id: string) {
     imageKey: row.imageKey,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
+    myRating: row.myRating,
+    lastCookedAt: row.lastCookedAt,
     ingredients: ingredients.map(({ ingredient: linked, ...line }) => ({
       ...line,
       ingredient: line.ingredientId ? linked : null,
@@ -231,12 +243,20 @@ export const recipes = new Hono<HouseholdEnv>()
   .use(requireAuth, requireHousehold)
   .get(
     "/",
-    validator("query", (value) => recipeListQuerySchema.parse(value)),
+    validator("query", (value) =>
+      recipeListQuerySchema
+        .extend({
+          suggestion: z.enum(["neglected", "favorites", "quick"]).optional(),
+        })
+        .parse(value),
+    ),
     async (c) => {
-      const { q, tag } = c.req.valid("query");
+      const { q, tag, suggestion } = c.req.valid("query");
       const householdId = c.get("householdId");
+      const insights = recipeInsights(householdId, c.get("user").id);
+      const knownTotal = sql<number>`${recipe.prepMinutes} + ${recipe.cookMinutes}`;
       const rows = await db
-        .select(summaryColumns)
+        .select({ ...summaryColumns, ...insights })
         .from(recipe)
         .where(
           and(
@@ -248,9 +268,21 @@ export const recipes = new Hono<HouseholdEnv>()
                 )
               : undefined,
             tag ? arrayContains(recipe.tags, [tag]) : undefined,
+            suggestion === "favorites" ? gte(insights.myRating, 4) : undefined,
+            suggestion === "quick" ? sql`${knownTotal} <= 30` : undefined,
           ),
         )
-        .orderBy(desc(recipe.updatedAt));
+        .orderBy(
+          ...(suggestion === "neglected"
+            ? [sql`${insights.lastCookedAt} asc nulls first`]
+            : suggestion === "favorites"
+              ? [desc(insights.myRating)]
+              : suggestion === "quick"
+                ? [asc(knownTotal)]
+                : [desc(recipe.updatedAt)]),
+          asc(recipe.title),
+          asc(recipe.id),
+        );
       return c.json(rows);
     },
   )
@@ -263,7 +295,11 @@ export const recipes = new Hono<HouseholdEnv>()
   })
   .get(ID, async (c) =>
     c.json(
-      await loadRecipe(c.get("householdId"), z.uuid().parse(c.req.param("id"))),
+      await loadRecipe(
+        c.get("householdId"),
+        z.uuid().parse(c.req.param("id")),
+        c.get("user").id,
+      ),
     ),
   )
   .post("/", recipeBody, async (c) => {
@@ -283,7 +319,7 @@ export const recipes = new Hono<HouseholdEnv>()
       await insertChildren(tx, row.id, input, catalog);
       return row.id;
     });
-    return c.json(await loadRecipe(householdId, id), 201);
+    return c.json(await loadRecipe(householdId, id, c.get("user").id), 201);
   })
   .put(ID, recipeBody, async (c) => {
     const householdId = c.get("householdId");
@@ -304,7 +340,58 @@ export const recipes = new Hono<HouseholdEnv>()
       await tx.delete(recipeStep).where(eq(recipeStep.recipeId, id));
       await insertChildren(tx, id, input, catalog);
     });
-    return c.json(await loadRecipe(householdId, id));
+    return c.json(await loadRecipe(householdId, id, c.get("user").id));
+  })
+  .put(
+    `${ID}/rating`,
+    validator("json", (value) =>
+      z
+        .object({
+          stars: z.number().int().min(1).max(5).nullable(),
+        })
+        .parse(value),
+    ),
+    async (c) => {
+      const id = z.uuid().parse(c.req.param("id"));
+      await assertRecipeOwned(c.get("householdId"), id);
+      const userId = c.get("user").id;
+      const { stars } = c.req.valid("json");
+      if (stars === null) {
+        await db
+          .delete(recipeRating)
+          .where(
+            and(eq(recipeRating.recipeId, id), eq(recipeRating.userId, userId)),
+          );
+      } else {
+        await db
+          .insert(recipeRating)
+          .values({ recipeId: id, userId, stars })
+          .onConflictDoUpdate({
+            target: [recipeRating.recipeId, recipeRating.userId],
+            set: { stars, updatedAt: new Date() },
+          });
+      }
+      return c.json({ myRating: stars });
+    },
+  )
+  .get(`${ID}/history`, async (c) => {
+    const id = z.uuid().parse(c.req.param("id"));
+    const householdId = c.get("householdId");
+    await assertRecipeOwned(householdId, id);
+    const rows = await db
+      .select({
+        id: cookLog.id,
+        cookedAt: cookLog.cookedAt,
+        cookedBy: user.name,
+      })
+      .from(cookLog)
+      .leftJoin(user, eq(user.id, cookLog.userId))
+      .where(
+        and(eq(cookLog.recipeId, id), eq(cookLog.householdId, householdId)),
+      )
+      .orderBy(desc(cookLog.cookedAt), asc(cookLog.id))
+      .limit(10);
+    return c.json(rows);
   })
   .post(
     `${ID}/cooked`,

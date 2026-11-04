@@ -4,10 +4,10 @@ import {
   scaleRecipeQuantity,
   type Unit,
 } from "@yumi/shared";
-import type { InferResponseType } from "hono/client";
+import type { InferRequestType, InferResponseType } from "hono/client";
 import type { api } from "@/lib/api";
 import { ensureOk } from "@/lib/api-error";
-import { formatNumber, getLocale, type Locale } from "@/lib/i18n";
+import { formatDate, formatNumber, getLocale, type Locale } from "@/lib/i18n";
 import { m } from "@/paraglide/messages";
 
 export type RecipeDetail = InferResponseType<
@@ -18,6 +18,9 @@ export type RecipeSummary = InferResponseType<
   typeof api.recipes.$get,
   200
 >[number];
+export type RecipeSuggestion = NonNullable<
+  InferRequestType<typeof api.recipes.$get>["query"]["suggestion"]
+>;
 export type ParsedLine = InferResponseType<
   typeof api.ingredients.parse.$post,
   200
@@ -169,6 +172,14 @@ export function formatMinutes(minutes: number) {
     unit: "minute",
     unitDisplay: "short",
   });
+}
+
+export function lastCookedLabel(cookedAt: string | null) {
+  return cookedAt
+    ? m["recipes.last_cooked"]({
+        date: formatDate(new Date(cookedAt), { dateStyle: "medium" }),
+      })
+    : m["recipes.never_cooked"]();
 }
 
 export function recipeImageUrl(

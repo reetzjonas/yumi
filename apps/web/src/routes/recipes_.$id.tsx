@@ -13,6 +13,7 @@ import { useRef } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page";
 import { AddRecipeToQueue } from "@/components/queue/add-recipe";
+import { RecipeInsights } from "@/components/recipes/recipe-insights";
 import { RecipeLibrary } from "@/components/recipes/recipe-library";
 import { ServingsSelector } from "@/components/recipes/servings-selector";
 import { AddRecipeToList } from "@/components/shopping/add-recipe";
@@ -121,6 +122,7 @@ function Recipe() {
                   </div>
                 )}
               </dl>
+              <RecipeInsights key={`${householdId}-${id}`} recipe={recipe} />
               {recipe.tags.length > 0 && (
                 <p className="row-detail">{recipe.tags.join(" · ")}</p>
               )}

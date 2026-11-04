@@ -7,7 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
 import { ensureOk, errorMessage } from "@/lib/api-error";
-import { formatMinutes, recipeImageUrl, totalMinutes } from "@/lib/recipes";
+import {
+  formatMinutes,
+  lastCookedLabel,
+  type RecipeSuggestion,
+  recipeImageUrl,
+  totalMinutes,
+} from "@/lib/recipes";
 import { useMe } from "@/lib/session";
 import { m } from "@/paraglide/messages";
 
@@ -16,14 +22,21 @@ export function RecipeLibrary() {
   const [search, setSearch] = useState("");
   const [q, setQ] = useState("");
   const [tag, setTag] = useState("");
+  const [suggestion, setSuggestion] = useState<RecipeSuggestion | "">("");
   useEffect(() => {
     const timer = setTimeout(() => setQ(search), 200);
     return () => clearTimeout(timer);
   }, [search]);
   const recipes = useQuery({
-    queryKey: ["recipes", householdId, "list", q, tag],
+    queryKey: ["recipes", householdId, "list", q, tag, suggestion],
     queryFn: async () =>
-      (await ensureOk(await api.recipes.$get({ query: { q, tag } }))).json(),
+      (
+        await ensureOk(
+          await api.recipes.$get({
+            query: { q, tag, suggestion: suggestion || undefined },
+          }),
+        )
+      ).json(),
   });
   const tags = useQuery({
     queryKey: ["recipes", householdId, "tags"],
@@ -39,6 +52,41 @@ export function RecipeLibrary() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
+        </label>
+        <label className="field">
+          <span>{m["recipes.suggestions"]()}</span>
+          <select
+            value={suggestion}
+            onChange={(event) => {
+              const value = event.target.value;
+              if (
+                value === "" ||
+                value === "neglected" ||
+                value === "favorites" ||
+                value === "quick"
+              )
+                setSuggestion(value);
+            }}
+            aria-describedby={suggestion ? "recipe-suggestion-hint" : undefined}
+          >
+            <option value="">{m["recipes.suggestions_all"]()}</option>
+            <option value="neglected">
+              {m["recipes.suggestions_neglected"]()}
+            </option>
+            <option value="favorites">
+              {m["recipes.suggestions_favorites"]()}
+            </option>
+            <option value="quick">{m["recipes.suggestions_quick"]()}</option>
+          </select>
+          {suggestion && (
+            <span id="recipe-suggestion-hint" className="row-detail">
+              {suggestion === "neglected"
+                ? m["recipes.suggestions_neglected_hint"]()
+                : suggestion === "favorites"
+                  ? m["recipes.suggestions_favorites_hint"]()
+                  : m["recipes.suggestions_quick_hint"]()}
+            </span>
+          )}
         </label>
         <fieldset
           className="recipe-actions recipe-tags"
@@ -73,12 +121,12 @@ export function RecipeLibrary() {
         <EmptyState
           icon={BookOpen}
           title={
-            q || tag
+            q || tag || suggestion
               ? m["recipes.no_results_title"]()
               : m["recipes.empty_title"]()
           }
           description={
-            q || tag
+            q || tag || suggestion
               ? m["recipes.no_results_description"]()
               : m["recipes.empty_description"]()
           }
@@ -108,6 +156,9 @@ export function RecipeLibrary() {
                     {[
                       totalMinutes(recipe) > 0 &&
                         formatMinutes(totalMinutes(recipe)),
+                      lastCookedLabel(recipe.lastCookedAt),
+                      recipe.myRating !== null &&
+                        m["recipes.rating_value"]({ stars: recipe.myRating }),
                       ...recipe.tags,
                     ]
                       .filter(Boolean)

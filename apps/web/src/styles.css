@@ -858,6 +858,10 @@ select:focus-visible {
   min-width: 48px;
   padding-inline: 12px;
 }
+.recipe-rating-star {
+  width: 48px;
+  padding-inline: 12px;
+}
 .servings-controls input {
   width: 80px;
   min-height: 48px;

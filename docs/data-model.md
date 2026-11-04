@@ -27,6 +27,12 @@ Alpha sketch, the Drizzle schema is the source of truth once it exists. Every ho
 - Recipe step input uses zero-based `ingredientPositions`: omitted or `null` matches German/English catalog names and parsed raw ingredient names when saving; an array overrides matching, including `[]` for no references. Positions must belong to the submitted recipe. Recipe edits recreate ingredient rows and bind step references to their new IDs.
 - Recipe detail returns resolved `ingredientRefs` and `ingredientPositions`. Automatic steps (`ingredient_refs_manual = false`, including legacy steps) match names when loaded and return `ingredientPositions: null`; manually selected steps return stored references and their positions, preserving deliberate empty arrays. Saves persist both the resolved references and whether positions were explicitly supplied.
 - `recipe_rating`, `cook_log` (id, household_id, recipe_id, cooked_at, user_id).
+- Ratings have one 1-5 star value per recipe and user; setting the rating to null
+  removes it. Recipe summaries and details include the acting user's `myRating`
+  and the household's `lastCookedAt`. The history endpoint returns the last ten
+  household cooking events and actor names. Recipe list suggestions combine with
+  search and tag filters: personal ratings of at least four stars, known total
+  times up to thirty minutes, or never-cooked/oldest-cooked first.
 - `POST /api/recipes/:id/cooked` accepts `{ requestId: UUID }` and records the acting user in the active household. Repeating the same request for the same household and recipe returns `{ ok: true }` without another log; reusing the ID for another recipe or household returns `409 request_id_conflict`. A foreign or missing recipe returns `404 not_found`.
 - `share_link`: recipe_id, token, expires_at.
 

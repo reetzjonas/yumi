@@ -53,9 +53,13 @@ function MealQueue({
   const update = useMutation({
     mutationFn: ({ id, input }: { id: string; input: QueueEntryUpdate }) =>
       updateQueueEntry(id, input),
-    onSuccess: (_, { input }) => {
-      if (input.status === "cooked") toast.success(m["queue.cooked_saved"]());
-      else if (input.status === "skipped")
+    onSuccess: async (_, { input }) => {
+      if (input.status === "cooked") {
+        await queryClient.invalidateQueries({
+          queryKey: ["recipes", householdId],
+        });
+        toast.success(m["queue.cooked_saved"]());
+      } else if (input.status === "skipped")
         toast.success(m["queue.skipped_saved"]());
       else toast.success(m["queue.saved"]());
     },
