@@ -1,3 +1,4 @@
+import type { NutritionValues } from "@yumi/shared";
 import { sql } from "drizzle-orm";
 import {
   index,
@@ -41,6 +42,8 @@ export const ingredient = pgTable(
     defaultUnit: text(),
     densityGPerMl: real(),
     pieceWeightG: real(),
+    nutritionPer100g: jsonb().$type<NutritionValues>(),
+    nutritionSource: text(),
     packSizes: jsonb().$type<PackSize[]>().notNull().default([]),
     icon: text(),
     ...timestamps,

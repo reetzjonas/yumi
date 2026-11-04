@@ -17,6 +17,8 @@ export const ingredientColumns = {
   defaultUnit: ingredient.defaultUnit,
   densityGPerMl: ingredient.densityGPerMl,
   pieceWeightG: ingredient.pieceWeightG,
+  nutritionPer100g: ingredient.nutritionPer100g,
+  nutritionSource: ingredient.nutritionSource,
   packSizes: ingredient.packSizes,
   icon: ingredient.icon,
 };

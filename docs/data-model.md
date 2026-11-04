@@ -12,9 +12,18 @@ Alpha sketch, the Drizzle schema is the source of truth once it exists. Every ho
 - `ingredient_category`: key, name_de, name_en, icon, default_position.
 - `ingredient`: name_en, name_de, synonyms[], category_id, default_unit, density_g_per_ml?, piece_weight_g?,
   pack_sizes (jsonb), icon, `household_id` nullable (null = global seed, set = household-specific),
-  `key` (unique slug of global seed entries; the seed in `packages/db/src/seed` upserts by it).
+  `key` (unique slug of global seed entries; the seed in `packages/db/src/seed` upserts by it),
+  nutrition_per100g? (jsonb: energyKcal, proteinG, fatG, carbsG, sugarG, fiberG, saltG; all seven or
+  null), nutrition_source? (seed provenance only; household edits that change the values clear it).
+- Seed nutrition comes from USDA FoodData Central SR Legacy 2018 (public domain), generated into
+  `packages/db/src/seed/nutrition.ts`: carbs are available carbohydrate (by difference minus fibre),
+  salt is sodium x 2.5. Ingredients without a matching complete profile, and non-food items, stay
+  null instead of getting a guessed value.
+- Recipe detail returns `nutrition` per serving of the base recipe, or null when no line counts.
+  Lines without quantity, linked nutrition or a gram conversion (density, piece weight; never for
+  pinch, bunch, can, pack) are listed in `excludedIngredients` and reported as partial coverage.
 - Household ingredient creation reviews German/English names, synonyms, category, default unit,
-  pack sizes and icon. `POST /api/ingredients/suggest` returns an unsaved AI proposal or a manual
+  pack sizes, icon and optional nutrition per 100 g. `POST /api/ingredients/suggest` returns an unsaved AI proposal or a manual
   draft when AI is unavailable; only the explicit `POST /api/ingredients` confirmation persists it.
   AI category keys are resolved against the catalog on the server. Pack sizes use positive
   quantities and canonical units. Shopping quick-add and recipe import share the review dialog.

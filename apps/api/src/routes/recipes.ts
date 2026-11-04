@@ -9,10 +9,12 @@ import {
   user,
 } from "@yumi/db/schema";
 import {
+  calculateRecipeNutrition,
   matchStepIngredientPositions,
   recipeCookedInputSchema,
   recipeInputSchema,
   recipeListQuerySchema,
+  unitSchema,
 } from "@yumi/shared";
 import {
   and,
@@ -157,6 +159,11 @@ async function loadRecipe(householdId: string, id: string, userId: string) {
           nameEn: ingredient.nameEn,
           categoryId: ingredient.categoryId,
         },
+        factors: {
+          nutritionPer100g: ingredient.nutritionPer100g,
+          densityGPerMl: ingredient.densityGPerMl,
+          pieceWeightG: ingredient.pieceWeightG,
+        },
       })
       .from(recipeIngredient)
       .leftJoin(ingredient, eq(ingredient.id, recipeIngredient.ingredientId))
@@ -191,10 +198,20 @@ async function loadRecipe(householdId: string, id: string, userId: string) {
     updatedAt: row.updatedAt,
     myRating: row.myRating,
     lastCookedAt: row.lastCookedAt,
-    ingredients: ingredients.map(({ ingredient: linked, ...line }) => ({
-      ...line,
-      ingredient: line.ingredientId ? linked : null,
-    })),
+    nutrition: calculateRecipeNutrition(
+      ingredients.map((line) => ({
+        quantity: line.quantity,
+        unit: unitSchema.nullable().parse(line.unit),
+        ingredient: line.ingredientId ? line.factors : null,
+      })),
+      row.servings,
+    ),
+    ingredients: ingredients.map(
+      ({ ingredient: linked, factors: _f, ...line }) => ({
+        ...line,
+        ingredient: line.ingredientId ? linked : null,
+      }),
+    ),
     steps: steps.map(({ ingredientRefsManual, ...step }) => {
       const positions = ingredientRefsManual
         ? step.ingredientRefs.flatMap((ref) => {

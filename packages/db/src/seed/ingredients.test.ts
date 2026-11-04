@@ -1,5 +1,7 @@
 import { expect, test } from "bun:test";
+import { nutritionValuesSchema } from "@yumi/shared";
 import { SEED_INGREDIENTS } from "./ingredients";
+import { SEED_NUTRITION } from "./nutrition";
 
 function duplicates(values: string[]) {
   const seen = new Set<string>();
@@ -20,6 +22,17 @@ test("seed keys are kebab-case slugs", () => {
   const invalid = SEED_INGREDIENTS.map((i) => i.key).filter(
     (k) => !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(k),
   );
+  expect(invalid).toEqual([]);
+});
+
+test("seed nutrition belongs to catalog keys and holds complete profiles", () => {
+  const keys = new Set(SEED_INGREDIENTS.map((i) => i.key));
+  const invalid = Object.entries(SEED_NUTRITION)
+    .filter(
+      ([key, { values }]) =>
+        !keys.has(key) || !nutritionValuesSchema.safeParse(values).success,
+    )
+    .map(([key]) => key);
   expect(invalid).toEqual([]);
 });
 

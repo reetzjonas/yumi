@@ -4,7 +4,7 @@ import {
   ingredientSearchSchema,
   parseLinesSchema,
 } from "@yumi/shared";
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { validator } from "hono/validator";
@@ -112,7 +112,14 @@ export const ingredients = new Hono<HouseholdEnv>()
     await assertCategoryExists(input.categoryId);
     const [row] = await db
       .update(ingredient)
-      .set(input)
+      .set({
+        ...input,
+        nutritionSource: sql`case
+          when ${ingredient.nutritionPer100g} is distinct from
+            ${input.nutritionPer100g === null ? null : JSON.stringify(input.nutritionPer100g)}::jsonb
+          then null else ${ingredient.nutritionSource}
+        end`,
+      })
       .where(
         and(
           eq(ingredient.id, c.req.param("id")),

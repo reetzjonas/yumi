@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { unitSchema } from "@yumi/shared";
+import { nutritionValuesSchema, unitSchema } from "@yumi/shared";
 import type { InferRequestType, InferResponseType } from "hono/client";
 import { useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { FormError } from "@/components/auth-layout";
 import { IngredientDraftFields } from "@/components/ingredients/draft-fields";
+import { NUTRIENTS } from "@/components/recipes/recipe-nutrition";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import { api } from "@/lib/api";
@@ -36,6 +37,7 @@ export function CreateIngredient({
   const queryClient = useQueryClient();
   const [proposal, setProposal] = useState<IngredientDraft | null>(null);
   const [revision, setRevision] = useState(0);
+  const [nutritionIncomplete, setNutritionIncomplete] = useState(false);
   const categories = useQuery({
     queryKey: ["ingredient-categories", householdId],
     enabled: !!householdId,
@@ -75,6 +77,7 @@ export function CreateIngredient({
     defaultUnit: null,
     densityGPerMl: null,
     pieceWeightG: null,
+    nutritionPer100g: null,
     packSizes: [],
     icon: null,
   };
@@ -106,6 +109,13 @@ export function CreateIngredient({
                 const number = (key: string) =>
                   text(key) ? Number(text(key).replace(",", ".")) : null;
                 const quantities = data.getAll("packQuantity");
+                const nutrition = NUTRIENTS.map(
+                  ([key]) => [key, number(`nutrition.${key}`)] as const,
+                );
+                const filled = nutrition.filter(([, value]) => value !== null);
+                const complete = filled.length === NUTRIENTS.length;
+                setNutritionIncomplete(filled.length > 0 && !complete);
+                if (filled.length > 0 && !complete) return;
                 save.mutate({
                   nameDe: text("nameDe"),
                   nameEn: text("nameEn"),
@@ -119,6 +129,9 @@ export function CreateIngredient({
                     : null,
                   densityGPerMl: number("densityGPerMl"),
                   pieceWeightG: number("pieceWeightG"),
+                  nutritionPer100g: complete
+                    ? nutritionValuesSchema.parse(Object.fromEntries(nutrition))
+                    : null,
                   packSizes: data.getAll("packUnit").map((unit, index) => ({
                     quantity: Number(
                       String(quantities[index]).replace(",", "."),
@@ -164,6 +177,13 @@ export function CreateIngredient({
                   categories={categories.data ?? []}
                 />
               </fieldset>
+              <FormError
+                message={
+                  nutritionIncomplete
+                    ? m["ingredients.nutrition_incomplete"]()
+                    : null
+                }
+              />
               <FormError
                 message={save.isError ? errorMessage(save.error) : null}
               />

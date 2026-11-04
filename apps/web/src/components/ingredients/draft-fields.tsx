@@ -3,6 +3,7 @@ import type { InferResponseType } from "hono/client";
 import { useState } from "react";
 import { Field } from "@/components/auth-layout";
 import type { IngredientDraft } from "@/components/ingredients/create-ingredient";
+import { NUTRIENTS } from "@/components/recipes/recipe-nutrition";
 import { Button } from "@/components/ui/button";
 import type { api } from "@/lib/api";
 import { ingredientName, unitLabel } from "@/lib/recipes";
@@ -172,6 +173,25 @@ export function IngredientDraftFields({
             step="any"
             defaultValue={draft.pieceWeightG ?? ""}
           />
+        </div>
+      </details>
+      <details>
+        <summary>{m["ingredients.nutrition"]()}</summary>
+        <p className="muted">{m["ingredients.nutrition_hint"]()}</p>
+        <div className="ingredient-conversion-fields">
+          {NUTRIENTS.map(([key, label, unit]) => (
+            <Field
+              key={key}
+              id={`${id}-nutrition-${key}`}
+              name={`nutrition.${key}`}
+              label={`${label()} (${unit})`}
+              type="number"
+              min="0"
+              max={key === "energyKcal" ? "1000" : "100"}
+              step="any"
+              defaultValue={draft.nutritionPer100g?.[key] ?? ""}
+            />
+          ))}
         </div>
       </details>
     </>

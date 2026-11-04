@@ -15,6 +15,7 @@ import { PageHeader } from "@/components/page";
 import { AddRecipeToQueue } from "@/components/queue/add-recipe";
 import { RecipeInsights } from "@/components/recipes/recipe-insights";
 import { RecipeLibrary } from "@/components/recipes/recipe-library";
+import { RecipeNutrition } from "@/components/recipes/recipe-nutrition";
 import { ServingsSelector } from "@/components/recipes/servings-selector";
 import { AddRecipeToList } from "@/components/shopping/add-recipe";
 import { Button } from "@/components/ui/button";
@@ -247,6 +248,9 @@ function Recipe() {
                   </div>
                 ))}
               </section>
+              {recipe.nutrition && (
+                <RecipeNutrition nutrition={recipe.nutrition} />
+              )}
               <section className="recipe-section">
                 <h2>{m["recipes.steps"]()}</h2>
                 {recipe.steps.length === 0 ? (

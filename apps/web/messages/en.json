@@ -454,5 +454,18 @@
   "shopping.new_list": "New list",
   "shopping.list_actions": "Actions for list \"{name}\"",
   "recipes.plan_action": "Plan it",
-  "recipes.list_action": "Add to list"
+  "recipes.list_action": "Add to list",
+  "recipes.nutrition_title": "Nutrition per serving",
+  "recipes.nutrition_coverage": "Approximate values: {included} of {total} ingredients counted.",
+  "recipes.nutrition_source": "Reference values from USDA FoodData Central and your own ingredient data. Ingredients without a quantity, gram conversion or nutrition data are left out of the total.",
+  "nutrition.energy": "Energy",
+  "nutrition.protein": "Protein",
+  "nutrition.fat": "Fat",
+  "nutrition.carbs": "Carbohydrates",
+  "nutrition.sugar": "of which sugars",
+  "nutrition.fiber": "Fibre",
+  "nutrition.salt": "Salt",
+  "ingredients.nutrition": "Nutrition per 100 g (optional)",
+  "ingredients.nutrition_hint": "Fill in all seven values or leave them all empty.",
+  "ingredients.nutrition_incomplete": "Please fill in all seven nutrition values or leave them all empty."
 }

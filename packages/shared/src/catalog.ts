@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { nutritionValuesSchema } from "./nutrition";
 import { unitSchema } from "./units";
 
 const name = z.string().trim().min(1).max(100);
@@ -12,6 +13,7 @@ export const ingredientInputSchema = z
     defaultUnit: unitSchema.nullable().default(null),
     densityGPerMl: z.number().positive().max(25).nullable().default(null),
     pieceWeightG: z.number().positive().max(100_000).nullable().default(null),
+    nutritionPer100g: nutritionValuesSchema.nullable().default(null),
     packSizes: z
       .array(
         z.object({

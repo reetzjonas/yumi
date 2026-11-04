@@ -838,6 +838,20 @@ select:focus-visible {
 .recipe-step-list li {
   white-space: pre-wrap;
 }
+.recipe-nutrition {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px 24px;
+  margin: 0;
+}
+.recipe-nutrition dt {
+  color: var(--muted-foreground);
+}
+.recipe-nutrition dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
 .recipe-meta {
   display: flex;
   flex-wrap: wrap;

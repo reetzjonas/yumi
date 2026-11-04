@@ -4,6 +4,7 @@ import type * as schema from "../schema";
 import { ingredient, ingredientCategory } from "../schema";
 import { CATEGORY_KEYS, SEED_CATEGORIES } from "./categories";
 import { SEED_INGREDIENTS } from "./ingredients";
+import { NUTRITION_SOURCE, SEED_NUTRITION } from "./nutrition";
 
 /** Upserts the global categories and ingredients; safe to run on every start. */
 export async function seedCatalog(db: PostgresJsDatabase<typeof schema>) {
@@ -48,6 +49,10 @@ export async function seedCatalog(db: PostgresJsDatabase<typeof schema>) {
             unit,
           })),
           icon: i.icon ?? null,
+          nutritionPer100g: SEED_NUTRITION[i.key]?.values ?? null,
+          nutritionSource: SEED_NUTRITION[i.key]
+            ? `${NUTRITION_SOURCE}, FDC ${SEED_NUTRITION[i.key]?.fdcId}`
+            : null,
         })),
       )
       .onConflictDoUpdate({
@@ -62,6 +67,8 @@ export async function seedCatalog(db: PostgresJsDatabase<typeof schema>) {
           pieceWeightG: sql`excluded.piece_weight_g`,
           packSizes: sql`excluded.pack_sizes`,
           icon: sql`excluded.icon`,
+          nutritionPer100g: sql`excluded.nutrition_per100g`,
+          nutritionSource: sql`excluded.nutrition_source`,
           updatedAt: sql`now()`,
         },
       });

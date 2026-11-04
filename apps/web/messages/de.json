@@ -454,5 +454,18 @@
   "shopping.new_list": "Neue Liste",
   "shopping.list_actions": "Aktionen für Liste „{name}“",
   "recipes.plan_action": "Einplanen",
-  "recipes.list_action": "Auf die Liste"
+  "recipes.list_action": "Auf die Liste",
+  "recipes.nutrition_title": "Nährwerte pro Portion",
+  "recipes.nutrition_coverage": "Ungefähre Werte: {included} von {total} Zutaten berücksichtigt.",
+  "recipes.nutrition_source": "Richtwerte aus USDA FoodData Central und euren eigenen Zutatenangaben. Zutaten ohne Menge, Gramm-Umrechnung oder Nährwerte fehlen in der Summe.",
+  "nutrition.energy": "Energie",
+  "nutrition.protein": "Eiweiß",
+  "nutrition.fat": "Fett",
+  "nutrition.carbs": "Kohlenhydrate",
+  "nutrition.sugar": "davon Zucker",
+  "nutrition.fiber": "Ballaststoffe",
+  "nutrition.salt": "Salz",
+  "ingredients.nutrition": "Nährwerte pro 100 g (optional)",
+  "ingredients.nutrition_hint": "Fülle alle sieben Werte aus oder lass alle leer.",
+  "ingredients.nutrition_incomplete": "Bitte fülle alle sieben Nährwerte aus oder lass alle leer."
 }
