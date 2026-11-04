@@ -252,10 +252,10 @@
   "household.leave": "Haushalt verlassen",
   "household.leave_confirm": "Möchtest du diesen Haushalt wirklich verlassen?",
   "household.error_last_owner": "Du bist die einzige Besitzer:in. Entferne erst die anderen Mitglieder oder lösche den Haushalt.",
-  "recipes.empty_title": "Noch keine Rezepte",
-  "recipes.empty_description": "Leg dein erstes Rezept an. Füge die Zutatenliste ein und yumi macht daraus ordentliche Zeilen.",
+  "recipes.empty_title": "Dein erstes Rezept",
+  "recipes.empty_description": "Tipp ein Lieblingsrezept ab, füg eine Zutatenliste ein oder importier eins von einer Website. Dauert keine zwei Minuten.",
   "recipes.no_results_title": "Keine passenden Rezepte",
-  "recipes.no_results_description": "Ändere deine Suche, den Tag oder die Auswahl unter „Was kochen wir?“.",
+  "recipes.no_results_description": "Kein Rezept passt zu Suche, Tag und Auswahl. Die Suche schaut in die Titel.",
   "recipes.new": "Neues Rezept",
   "recipes.search": "Rezepte durchsuchen",
   "recipes.filter_tags": "Nach Tag filtern",
@@ -465,5 +465,12 @@
   "ingredients.nutrition": "Nährwerte pro 100 g (optional)",
   "ingredients.nutrition_hint": "Fülle alle sieben Werte aus oder lass alle leer.",
   "ingredients.nutrition_incomplete": "Bitte fülle alle sieben Nährwerte aus oder lass alle leer.",
-  "recipes.detail_title": "Rezept"
+  "recipes.detail_title": "Rezept",
+  "recipes.search_placeholder": "Titel suchen",
+  "recipes.count_one": "1 Rezept",
+  "recipes.count": "{count} Rezepte",
+  "recipes.show_mode": "Anzeigen: {mode}",
+  "recipes.reset_filters": "Filter zurücksetzen",
+  "recipes.cooked_ago": "{ago} gekocht",
+  "recipes.cooked_never": "noch nie gekocht"
 }

@@ -182,6 +182,34 @@ export function lastCookedLabel(cookedAt: string | null) {
     : m["recipes.never_cooked"]();
 }
 
+const DAY_MS = 86_400_000;
+const startOfDay = (date: Date) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+
+export function cookedAgoLabel(
+  cookedAt: string | null,
+  now = new Date(),
+  locale: Locale = getLocale(),
+) {
+  if (!cookedAt) return m["recipes.cooked_never"]({}, { locale });
+  const days = Math.max(
+    0,
+    Math.round((startOfDay(now) - startOfDay(new Date(cookedAt))) / DAY_MS),
+  );
+  const relative = new Intl.RelativeTimeFormat(locale, {
+    numeric: "auto",
+  });
+  const ago =
+    days < 7
+      ? relative.format(-days, "day")
+      : days < 60
+        ? relative.format(-Math.round(days / 7), "week")
+        : days < 365
+          ? relative.format(-Math.round(days / 30), "month")
+          : relative.format(-Math.round(days / 365), "year");
+  return m["recipes.cooked_ago"]({ ago }, { locale });
+}
+
 export function recipeImageUrl(
   id: string,
   imageKey: string,

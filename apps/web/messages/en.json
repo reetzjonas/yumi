@@ -252,10 +252,10 @@
   "household.leave": "Leave household",
   "household.leave_confirm": "Do you really want to leave this household?",
   "household.error_last_owner": "You are the only owner. Remove the other members or delete the household instead.",
-  "recipes.empty_title": "No recipes yet",
-  "recipes.empty_description": "Add your first recipe. Paste the ingredient list and yumi turns it into tidy lines.",
+  "recipes.empty_title": "Your first recipe",
+  "recipes.empty_description": "Type up a favourite, paste an ingredient list or import one from a website. It takes less than two minutes.",
   "recipes.no_results_title": "No matching recipes",
-  "recipes.no_results_description": "Change your search, tag or recipe suggestion filter.",
+  "recipes.no_results_description": "No recipe matches your search, tag and selection. Search looks at titles.",
   "recipes.new": "New recipe",
   "recipes.search": "Search recipes",
   "recipes.filter_tags": "Filter by tag",
@@ -465,5 +465,12 @@
   "ingredients.nutrition": "Nutrition per 100 g (optional)",
   "ingredients.nutrition_hint": "Fill in all seven values or leave them all empty.",
   "ingredients.nutrition_incomplete": "Please fill in all seven nutrition values or leave them all empty.",
-  "recipes.detail_title": "Recipe"
+  "recipes.detail_title": "Recipe",
+  "recipes.search_placeholder": "Search titles",
+  "recipes.count_one": "1 recipe",
+  "recipes.count": "{count} recipes",
+  "recipes.show_mode": "Show: {mode}",
+  "recipes.reset_filters": "Reset filters",
+  "recipes.cooked_ago": "Cooked {ago}",
+  "recipes.cooked_never": "Never cooked"
 }
