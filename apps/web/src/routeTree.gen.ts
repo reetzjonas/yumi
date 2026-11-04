@@ -23,6 +23,7 @@ import { Route as MoreHouseholdRouteImport } from './routes/more.household'
 import { Route as MorePantryRouteImport } from './routes/more.pantry'
 import { Route as MoreSettingsRouteImport } from './routes/more.settings'
 import { Route as MoreStoresRouteImport } from './routes/more.stores'
+import { Route as PlanSuggestionsRouteImport } from './routes/plan_.suggestions'
 import { Route as RecipesIdRouteImport } from './routes/recipes_.$id'
 import { Route as RecipesImportRouteImport } from './routes/recipes_.import'
 import { Route as RecipesNewRouteImport } from './routes/recipes_.new'
@@ -99,6 +100,11 @@ const MoreStoresRoute = MoreStoresRouteImport.update({
   path: '/more/stores',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlanSuggestionsRoute = PlanSuggestionsRouteImport.update({
+  id: '/plan_/suggestions',
+  path: '/plan/suggestions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RecipesIdRoute = RecipesIdRouteImport.update({
   id: '/recipes_/$id',
   path: '/recipes/$id',
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/more/pantry': typeof MorePantryRoute
   '/more/settings': typeof MoreSettingsRoute
   '/more/stores': typeof MoreStoresRoute
+  '/plan/suggestions': typeof PlanSuggestionsRoute
   '/recipes/$id': typeof RecipesIdRoute
   '/recipes/import': typeof RecipesImportRoute
   '/recipes/new': typeof RecipesNewRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/more/pantry': typeof MorePantryRoute
   '/more/settings': typeof MoreSettingsRoute
   '/more/stores': typeof MoreStoresRoute
+  '/plan/suggestions': typeof PlanSuggestionsRoute
   '/recipes/$id': typeof RecipesIdRoute
   '/recipes/import': typeof RecipesImportRoute
   '/recipes/new': typeof RecipesNewRoute
@@ -182,6 +190,7 @@ export interface FileRoutesById {
   '/more/pantry': typeof MorePantryRoute
   '/more/settings': typeof MoreSettingsRoute
   '/more/stores': typeof MoreStoresRoute
+  '/plan_/suggestions': typeof PlanSuggestionsRoute
   '/recipes_/$id': typeof RecipesIdRoute
   '/recipes_/import': typeof RecipesImportRoute
   '/recipes_/new': typeof RecipesNewRoute
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
     | '/more/pantry'
     | '/more/settings'
     | '/more/stores'
+    | '/plan/suggestions'
     | '/recipes/$id'
     | '/recipes/import'
     | '/recipes/new'
@@ -226,6 +236,7 @@ export interface FileRouteTypes {
     | '/more/pantry'
     | '/more/settings'
     | '/more/stores'
+    | '/plan/suggestions'
     | '/recipes/$id'
     | '/recipes/import'
     | '/recipes/new'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/more/pantry'
     | '/more/settings'
     | '/more/stores'
+    | '/plan_/suggestions'
     | '/recipes_/$id'
     | '/recipes_/import'
     | '/recipes_/new'
@@ -269,6 +281,7 @@ export interface RootRouteChildren {
   MorePantryRoute: typeof MorePantryRoute
   MoreSettingsRoute: typeof MoreSettingsRoute
   MoreStoresRoute: typeof MoreStoresRoute
+  PlanSuggestionsRoute: typeof PlanSuggestionsRoute
   RecipesIdRoute: typeof RecipesIdRoute
   RecipesImportRoute: typeof RecipesImportRoute
   RecipesNewRoute: typeof RecipesNewRoute
@@ -377,6 +390,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MoreStoresRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/plan_/suggestions': {
+      id: '/plan_/suggestions'
+      path: '/plan/suggestions'
+      fullPath: '/plan/suggestions'
+      preLoaderRoute: typeof PlanSuggestionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recipes_/$id': {
       id: '/recipes_/$id'
       path: '/recipes/$id'
@@ -429,6 +449,7 @@ const rootRouteChildren: RootRouteChildren = {
   MorePantryRoute: MorePantryRoute,
   MoreSettingsRoute: MoreSettingsRoute,
   MoreStoresRoute: MoreStoresRoute,
+  PlanSuggestionsRoute: PlanSuggestionsRoute,
   RecipesIdRoute: RecipesIdRoute,
   RecipesImportRoute: RecipesImportRoute,
   RecipesNewRoute: RecipesNewRoute,

@@ -6,12 +6,22 @@ import { m } from "@/paraglide/messages";
 export function ServingsStepper({
   value,
   onChange,
+  compact = false,
+  disabled = false,
+  label = m["recipes.servings"](),
 }: {
   value: number;
   onChange: (value: number) => void;
+  compact?: boolean;
+  disabled?: boolean;
+  label?: string;
 }) {
   return (
-    <fieldset className="stepper" aria-label={m["recipes.servings"]()}>
+    <fieldset
+      className={compact ? "stepper is-compact" : "stepper"}
+      aria-label={label}
+      disabled={disabled}
+    >
       <button
         type="button"
         className="stepper-button"
@@ -22,7 +32,7 @@ export function ServingsStepper({
         <Minus size={20} aria-hidden="true" />
       </button>
       <output className="stepper-value" aria-live="polite">
-        {m["recipes.servings_count"]({ count: value })}
+        {compact ? value : m["recipes.servings_count"]({ count: value })}
       </output>
       <button
         type="button"

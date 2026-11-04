@@ -1,13 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ListChecks } from "lucide-react";
+import { ListChecks, Plus, Sparkles } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { EmptyState, PageHeader } from "@/components/page";
-import { LeftoversPanel } from "@/components/queue/leftovers-panel";
 import { MealQueueEntry } from "@/components/queue/queue-entry";
+import { RecipePicker } from "@/components/queue/recipe-picker";
 import { QueueShoppingPreview } from "@/components/queue/shopping-preview";
 import { Button } from "@/components/ui/button";
+import { Sheet } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { errorMessage } from "@/lib/api-error";
 import { leftoversKey } from "@/lib/leftovers";
@@ -42,6 +43,8 @@ function MealQueue({
   const dragRef = useRef<typeof drag>(null);
   const [announcement, setAnnouncement] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const pickerSheet = useRef<HTMLDialogElement>(null);
+  const shoppingSheet = useRef<HTMLDialogElement>(null);
   const [shoppingPending, setShoppingPending] = useState(false);
   const [shoppingAdded, setShoppingAdded] = useState<number | null>(null);
   const refresh = () =>
@@ -104,17 +107,27 @@ function MealQueue({
 
   return (
     <>
-      <div className="recipe-list-heading">
-        <PageHeader title={m.nav_plan()} />
+      <PageHeader title={m["queue.title"]()} />
+      <div className="recipe-library-actions queue-header-actions">
+        <Button asChild variant="outline">
+          <Link to="/plan/suggestions">
+            <Sparkles aria-hidden="true" size={20} />
+            {m["queue.suggestions"]()}
+          </Link>
+        </Button>
         <Button
-          asChild
-          variant={
-            selectedEntries.length || !entries.length ? "secondary" : "default"
-          }
+          type="button"
+          variant={entries.length ? "outline" : "default"}
+          aria-haspopup="dialog"
+          onClick={() => pickerSheet.current?.showModal()}
         >
-          <Link to="/recipes">{m["queue.add_meal"]()}</Link>
+          <Plus aria-hidden="true" size={20} />
+          {m["queue.plan_recipe"]()}
         </Button>
       </div>
+      <Sheet ref={pickerSheet} title={m["queue.add"]()}>
+        <RecipePicker />
+      </Sheet>
       {query.isPending ? (
         <div className="queue-loading" role="status">
           <p>{m["queue.loading"]()}</p>
@@ -140,32 +153,16 @@ function MealQueue({
           title={m.plan_empty_title()}
           description={m.plan_empty_description()}
         >
-          <Button asChild>
-            <Link to="/recipes">{m.plan_recipes_link()}</Link>
+          <Button
+            type="button"
+            aria-haspopup="dialog"
+            onClick={() => pickerSheet.current?.showModal()}
+          >
+            {m.plan_recipes_link()}
           </Button>
         </EmptyState>
       ) : (
         <>
-          <label className="queue-checkbox queue-select-all">
-            <input
-              type="checkbox"
-              checked={selectedEntries.length === entries.length}
-              ref={(input) => {
-                if (input)
-                  input.indeterminate =
-                    selectedEntries.length > 0 &&
-                    selectedEntries.length < entries.length;
-              }}
-              disabled={busy}
-              onChange={(event) => {
-                setSelectedIds(
-                  event.target.checked ? entries.map((entry) => entry.id) : [],
-                );
-                setShoppingAdded(null);
-              }}
-            />
-            <span>{m["queue.select_all"]()}</span>
-          </label>
           {reorder.isError && (
             <p className="form-error" role="alert">
               {errorMessage(reorder.error)}
@@ -179,15 +176,6 @@ function MealQueue({
                 index={index}
                 count={entries.length}
                 disabled={busy}
-                selected={selectedIds.includes(entry.id)}
-                onSelect={(selected) => {
-                  setSelectedIds(
-                    selected
-                      ? [...selectedEntries.map((item) => item.id), entry.id]
-                      : selectedIds.filter((id) => id !== entry.id),
-                  );
-                  setShoppingAdded(null);
-                }}
                 removeError={
                   remove.isError && remove.variables.id === entry.id
                     ? errorMessage(remove.error)
@@ -265,29 +253,77 @@ function MealQueue({
           <p id="queue-order-hint" className="queue-hint">
             {m["queue.order_hint"]()}
           </p>
-          {shoppingAdded !== null && (
-            <p className="queue-shopping-result" role="status">
-              {m["shopping.recipe_added"]({ count: shoppingAdded })}{" "}
-              <Link className="text-link" to="/list">
-                {m["queue.open_list"]()}
-              </Link>
-            </p>
-          )}
-          <QueueShoppingPreview
-            key={selectedEntries
-              .map((entry) => `${entry.id}:${entry.servings}`)
-              .join(",")}
-            entries={selectedEntries}
-            disabled={busy}
-            onPendingChange={setShoppingPending}
-            onAdded={(added) => {
-              setSelectedIds([]);
-              setShoppingAdded(added);
-            }}
-          />
+          <div className="sticky-action">
+            <Button
+              type="button"
+              className="w-full"
+              aria-haspopup="dialog"
+              onClick={() => {
+                setSelectedIds(entries.map((entry) => entry.id));
+                setShoppingAdded(null);
+                shoppingSheet.current?.showModal();
+              }}
+            >
+              <ListChecks aria-hidden="true" size={20} />
+              {entries.length === 1
+                ? m["queue.to_list_one"]()
+                : m["queue.to_list"]({ count: entries.length })}
+            </Button>
+          </div>
+          <Sheet ref={shoppingSheet} title={m["queue.shopping_title"]()}>
+            <fieldset className="picker-list" disabled={busy}>
+              <legend className="field-label">
+                {m["queue.shopping_meals"]()}
+              </legend>
+              {entries.map((entry) => (
+                <label key={entry.id} className="picker-row">
+                  <input
+                    className="picker-input"
+                    type="checkbox"
+                    checked={selectedIds.includes(entry.id)}
+                    onChange={(event) => {
+                      setSelectedIds(
+                        event.target.checked
+                          ? [...selectedIds, entry.id]
+                          : selectedIds.filter((id) => id !== entry.id),
+                      );
+                      setShoppingAdded(null);
+                    }}
+                  />
+                  <span className="picker-row-main">
+                    <span className="picker-row-title">
+                      {entry.recipe.title}
+                    </span>
+                    <span className="meta">
+                      {m["queue.servings_count"]({ count: entry.servings })}
+                    </span>
+                  </span>
+                </label>
+              ))}
+            </fieldset>
+            {shoppingAdded !== null && (
+              <p className="queue-shopping-result" role="status">
+                {m["shopping.recipe_added"]({ count: shoppingAdded })}{" "}
+                <Link className="text-link" to="/list">
+                  {m["queue.open_list"]()}
+                </Link>
+              </p>
+            )}
+            <QueueShoppingPreview
+              key={selectedEntries
+                .map((entry) => `${entry.id}:${entry.servings}`)
+                .join(",")}
+              entries={selectedEntries}
+              disabled={busy}
+              onPendingChange={setShoppingPending}
+              onAdded={(added) => {
+                setSelectedIds([]);
+                setShoppingAdded(added);
+              }}
+            />
+          </Sheet>
         </>
       )}
-      <LeftoversPanel />
       <p className="sr-only top-0" role="status">
         {announcement}
       </p>

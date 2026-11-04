@@ -118,8 +118,7 @@ export function QueueShoppingPreview({
   }
 
   return (
-    <section className="queue-shopping" aria-labelledby={`${id}-title`}>
-      <h2 id={`${id}-title`}>{m["queue.shopping_title"]()}</h2>
+    <div className="queue-shopping">
       <p role="status">
         {entries.length
           ? m["queue.selected_count"]({ count: entries.length })
@@ -264,6 +263,6 @@ export function QueueShoppingPreview({
           )}
         </div>
       )}
-    </section>
+    </div>
   );
 }

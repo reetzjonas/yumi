@@ -124,9 +124,8 @@ Layout: Step ingredient assignments - associate automatic/manual choices with
 their step -> stack inside the existing recipe editor; scroll owner: `.app-main`;
 avoid nested scrollers and fixed-width checkbox labels.
 
-Layout: Expected leftovers and reuse suggestions - follow the queue's shopping
-workflow in the main Plan pane, including when the queue is empty; scroll owner:
-`.app-main`. Keep the shopping preview
+Layout: Expected leftovers and reuse suggestions - live on the Vorschläge page
+(`/plan/suggestions`) reached from Als Nächstes; scroll owner: `.app-main`. Keep the shopping preview
 and active list in their existing places. Reading priorities are planned meals,
 shopping, expected leftovers, then recipes that use them. Leftover rows show
 localized ingredient names and amounts, with secondary edit and dismiss actions.
