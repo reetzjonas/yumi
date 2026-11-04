@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PHOTO_IMPORT_MIME_TYPES, photoImportUploadError } from "@yumi/shared";
-import { Download } from "lucide-react";
+import { Camera, Link2, Share2 } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { Field, FormError } from "@/components/auth-layout";
 import { BackLink, PageHeader } from "@/components/page";
@@ -35,7 +35,6 @@ function imageFile(image: { mimeType: string; dataBase64: string }) {
 function ImportRecipe({ sharedUrl }: { sharedUrl?: string }) {
   const id = useId();
   const householdId = useMe()?.activeHouseholdId;
-  const [mode, setMode] = useState<"url" | "photos">("url");
   const [photos, setPhotos] = useState<{ id: string; file: File }[]>([]);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const reviewRef = useRef<HTMLElement>(null);
@@ -84,6 +83,9 @@ function ImportRecipe({ sharedUrl }: { sharedUrl?: string }) {
       ]);
   }
 
+  const pending = load.variables?.kind;
+  const photoInputsDisabled = load.isPending || !capabilities.data?.photos;
+
   return (
     <>
       <PageHeader
@@ -92,8 +94,20 @@ function ImportRecipe({ sharedUrl }: { sharedUrl?: string }) {
       />
       {load.data && householdId ? (
         <>
-          <section ref={reviewRef} className="section import-review">
-            <p role="status">{m["recipes.import_review"]()}</p>
+          <section ref={reviewRef} className="import-card import-review">
+            <h2 className="import-card-title">
+              {load.variables?.kind === "url"
+                ? new URL(load.variables.url).hostname.replace(/^www\./, "")
+                : m["recipes.import_pages_count"]({
+                    count:
+                      load.variables?.kind === "photos"
+                        ? load.variables.files.length
+                        : 0,
+                  })}
+            </h2>
+            <p role="status" className="import-card-text">
+              {m["recipes.import_review"]()}
+            </p>
             {load.data.warnings.length > 0 && (
               <p className="muted">{m["recipes.import_image_missing"]()}</p>
             )}
@@ -117,38 +131,23 @@ function ImportRecipe({ sharedUrl }: { sharedUrl?: string }) {
           />
         </>
       ) : (
-        <section className="section import-form">
-          <fieldset
-            className="recipe-actions"
-            aria-label={m["recipes.import_source"]()}
-          >
-            <Button
-              type="button"
-              variant="outline"
-              aria-pressed={mode === "url"}
-              disabled={load.isPending}
-              onClick={() => {
-                setMode("url");
-                load.reset();
-              }}
-            >
-              {m["recipes.import_from_url"]()}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              aria-pressed={mode === "photos"}
-              disabled={load.isPending}
-              onClick={() => {
-                setMode("photos");
-                load.reset();
-              }}
-            >
-              {m["recipes.import_from_photos"]()}
-            </Button>
-          </fieldset>
-          {mode === "url" ? (
+        <div className="import-cards">
+          <section className="import-card" aria-labelledby={`${id}-link`}>
+            <div className="import-card-head">
+              <span className="import-card-icon">
+                <Link2 aria-hidden="true" size={20} />
+              </span>
+              <div>
+                <h2 id={`${id}-link`} className="import-card-title">
+                  {m["recipes.import_link_title"]()}
+                </h2>
+                <p id={`${id}-hint`} className="import-card-text">
+                  {m["recipes.import_link_text"]()}
+                </p>
+              </div>
+            </div>
             <form
+              className="import-card-form"
               aria-busy={load.isPending}
               onSubmit={(event) => {
                 event.preventDefault();
@@ -158,9 +157,6 @@ function ImportRecipe({ sharedUrl }: { sharedUrl?: string }) {
                 if (url) load.mutate({ kind: "url", url });
               }}
             >
-              <p id={`${id}-hint`} className="section-description">
-                {m["recipes.import_hint"]()}
-              </p>
               <Field
                 id="url"
                 label={m["recipes.import_url"]()}
@@ -173,17 +169,57 @@ function ImportRecipe({ sharedUrl }: { sharedUrl?: string }) {
                 aria-describedby={`${id}-hint`}
                 disabled={load.isPending}
               />
-              <div className="recipe-actions">
-                <Button type="submit" disabled={load.isPending || !householdId}>
-                  <Download aria-hidden="true" size={20} />
-                  {load.isPending
-                    ? m["recipes.importing"]()
-                    : m["recipes.import_submit"]()}
-                </Button>
-              </div>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={load.isPending || !householdId}
+              >
+                {load.isPending && pending === "url"
+                  ? m["recipes.importing"]()
+                  : m["recipes.import_submit"]()}
+              </Button>
+              <FormError
+                message={
+                  load.isError && pending === "url"
+                    ? errorMessage(load.error)
+                    : null
+                }
+              />
             </form>
-          ) : (
+          </section>
+          <section className="import-card" aria-labelledby={`${id}-share`}>
+            <div className="import-card-head">
+              <span className="import-card-icon">
+                <Share2 aria-hidden="true" size={20} />
+              </span>
+              <div>
+                <h2 id={`${id}-share`} className="import-card-title">
+                  {m["recipes.import_share_title"]()}
+                </h2>
+                <p className="import-card-text">
+                  {m["recipes.import_share_text"]()}
+                </p>
+              </div>
+            </div>
+          </section>
+          <section className="import-card" aria-labelledby={`${id}-photos`}>
+            <div className="import-card-head">
+              <span className="import-card-icon">
+                <Camera aria-hidden="true" size={20} />
+              </span>
+              <div>
+                <h2 id={`${id}-photos`} className="import-card-title">
+                  {m["recipes.import_photo_title"]()}
+                </h2>
+                <p id={`${id}-photos-hint`} className="import-card-text">
+                  {capabilities.data?.photos === false
+                    ? m["errors.photo_import_unavailable"]()
+                    : m["recipes.import_photos_hint"]()}
+                </p>
+              </div>
+            </div>
             <form
+              className="import-card-form"
               aria-busy={load.isPending}
               onSubmit={(event) => {
                 event.preventDefault();
@@ -195,110 +231,107 @@ function ImportRecipe({ sharedUrl }: { sharedUrl?: string }) {
                 if (!error) load.mutate({ kind: "photos", files });
               }}
             >
-              <p id={`${id}-photos-hint`} className="section-description">
-                {m["recipes.import_photos_hint"]()}
-              </p>
-              {capabilities.data?.photos === false && (
-                <p role="status">{m["errors.photo_import_unavailable"]()}</p>
-              )}
-              <Field
-                id={`${id}-photos`}
-                label={m["recipes.import_choose_photos"]()}
-                type="file"
-                accept={PHOTO_IMPORT_MIME_TYPES.join(",")}
-                multiple
-                aria-describedby={`${id}-photos-hint`}
-                disabled={load.isPending || !capabilities.data?.photos}
-                onChange={(event) => {
-                  addPhotos(event.currentTarget.files);
-                  event.currentTarget.value = "";
-                }}
-              />
-              <Field
-                id={`${id}-camera`}
-                label={m["recipes.import_take_photo"]()}
-                type="file"
-                accept={PHOTO_IMPORT_MIME_TYPES.join(",")}
-                capture="environment"
-                aria-describedby={`${id}-photos-hint`}
-                disabled={load.isPending || !capabilities.data?.photos}
-                onChange={(event) => {
-                  addPhotos(event.currentTarget.files);
-                  event.currentTarget.value = "";
-                }}
-              />
-              {photos.length > 0 && (
-                <ol
-                  className="photo-import-pages"
-                  aria-label={m["recipes.import_pages"]()}
+              <div className="recipe-image-actions">
+                <label
+                  className="button button-outline file-button"
+                  aria-disabled={photoInputsDisabled}
                 >
-                  {photos.map((photo) => (
-                    <li key={photo.id}>
-                      <span>{photo.file.name}</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        disabled={load.isPending}
-                        aria-label={m["recipes.import_remove_photo"]({
-                          name: photo.file.name,
-                        })}
-                        onClick={() => {
-                          setPhotos((current) =>
-                            current.filter((item) => item.id !== photo.id),
-                          );
-                          setUploadError(null);
-                          load.reset();
-                        }}
-                      >
-                        {m["recipes.import_remove"]()}
-                      </Button>
-                    </li>
-                  ))}
-                </ol>
+                  <input
+                    className="sr-only"
+                    type="file"
+                    accept={PHOTO_IMPORT_MIME_TYPES.join(",")}
+                    capture="environment"
+                    aria-describedby={`${id}-photos-hint`}
+                    disabled={photoInputsDisabled}
+                    onChange={(event) => {
+                      addPhotos(event.currentTarget.files);
+                      event.currentTarget.value = "";
+                    }}
+                  />
+                  <Camera aria-hidden="true" size={18} />
+                  {photos.length > 0
+                    ? m["recipes.import_take_photo"]()
+                    : m["recipes.import_photo_capture"]()}
+                </label>
+                <label
+                  className="button button-ghost file-button"
+                  aria-disabled={photoInputsDisabled}
+                >
+                  <input
+                    className="sr-only"
+                    type="file"
+                    accept={PHOTO_IMPORT_MIME_TYPES.join(",")}
+                    multiple
+                    aria-describedby={`${id}-photos-hint`}
+                    disabled={photoInputsDisabled}
+                    onChange={(event) => {
+                      addPhotos(event.currentTarget.files);
+                      event.currentTarget.value = "";
+                    }}
+                  />
+                  {m["recipes.import_gallery"]()}
+                </label>
+              </div>
+              {photos.length > 0 && (
+                <>
+                  <ol
+                    className="photo-import-pages"
+                    aria-label={m["recipes.import_pages"]()}
+                  >
+                    {photos.map((photo) => (
+                      <li key={photo.id}>
+                        <span>{photo.file.name}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          disabled={load.isPending}
+                          aria-label={m["recipes.import_remove_photo"]({
+                            name: photo.file.name,
+                          })}
+                          onClick={() => {
+                            setPhotos((current) =>
+                              current.filter((item) => item.id !== photo.id),
+                            );
+                            setUploadError(null);
+                            load.reset();
+                          }}
+                        >
+                          {m["recipes.import_remove"]()}
+                        </Button>
+                      </li>
+                    ))}
+                  </ol>
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    className="w-full"
+                    disabled={load.isPending || !householdId}
+                  >
+                    {load.isPending && pending === "photos"
+                      ? m["recipes.importing_photos"]()
+                      : m["recipes.import_photos_submit"]()}
+                  </Button>
+                </>
               )}
               <FormError message={uploadError} />
-              <div className="recipe-actions">
-                <Button
-                  type="submit"
-                  variant={
-                    capabilities.data?.photos === false ? "outline" : "default"
-                  }
-                  disabled={
-                    load.isPending ||
-                    !householdId ||
-                    !capabilities.data?.photos ||
-                    photos.length === 0
-                  }
-                >
-                  <Download aria-hidden="true" size={20} />
-                  {load.isPending
-                    ? m["recipes.importing_photos"]()
-                    : m["recipes.import_photos_submit"]()}
-                </Button>
-              </div>
+              <FormError
+                message={
+                  load.isError && pending === "photos"
+                    ? errorMessage(load.error)
+                    : null
+                }
+              />
+              <FormError
+                message={
+                  capabilities.isError ? errorMessage(capabilities.error) : null
+                }
+              />
             </form>
-          )}
-          <FormError message={load.isError ? errorMessage(load.error) : null} />
-          {mode === "photos" && (
-            <FormError
-              message={
-                capabilities.isError ? errorMessage(capabilities.error) : null
-              }
-            />
-          )}
-          <div className="recipe-actions">
-            <Button
-              asChild
-              variant={
-                mode === "photos" && capabilities.data?.photos === false
-                  ? "default"
-                  : "outline"
-              }
-            >
-              <Link to="/recipes/new">{m["recipes.import_manual"]()}</Link>
-            </Button>
-          </div>
-        </section>
+          </section>
+          <Button asChild variant="outline" className="w-full">
+            <Link to="/recipes/new">{m["recipes.import_manual"]()}</Link>
+          </Button>
+        </div>
       )}
     </>
   );

@@ -1269,6 +1269,51 @@ select:focus-visible {
   flex-wrap: wrap;
   gap: 8px;
 }
+.import-cards {
+  display: grid;
+  gap: 12px;
+}
+.import-card {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--card);
+}
+.import-card-head {
+  display: flex;
+  gap: 12px;
+}
+.import-card-icon {
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-control);
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+.import-card-title {
+  margin-bottom: 4px;
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+.import-card-text {
+  color: var(--muted-foreground);
+}
+.import-review {
+  margin-bottom: 16px;
+}
+.import-card-form {
+  display: grid;
+  gap: 12px;
+}
+.file-button[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
 .recipe-image-field {
   display: grid;
   gap: 8px;
