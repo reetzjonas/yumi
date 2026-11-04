@@ -7,6 +7,7 @@ import { m } from "@/paraglide/messages";
 import { getLocale, getTextDirection } from "@/paraglide/runtime";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
+import "./cooking.css";
 
 document.documentElement.lang = getLocale();
 document.documentElement.dir = getTextDirection();

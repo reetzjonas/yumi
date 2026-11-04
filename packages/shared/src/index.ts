@@ -5,5 +5,6 @@ export * from "./planning";
 export * from "./recipes";
 export * from "./recurring";
 export * from "./shopping";
+export * from "./step-ingredients";
 export * from "./stores";
 export * from "./units";

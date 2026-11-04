@@ -1,0 +1,1 @@
+ALTER TABLE "recipe_step" ADD COLUMN "ingredient_refs_manual" boolean DEFAULT false NOT NULL;

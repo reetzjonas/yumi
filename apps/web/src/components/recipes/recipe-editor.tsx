@@ -50,6 +50,12 @@ export function RecipeEditor({
       source?.steps.map((step) => ({
         key: crypto.randomUUID(),
         text: step.text,
+        ingredientKeys:
+          step.ingredientPositions === null
+            ? null
+            : step.ingredientPositions.flatMap(
+                (position) => ingredients[position]?.key ?? [],
+              ),
       })) ?? [],
   );
   const [image, setImage] = useState<ImageSelection>({
@@ -123,7 +129,15 @@ export function RecipeEditor({
         .map((tag) => tag.trim())
         .filter(Boolean),
       ingredients: lines,
-      steps: steps.map((step) => ({ text: step.text })),
+      steps: steps.map((step) => ({
+        text: step.text,
+        ingredientPositions:
+          step.ingredientKeys === null
+            ? null
+            : ingredients.flatMap((line, position) =>
+                step.ingredientKeys?.includes(line.key) ? [position] : [],
+              ),
+      })),
     });
     if (!input.success) {
       setError(m["errors.invalid_input"]());
@@ -141,7 +155,7 @@ export function RecipeEditor({
           setRows={setIngredients}
           onParsingChange={setParsing}
         />
-        <StepEditor rows={steps} setRows={setSteps} />
+        <StepEditor rows={steps} setRows={setSteps} ingredients={ingredients} />
         <ImageEditor
           recipe={recipe}
           value={image}

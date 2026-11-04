@@ -78,11 +78,11 @@ describe("structured recipe extraction", () => {
     expect(result.draft.prepMinutes).toBe(31);
     expect(result.imageUrl).toBe("https://images.example/pie.webp");
     expect(result.draft.steps).toEqual([
-      { text: "For the pastry" },
-      { text: "Mix the flour." },
-      { text: "Chill." },
-      { text: "For the filling" },
-      { text: "Fill and bake." },
+      { text: "For the pastry", ingredientPositions: null },
+      { text: "Mix the flour.", ingredientPositions: null },
+      { text: "Chill.", ingredientPositions: null },
+      { text: "For the filling", ingredientPositions: null },
+      { text: "Fill and bake.", ingredientPositions: null },
     ]);
   });
 
@@ -124,9 +124,9 @@ describe("structured recipe extraction", () => {
     const result = extractRecipe(html, source);
     expect(result.draft.servings).toBe(8);
     expect(result.draft.steps).toEqual([
-      { text: "Mix & stir." },
-      { text: "Bake." },
-      { text: "Serve." },
+      { text: "Mix & stir.", ingredientPositions: null },
+      { text: "Bake.", ingredientPositions: null },
+      { text: "Serve.", ingredientPositions: null },
     ]);
     expect(result.imageUrl).toBe("https://recipes.example/cover.jpg");
   });
@@ -170,7 +170,10 @@ describe("structured recipe extraction", () => {
       "200 g flour",
       "100 g butter",
     ]);
-    expect(result.draft.steps).toEqual([{ text: "Mix" }, { text: "Bake" }]);
+    expect(result.draft.steps).toEqual([
+      { text: "Mix", ingredientPositions: null },
+      { text: "Bake", ingredientPositions: null },
+    ]);
   });
 
   test("rejects excessively nested structured fields with a typed extraction error", () => {

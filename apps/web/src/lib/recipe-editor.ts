@@ -29,7 +29,11 @@ export type IngredientRow = {
   changed: boolean;
 };
 
-export type StepRow = { key: string; text: string };
+export type StepRow = {
+  key: string;
+  text: string;
+  ingredientKeys: string[] | null;
+};
 
 function preservedNote(parsed: ParsedIngredientLine, existing?: string | null) {
   const parts: string[] = [];

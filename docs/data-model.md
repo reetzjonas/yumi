@@ -23,8 +23,11 @@ Alpha sketch, the Drizzle schema is the source of truth once it exists. Every ho
 
 - `recipe`: title, description, servings, prep_min, cook_min, source_url, image, language, tags[].
 - `recipe_ingredient`: recipe_id, section, position, ingredient_id?, raw_text, quantity?, unit?, note, optional.
-- `recipe_step`: recipe_id, position, text, ingredient refs, detected timers (jsonb).
-- `recipe_rating`, `cook_log` (recipe_id, cooked_at, user_id).
+- `recipe_step`: recipe_id, position, text, ingredient refs (`recipe_ingredient.id` UUIDs), ingredient_refs_manual (boolean, default false), detected timers (jsonb).
+- Recipe step input uses zero-based `ingredientPositions`: omitted or `null` matches German/English catalog names and parsed raw ingredient names when saving; an array overrides matching, including `[]` for no references. Positions must belong to the submitted recipe. Recipe edits recreate ingredient rows and bind step references to their new IDs.
+- Recipe detail returns resolved `ingredientRefs` and `ingredientPositions`. Automatic steps (`ingredient_refs_manual = false`, including legacy steps) match names when loaded and return `ingredientPositions: null`; manually selected steps return stored references and their positions, preserving deliberate empty arrays. Saves persist both the resolved references and whether positions were explicitly supplied.
+- `recipe_rating`, `cook_log` (id, household_id, recipe_id, cooked_at, user_id).
+- `POST /api/recipes/:id/cooked` accepts `{ requestId: UUID }` and records the acting user in the active household. Repeating the same request for the same household and recipe returns `{ ok: true }` without another log; reusing the ID for another recipe or household returns `409 request_id_conflict`. A foreign or missing recipe returns `404 not_found`.
 - `share_link`: recipe_id, token, expires_at.
 
 ## Planning

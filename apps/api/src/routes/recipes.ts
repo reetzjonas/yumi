@@ -1,11 +1,17 @@
 import {
+  cookLog,
   ingredient,
   recipe,
   recipeImage,
   recipeIngredient,
   recipeStep,
 } from "@yumi/db/schema";
-import { recipeInputSchema, recipeListQuerySchema } from "@yumi/shared";
+import {
+  matchStepIngredientPositions,
+  recipeCookedInputSchema,
+  recipeInputSchema,
+  recipeListQuerySchema,
+} from "@yumi/shared";
 import {
   and,
   arrayContains,
@@ -45,38 +51,70 @@ function escapeLike(text: string) {
   return text.replace(/[\\%_]/g, (ch) => `\\${ch}`);
 }
 
-async function assertIngredientsVisible(
+async function loadVisibleIngredients(
   householdId: string,
   input: ParsedRecipe,
 ) {
   const ids = [
     ...new Set(input.ingredients.flatMap((i) => i.ingredientId ?? [])),
   ];
-  if (ids.length === 0) return;
+  if (ids.length === 0) return [];
   const rows = await db
-    .select({ id: ingredient.id })
+    .select({
+      id: ingredient.id,
+      nameDe: ingredient.nameDe,
+      nameEn: ingredient.nameEn,
+    })
     .from(ingredient)
     .where(and(inArray(ingredient.id, ids), visibleTo(householdId)));
   if (rows.length !== ids.length)
     throw new HTTPException(400, { message: "invalid_ingredient" });
+  return rows;
 }
 
-async function insertChildren(tx: Tx, recipeId: string, input: ParsedRecipe) {
-  if (input.ingredients.length > 0) {
-    await tx.insert(recipeIngredient).values(
-      input.ingredients.map((line, position) => ({
-        ...line,
-        recipeId,
-        position,
-      })),
-    );
-  }
+async function insertChildren(
+  tx: Tx,
+  recipeId: string,
+  input: ParsedRecipe,
+  catalog: Awaited<ReturnType<typeof loadVisibleIngredients>>,
+) {
+  const lines =
+    input.ingredients.length === 0
+      ? []
+      : await tx
+          .insert(recipeIngredient)
+          .values(
+            input.ingredients.map((line, position) => ({
+              ...line,
+              recipeId,
+              position,
+            })),
+          )
+          .returning({
+            id: recipeIngredient.id,
+            position: recipeIngredient.position,
+          });
+  const idsByPosition = new Map(lines.map((line) => [line.position, line.id]));
+  const namesById = new Map(catalog.map((item) => [item.id, item]));
+  const matchingIngredients = input.ingredients.map((line) => ({
+    rawText: line.rawText,
+    ...namesById.get(line.ingredientId ?? ""),
+  }));
   if (input.steps.length > 0) {
     await tx.insert(recipeStep).values(
       input.steps.map((step, position) => ({
         text: step.text,
         recipeId,
         position,
+        ingredientRefsManual: step.ingredientPositions !== null,
+        ingredientRefs: (
+          step.ingredientPositions ??
+          matchStepIngredientPositions(step.text, matchingIngredients)
+        ).map((ingredientPosition) => {
+          const id = idsByPosition.get(ingredientPosition);
+          if (!id) throw new Error("inserted recipe ingredient missing");
+          return id;
+        }),
       })),
     );
   }
@@ -115,11 +153,20 @@ async function loadRecipe(householdId: string, id: string) {
       .where(eq(recipeIngredient.recipeId, id))
       .orderBy(asc(recipeIngredient.position)),
     db
-      .select({ id: recipeStep.id, text: recipeStep.text })
+      .select({
+        id: recipeStep.id,
+        text: recipeStep.text,
+        ingredientRefs: recipeStep.ingredientRefs,
+        ingredientRefsManual: recipeStep.ingredientRefsManual,
+      })
       .from(recipeStep)
       .where(eq(recipeStep.recipeId, id))
       .orderBy(asc(recipeStep.position)),
   ]);
+  const matchingIngredients = ingredients.map((line) => ({
+    rawText: line.rawText,
+    ...line.ingredient,
+  }));
   return {
     id: row.id,
     title: row.title,
@@ -136,7 +183,24 @@ async function loadRecipe(householdId: string, id: string) {
       ...line,
       ingredient: line.ingredientId ? linked : null,
     })),
-    steps,
+    steps: steps.map(({ ingredientRefsManual, ...step }) => {
+      const positions = ingredientRefsManual
+        ? step.ingredientRefs.flatMap((ref) => {
+            const position = ingredients.findIndex((line) => line.id === ref);
+            return position === -1 ? [] : [position];
+          })
+        : matchStepIngredientPositions(step.text, matchingIngredients);
+      return {
+        ...step,
+        ingredientRefs: ingredientRefsManual
+          ? step.ingredientRefs
+          : positions.flatMap((position) => {
+              const line = ingredients[position];
+              return line ? [line.id] : [];
+            }),
+        ingredientPositions: ingredientRefsManual ? positions : null,
+      };
+    }),
   };
 }
 
@@ -205,7 +269,7 @@ export const recipes = new Hono<HouseholdEnv>()
   .post("/", recipeBody, async (c) => {
     const householdId = c.get("householdId");
     const input = c.req.valid("json");
-    await assertIngredientsVisible(householdId, input);
+    const catalog = await loadVisibleIngredients(householdId, input);
     const id = await db.transaction(async (tx) => {
       const [row] = await tx
         .insert(recipe)
@@ -216,7 +280,7 @@ export const recipes = new Hono<HouseholdEnv>()
         })
         .returning({ id: recipe.id });
       if (!row) throw new Error("recipe insert returned no row");
-      await insertChildren(tx, row.id, input);
+      await insertChildren(tx, row.id, input, catalog);
       return row.id;
     });
     return c.json(await loadRecipe(householdId, id), 201);
@@ -225,7 +289,7 @@ export const recipes = new Hono<HouseholdEnv>()
     const householdId = c.get("householdId");
     const id = z.uuid().parse(c.req.param("id"));
     const input = c.req.valid("json");
-    await assertIngredientsVisible(householdId, input);
+    const catalog = await loadVisibleIngredients(householdId, input);
     await db.transaction(async (tx) => {
       const updated = await tx
         .update(recipe)
@@ -238,10 +302,45 @@ export const recipes = new Hono<HouseholdEnv>()
         .delete(recipeIngredient)
         .where(eq(recipeIngredient.recipeId, id));
       await tx.delete(recipeStep).where(eq(recipeStep.recipeId, id));
-      await insertChildren(tx, id, input);
+      await insertChildren(tx, id, input, catalog);
     });
     return c.json(await loadRecipe(householdId, id));
   })
+  .post(
+    `${ID}/cooked`,
+    validator("json", (value) => recipeCookedInputSchema.parse(value)),
+    async (c) => {
+      const householdId = c.get("householdId");
+      const id = z.uuid().parse(c.req.param("id"));
+      const { requestId } = c.req.valid("json");
+      await assertRecipeOwned(householdId, id);
+      const inserted = await db
+        .insert(cookLog)
+        .values({
+          id: requestId,
+          householdId,
+          recipeId: id,
+          userId: c.get("user").id,
+        })
+        .onConflictDoNothing({ target: cookLog.id })
+        .returning({ id: cookLog.id });
+      if (inserted.length === 0) {
+        const [existing] = await db
+          .select({ id: cookLog.id })
+          .from(cookLog)
+          .where(
+            and(
+              eq(cookLog.id, requestId),
+              eq(cookLog.householdId, householdId),
+              eq(cookLog.recipeId, id),
+            ),
+          );
+        if (!existing)
+          throw new HTTPException(409, { message: "request_id_conflict" });
+      }
+      return c.json({ ok: true });
+    },
+  )
   .delete(ID, async (c) => {
     const deleted = await db
       .delete(recipe)

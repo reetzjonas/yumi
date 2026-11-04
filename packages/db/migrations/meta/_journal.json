@@ -43,6 +43,13 @@
       "when": 1793726262669,
       "tag": "0005_melodic_pete_wisdom",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793776579350,
+      "tag": "0006_dazzling_polaris",
+      "breakpoints": true
     }
   ]
 }

@@ -4,6 +4,7 @@ import { parseIngredientLine, unitSchema } from "@yumi/shared";
 import {
   ArrowLeft,
   CalendarPlus,
+  CookingPot,
   ListPlus,
   Pencil,
   Trash2,
@@ -120,8 +121,15 @@ function Recipe() {
                 </a>
               )}
               <div className="recipe-actions">
+                <Button asChild>
+                  <Link to="/cook/$id" params={{ id }}>
+                    <CookingPot size={18} aria-hidden="true" />
+                    {m["cooking.start"]()}
+                  </Link>
+                </Button>
                 <Button
                   type="button"
+                  variant="outline"
                   aria-haspopup="dialog"
                   onClick={() => queueSheet.current?.showModal()}
                 >

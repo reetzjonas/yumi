@@ -105,6 +105,24 @@ Shopping mode and cooking view are full-screen modes outside the shell at every
 size. From 768 px the cooking view uses two columns: ingredients for the step
 left, the step right.
 
+Layout: Cooking view - keep the current instruction and its ingredients visible
+inside a bounded viewport -> scroll-body-shell; scroll owner: `.cooking-body`;
+header and navigation stay fixed, with a step overview in landscape. Avoid
+document scrolling, nested vertical scrollers and content-width grid tracks.
+
+Layout: Step ingredient assignments - associate automatic/manual choices with
+their step -> stack inside the existing recipe editor; scroll owner: `.app-main`;
+avoid nested scrollers and fixed-width checkbox labels.
+
+Cooking view brief: the primary action is Next, becoming Mark cooked on the last
+step. Reading priorities are the current instruction, its ingredients, then
+progress. Required controls are close, previous, next, step overview, wake-lock
+status and editable ingredient assignments in the recipe editor. Empty recipes
+offer editing; request failures appear beside the completion action. Decorative
+badges and duplicate recipe metadata are left out.
+Ingredient text retains the project's 16 px body and 14 px secondary roles;
+the active instruction uses the larger cook-step role.
+
 The page title stays in the content as the one h1. Each pane owns its scroll;
 there is no page scroll behind it and no horizontal page scroll down to 320 px.
 On phones, tag filters are one horizontally scrolling strip. Safe-area insets extend bars, rail and sidebar. On

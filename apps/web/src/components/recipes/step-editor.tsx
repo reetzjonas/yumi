@@ -1,15 +1,17 @@
 import type { Dispatch, SetStateAction } from "react";
 import { RowControls } from "@/components/recipes/row-controls";
 import { Button } from "@/components/ui/button";
-import { moveRow, type StepRow } from "@/lib/recipe-editor";
+import { type IngredientRow, moveRow, type StepRow } from "@/lib/recipe-editor";
 import { m } from "@/paraglide/messages";
 
 export function StepEditor({
   rows,
   setRows,
+  ingredients,
 }: {
   rows: StepRow[];
   setRows: Dispatch<SetStateAction<StepRow[]>>;
+  ingredients: IngredientRow[];
 }) {
   return (
     <section className="recipe-form" aria-labelledby="step-editor-title">
@@ -36,6 +38,58 @@ export function StepEditor({
                   );
                 }}
               />
+              <fieldset className="step-ingredient-choices">
+                <legend>{m["cooking.step_ingredients"]()}</legend>
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={row.ingredientKeys === null}
+                    onChange={(event) => {
+                      const automatic = event.target.checked;
+                      setRows((current) =>
+                        current.map((step) =>
+                          step.key === row.key
+                            ? { ...step, ingredientKeys: automatic ? null : [] }
+                            : step,
+                        ),
+                      );
+                    }}
+                  />
+                  {m["cooking.auto_ingredients"]()}
+                </label>
+                {row.ingredientKeys !== null &&
+                  ingredients.map((ingredient) => (
+                    <label className="checkbox-label" key={ingredient.key}>
+                      <input
+                        type="checkbox"
+                        checked={
+                          row.ingredientKeys?.includes(ingredient.key) ?? false
+                        }
+                        onChange={(event) => {
+                          const checked = event.target.checked;
+                          setRows((current) =>
+                            current.map((step) =>
+                              step.key === row.key
+                                ? {
+                                    ...step,
+                                    ingredientKeys: checked
+                                      ? [
+                                          ...(step.ingredientKeys ?? []),
+                                          ingredient.key,
+                                        ]
+                                      : (step.ingredientKeys ?? []).filter(
+                                          (key) => key !== ingredient.key,
+                                        ),
+                                  }
+                                : step,
+                            ),
+                          );
+                        }}
+                      />
+                      {ingredient.name || ingredient.rawText}
+                    </label>
+                  ))}
+              </fieldset>
             </div>
             <RowControls
               item={item}
@@ -60,7 +114,7 @@ export function StepEditor({
         onClick={() =>
           setRows((current) => [
             ...current,
-            { key: crypto.randomUUID(), text: "" },
+            { key: crypto.randomUUID(), text: "", ingredientKeys: null },
           ])
         }
       >

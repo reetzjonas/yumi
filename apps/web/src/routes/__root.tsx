@@ -16,7 +16,7 @@ import { useShoppingSync } from "@/lib/shopping-sync";
 const PUBLIC_PATHS = ["/login", "/signup"];
 /** Need a session, but no active household. */
 const HOUSEHOLDLESS_PATHS = ["/onboarding", "/invite/"];
-const BARE_PATHS = [...PUBLIC_PATHS, ...HOUSEHOLDLESS_PATHS];
+const BARE_PATHS = [...PUBLIC_PATHS, ...HOUSEHOLDLESS_PATHS, "/cook/"];
 
 const matches = (pathname: string, prefixes: string[]) =>
   prefixes.some((p) => pathname.startsWith(p));

@@ -81,6 +81,7 @@ export const recipeStep = pgTable(
     position: integer().notNull(),
     text: text().notNull(),
     ingredientRefs: uuid().array().notNull().default(sql`'{}'::uuid[]`),
+    ingredientRefsManual: boolean().notNull().default(false),
     timers: jsonb().$type<StepTimer[]>().notNull().default([]),
   },
   (t) => [index("recipe_step_recipe_idx").on(t.recipeId)],

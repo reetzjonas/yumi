@@ -1,20 +1,34 @@
 import { describe, expect, test } from "bun:test";
-import { type Client, householdMember } from "./test/client";
+import { cookLog, recipeStep } from "@yumi/db/schema";
+import { eq } from "drizzle-orm";
+import { z } from "zod";
+import { db } from "./db";
+import { type Client, client, householdMember, signUp } from "./test/client";
 
-type Recipe = {
-  id: string;
-  title: string;
-  tags: string[];
-  ingredients: Array<{
-    section: string | null;
-    rawText: string;
-    quantity: number | null;
-    unit: string | null;
-    ingredientId: string | null;
-    ingredient: { nameDe: string } | null;
-  }>;
-  steps: Array<{ text: string }>;
-};
+const recipeSchema = z.object({
+  id: z.uuid(),
+  title: z.string(),
+  tags: z.array(z.string()),
+  ingredients: z.array(
+    z.object({
+      id: z.uuid(),
+      section: z.string().nullable(),
+      rawText: z.string(),
+      quantity: z.number().nullable(),
+      unit: z.string().nullable(),
+      ingredientId: z.uuid().nullable(),
+      ingredient: z.object({ nameDe: z.string() }).nullable(),
+    }),
+  ),
+  steps: z.array(
+    z.object({
+      text: z.string(),
+      ingredientRefs: z.array(z.uuid()),
+      ingredientPositions: z.array(z.number()).nullable(),
+    }),
+  ),
+});
+type Recipe = z.infer<typeof recipeSchema>;
 
 async function onionId(c: Client) {
   const res = await c.request("/api/ingredients?q=Zwiebel&limit=1");
@@ -29,7 +43,7 @@ async function createRecipe(c: Client, body: object) {
     body: JSON.stringify(body),
   });
   expect(res.status).toBe(201);
-  return (await res.json()) as Recipe;
+  return recipeSchema.parse(await res.json());
 }
 
 describe("recipes", () => {
@@ -109,6 +123,230 @@ describe("recipes", () => {
     ]);
   });
 
+  test("saving automatically links catalog translations and parsed raw names", async () => {
+    const c = await householdMember("recipe-auto-steps");
+    const onion = await onionId(c);
+    const created = await createRecipe(c, {
+      title: "Step ingredients",
+      ingredients: [
+        { rawText: "1 Knolle", ingredientId: onion },
+        { rawText: "250 g Mehl, gesiebt" },
+      ],
+      steps: [
+        { text: "Zwiebeln schneiden" },
+        { text: "Mix onions with Mehl", ingredientPositions: null },
+        { text: "Servieren" },
+      ],
+    });
+    expect(created.steps.map((step) => step.ingredientPositions)).toEqual([
+      null,
+      null,
+      null,
+    ]);
+    const onionLineId = z.uuid().parse(created.ingredients[0]?.id);
+    expect(created.steps[0]?.ingredientRefs).toEqual([onionLineId]);
+    expect(created.steps[1]?.ingredientRefs).toEqual(
+      created.ingredients.map((line) => line.id),
+    );
+    expect(created.steps[2]?.ingredientRefs).toEqual([]);
+    const stored = await db
+      .select()
+      .from(recipeStep)
+      .where(eq(recipeStep.recipeId, created.id))
+      .orderBy(recipeStep.position);
+    expect(stored.map((step) => step.ingredientRefsManual)).toEqual([
+      false,
+      false,
+      false,
+    ]);
+    expect(stored.map((step) => step.ingredientRefs)).toEqual([
+      [onionLineId],
+      created.ingredients.map((line) => line.id),
+      [],
+    ]);
+
+    const loaded = recipeSchema.parse(
+      await (await c.request(`/api/recipes/${created.id}`)).json(),
+    );
+    expect(loaded.steps).toEqual(created.steps);
+  });
+
+  test("manual references override matches and rebind to new ingredient IDs on edit", async () => {
+    const c = await householdMember("recipe-manual-steps");
+    const created = await createRecipe(c, {
+      title: "Manual steps",
+      ingredients: [{ rawText: "1 Zwiebel" }, { rawText: "200 g Mehl" }],
+      steps: [
+        { text: "Zwiebeln schneiden", ingredientPositions: [1, 1] },
+        { text: "Mehl sieben", ingredientPositions: [] },
+      ],
+    });
+    expect(created.steps[0]?.ingredientPositions).toEqual([1]);
+    const oldFlourId = z.uuid().parse(created.ingredients[1]?.id);
+    expect(created.steps[0]?.ingredientRefs).toEqual([oldFlourId]);
+    expect(created.steps[1]?.ingredientRefs).toEqual([]);
+
+    const response = await c.request(`/api/recipes/${created.id}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        title: created.title,
+        ingredients: [{ rawText: "200 g Mehl" }, { rawText: "1 Zwiebel" }],
+        steps: [
+          { text: "Zwiebeln schneiden", ingredientPositions: [0] },
+          { text: "Mehl sieben", ingredientPositions: [] },
+          { text: "Zwiebeln schneiden", ingredientPositions: null },
+        ],
+      }),
+    });
+    expect(response.status).toBe(200);
+    const updated = recipeSchema.parse(await response.json());
+    expect(updated.steps.map((step) => step.ingredientPositions)).toEqual([
+      [0],
+      [],
+      null,
+    ]);
+    const newFlourId = z.uuid().parse(updated.ingredients[0]?.id);
+    const newOnionId = z.uuid().parse(updated.ingredients[1]?.id);
+    expect(updated.steps[0]?.ingredientRefs).toEqual([newFlourId]);
+    expect(updated.steps[2]?.ingredientRefs).toEqual([newOnionId]);
+    expect(updated.ingredients.map((line) => line.id)).not.toContain(
+      oldFlourId,
+    );
+    const loaded = recipeSchema.parse(
+      await (await c.request(`/api/recipes/${created.id}`)).json(),
+    );
+    expect(loaded.steps).toEqual(updated.steps);
+  });
+
+  test("legacy empty references auto-match while explicit empty selections stay manual", async () => {
+    const c = await householdMember("recipe-legacy-steps");
+    const recipe = await createRecipe(c, {
+      title: "Legacy steps",
+      ingredients: [{ rawText: "2 Zwiebeln" }],
+      steps: [{ text: "Zwiebeln schneiden", ingredientPositions: [] }],
+    });
+    await db.insert(recipeStep).values({
+      recipeId: recipe.id,
+      position: 1,
+      text: "Zwiebeln schneiden",
+    });
+
+    const loaded = recipeSchema.parse(
+      await (await c.request(`/api/recipes/${recipe.id}`)).json(),
+    );
+
+    expect(loaded.steps.map((step) => step.ingredientPositions)).toEqual([
+      [],
+      null,
+    ]);
+    const onionId = z.uuid().parse(recipe.ingredients[0]?.id);
+    expect(loaded.steps.map((step) => step.ingredientRefs)).toEqual([
+      [],
+      [onionId],
+    ]);
+    const stored = await db
+      .select()
+      .from(recipeStep)
+      .where(eq(recipeStep.recipeId, recipe.id))
+      .orderBy(recipeStep.position);
+    expect(stored.map((step) => step.ingredientRefsManual)).toEqual([
+      true,
+      false,
+    ]);
+    expect(stored.map((step) => step.ingredientRefs)).toEqual([[], []]);
+  });
+
+  test("cooking a recipe records the actor once for concurrent retries", async () => {
+    const c = await householdMember("recipe-cooked");
+    const recipe = await createRecipe(c, { title: "Cook me" });
+    const requestId = crypto.randomUUID();
+    const me = z
+      .object({
+        user: z.object({ id: z.string() }),
+        session: z.object({ activeOrganizationId: z.string() }),
+      })
+      .parse(await (await c.request("/api/auth/get-session")).json());
+
+    const responses = await Promise.all(
+      [1, 2].map(() =>
+        c.request(`/api/recipes/${recipe.id}/cooked`, {
+          method: "POST",
+          body: JSON.stringify({ requestId }),
+        }),
+      ),
+    );
+
+    expect(responses.map((response) => response.status)).toEqual([200, 200]);
+    for (const response of responses)
+      expect(await response.json()).toEqual({ ok: true });
+    const logs = await db
+      .select()
+      .from(cookLog)
+      .where(eq(cookLog.recipeId, recipe.id));
+    expect(logs).toHaveLength(1);
+    expect(logs[0]).toMatchObject({
+      id: requestId,
+      householdId: me.session.activeOrganizationId,
+      recipeId: recipe.id,
+      userId: me.user.id,
+    });
+  });
+
+  test("cooking rejects foreign recipes and request IDs bound to another recipe or household", async () => {
+    const owner = await householdMember("recipe-cook-owner");
+    const outsider = await householdMember("recipe-cook-outsider");
+    const recipe = await createRecipe(owner, { title: "Owned" });
+    const second = await createRecipe(owner, { title: "Second" });
+    const foreign = await createRecipe(outsider, { title: "Foreign" });
+    const requestId = crypto.randomUUID();
+    const cooked = (c: Client, id: string) =>
+      c.request(`/api/recipes/${id}/cooked`, {
+        method: "POST",
+        body: JSON.stringify({ requestId }),
+      });
+
+    expect((await cooked(outsider, recipe.id)).status).toBe(404);
+    expect(
+      await db.select().from(cookLog).where(eq(cookLog.id, requestId)),
+    ).toEqual([]);
+    expect((await cooked(owner, recipe.id)).status).toBe(200);
+    for (const [c, id] of [
+      [owner, second.id],
+      [outsider, foreign.id],
+    ] as const) {
+      const response = await cooked(c, id);
+      expect(response.status).toBe(409);
+      expect(await response.json()).toEqual({ error: "request_id_conflict" });
+      expect(
+        await db.select().from(cookLog).where(eq(cookLog.recipeId, id)),
+      ).toEqual([]);
+    }
+    expect((await cooked(owner, crypto.randomUUID())).status).toBe(404);
+  });
+
+  test("cooking validates request IDs and requires an active household", async () => {
+    const c = await householdMember("recipe-cook-invalid");
+    const recipe = await createRecipe(c, { title: "Validate cooking" });
+    const path = `/api/recipes/${recipe.id}/cooked`;
+    for (const body of [{}, { requestId: "invalid" }]) {
+      expect(
+        (await c.request(path, { method: "POST", body: JSON.stringify(body) }))
+          .status,
+      ).toBe(400);
+    }
+    const body = JSON.stringify({ requestId: crypto.randomUUID() });
+    expect(
+      (await client().request(path, { method: "POST", body })).status,
+    ).toBe(401);
+    const noHousehold = await signUp("recipe-cook-no-household");
+    expect(
+      (await noHousehold.request(path, { method: "POST", body })).status,
+    ).toBe(409);
+    expect(
+      await db.select().from(cookLog).where(eq(cookLog.recipeId, recipe.id)),
+    ).toEqual([]);
+  });
+
   test("recipes and household ingredients stay within their household", async () => {
     const a = await householdMember("recipe-a");
     const b = await householdMember("recipe-b");
@@ -152,6 +390,14 @@ describe("recipes", () => {
       { title: " " },
       { title: "X", sourceUrl: "javascript:alert(1)" },
       { title: "X", ingredients: [{ rawText: "1 x", unit: "bucket" }] },
+      { title: "X", steps: [{ text: "Mix", ingredientPositions: [0] }] },
+      {
+        title: "X",
+        ingredients: [{ rawText: "1 onion" }],
+        steps: [{ text: "Mix", ingredientPositions: [1] }],
+      },
+      { title: "X", steps: [{ text: "Mix", ingredientPositions: [-1] }] },
+      { title: "X", steps: [{ text: "Mix", ingredientPositions: [0.5] }] },
     ]) {
       const res = await c.request("/api/recipes", {
         method: "POST",

@@ -22,26 +22,54 @@ export const recipeIngredientInputSchema = z.object({
 
 export const recipeStepInputSchema = z.object({
   text: z.string().trim().min(1).max(5000),
+  ingredientPositions: z
+    .array(z.number().int().min(0).max(199))
+    .max(200)
+    .nullable()
+    .default(null)
+    .transform((positions) =>
+      positions === null ? null : [...new Set(positions)],
+    ),
 });
 
-export const recipeInputSchema = z.object({
-  title: z.string().trim().min(1).max(200),
-  description: optionalText(5000),
-  servings: z.number().int().min(1).max(100).default(2),
-  prepMinutes: z.number().int().min(0).max(10_000).nullable().default(null),
-  cookMinutes: z.number().int().min(0).max(10_000).nullable().default(null),
-  sourceUrl: z
-    .url({ protocol: /^https?$/ })
-    .max(2000)
-    .nullable()
-    .default(null),
-  tags: z
-    .array(z.string().trim().min(1).max(40))
-    .max(20)
-    .default([])
-    .transform((tags) => [...new Set(tags)]),
-  ingredients: z.array(recipeIngredientInputSchema).max(200).default([]),
-  steps: z.array(recipeStepInputSchema).max(100).default([]),
+export const recipeInputSchema = z
+  .object({
+    title: z.string().trim().min(1).max(200),
+    description: optionalText(5000),
+    servings: z.number().int().min(1).max(100).default(2),
+    prepMinutes: z.number().int().min(0).max(10_000).nullable().default(null),
+    cookMinutes: z.number().int().min(0).max(10_000).nullable().default(null),
+    sourceUrl: z
+      .url({ protocol: /^https?$/ })
+      .max(2000)
+      .nullable()
+      .default(null),
+    tags: z
+      .array(z.string().trim().min(1).max(40))
+      .max(20)
+      .default([])
+      .transform((tags) => [...new Set(tags)]),
+    ingredients: z.array(recipeIngredientInputSchema).max(200).default([]),
+    steps: z.array(recipeStepInputSchema).max(100).default([]),
+  })
+  .superRefine((input, ctx) => {
+    for (const [index, step] of input.steps.entries()) {
+      if (
+        step.ingredientPositions?.some(
+          (position) => position >= input.ingredients.length,
+        )
+      ) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Ingredient position is outside the recipe",
+          path: ["steps", index, "ingredientPositions"],
+        });
+      }
+    }
+  });
+
+export const recipeCookedInputSchema = z.object({
+  requestId: z.uuid(),
 });
 
 export type RecipeInput = z.input<typeof recipeInputSchema>;
