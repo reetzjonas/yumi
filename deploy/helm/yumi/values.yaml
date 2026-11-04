@@ -55,6 +55,61 @@ postgresql:
   tolerations: []
   affinity: {}
 
+# Logical database backups to storage outside this cluster. See docs/backups.md.
+backup:
+  enabled: false
+  schedule: "0 3 * * *"
+  timeZone: Etc/UTC
+  suspend: false
+  startingDeadlineSeconds: 3600
+  activeDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  # Must be at least the server's major version; defaults match bundled PostgreSQL.
+  postgresImage:
+    repository: postgres
+    tag: 18-alpine
+    pullPolicy: IfNotPresent
+  uploadImage:
+    repository: public.ecr.aws/aws-cli/aws-cli
+    tag: "2.31.29"
+    pullPolicy: IfNotPresent
+  database:
+    # Optional dedicated Secret containing a libpq connection URL.
+    # Otherwise use bundled PostgreSQL credentials or the app's DATABASE_URL.
+    existingSecret: ""
+    secretKey: DATABASE_URL
+  s3:
+    bucket: ""
+    # Use a unique prefix per installation. Configure a 30-day bucket lifecycle
+    # for this prefix before enabling backups; the job never deletes objects.
+    prefix: yumi
+    region: us-east-1
+    # Empty uses AWS S3. Custom endpoints must use HTTPS.
+    endpoint: ""
+    forcePathStyle: true
+    # Required keys: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY.
+    # Optional: AWS_SESSION_TOKEN, AWS_CA_BUNDLE (with a custom CA volume).
+    existingSecret: ""
+  # Disk-backed scratch space must fit a full compressed dump.
+  scratchSizeLimit: 10Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  # Optional CA certificates / libpq TLS material supplied by Secret volumes.
+  extraEnv: []
+  extraVolumes: []
+  extraVolumeMounts: []
+  networkPolicy:
+    # Additional rules for private S3 endpoints or external DBs on other ports.
+    extraEgress: []
+
 service:
   type: ClusterIP
   port: 80
@@ -82,7 +137,7 @@ httpRoute:
 
 networkPolicy:
   # Restrict app ingress to `ingressFrom` peers, app egress to DNS, PostgreSQL
-  # and public HTTPS (AI providers), PostgreSQL ingress to the app.
+  # and public HTTPS (AI providers), PostgreSQL ingress to the app and backups.
   enabled: false
   # Peers allowed to reach the app, e.g. your ingress controller's namespace.
   ingressFrom: []

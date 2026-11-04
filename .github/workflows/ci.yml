@@ -41,12 +41,20 @@ jobs:
       - run: bun run typecheck
       - run: bun run test
       - run: bun run build
+      - run: sh deploy/tests/backup-restore.sh
+        env:
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
 
   chart:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       - uses: azure/setup-helm@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python3 -m pip install 'PyYAML>=6,<7'
+      - run: python3 deploy/tests/backups.py
       - run: helm lint deploy/helm/yumi --set baseUrl=https://yumi.example.com
       - run: helm template yumi deploy/helm/yumi --set baseUrl=https://yumi.example.com --set ingress.enabled=true --set networkPolicy.enabled=true > /dev/null
 

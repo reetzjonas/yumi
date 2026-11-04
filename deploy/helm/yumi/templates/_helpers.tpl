@@ -27,6 +27,15 @@ app.kubernetes.io/name: yumi-postgresql
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
+{{- define "yumi.backup.fullname" -}}
+{{- printf "%s-backup" (include "yumi.fullname" . | trunc 45 | trimSuffix "-") -}}
+{{- end -}}
+
+{{- define "yumi.backup.selectorLabels" -}}
+app.kubernetes.io/name: yumi-backup
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
 {{- define "yumi.image" -}}
 {{- printf "%s:%s" .Values.image.repository (default .Chart.AppVersion .Values.image.tag) -}}
 {{- end -}}
@@ -50,5 +59,31 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 {{- if and .Values.secrets.existingSecret .Values.postgresql.enabled (not .Values.postgresql.auth.existingSecret) -}}
 {{- fail "with secrets.existingSecret and the bundled postgresql, also set postgresql.auth.existingSecret" -}}
+{{- end -}}
+{{- if .Values.backup.enabled -}}
+{{- if not .Values.backup.s3.existingSecret -}}
+{{- fail "backup.s3.existingSecret is required when backup.enabled=true" -}}
+{{- end -}}
+{{- if not (regexMatch "^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$" .Values.backup.s3.bucket) -}}
+{{- fail "backup.s3.bucket must be a valid S3 bucket name (3-63 characters)" -}}
+{{- end -}}
+{{- if not (regexMatch "^[A-Za-z0-9_-]+(/[A-Za-z0-9_-]+)*$" .Values.backup.s3.prefix) -}}
+{{- fail "backup.s3.prefix must be a nonempty path of letters, digits, underscores or hyphens without trailing slash" -}}
+{{- end -}}
+{{- if and .Values.backup.s3.endpoint (not (hasPrefix "https://" .Values.backup.s3.endpoint)) -}}
+{{- fail "backup.s3.endpoint must use HTTPS" -}}
+{{- end -}}
+{{- if not .Values.backup.schedule -}}
+{{- fail "backup.schedule is required" -}}
+{{- end -}}
+{{- if not .Values.backup.timeZone -}}
+{{- fail "backup.timeZone is required" -}}
+{{- end -}}
+{{- if or (lt (int .Values.backup.startingDeadlineSeconds) 1) (lt (int .Values.backup.activeDeadlineSeconds) 1) -}}
+{{- fail "backup deadlines must be positive" -}}
+{{- end -}}
+{{- if and .Values.backup.database.existingSecret (not .Values.backup.database.secretKey) -}}
+{{- fail "backup.database.secretKey is required with backup.database.existingSecret" -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}

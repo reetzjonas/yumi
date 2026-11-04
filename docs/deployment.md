@@ -112,7 +112,9 @@ your gateway, Tailscale HTTPS (`tailscale serve`), or an internal CA trusted by 
   prevents concurrent migration runs; upgrades have a short downtime.
 - `/api/health` serves the startup, readiness and liveness probes (process only, no DB check yet).
 - Rollback: deploy the previous image tag. Migrations are not rolled back.
-- Backups are not part of the chart: back up the PostgreSQL volume or use `pg_dump` (see #36).
+- Scheduled off-cluster PostgreSQL backups are opt-in via `backup.enabled`.
+  See [Backups and restore](backups.md) for S3 credentials, retention, network
+  access, monitoring and the tested restore procedure.
 
 ## Build
 

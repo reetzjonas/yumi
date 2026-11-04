@@ -1,0 +1,186 @@
+{{- if .Values.backup.enabled }}
+{{- $backup := .Values.backup -}}
+{{- $name := include "yumi.backup.fullname" . -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "yumi.labels" . | nindent 4 }}
+data:
+  backup.sh: |
+    {{- .Files.Get "files/backup.sh" | nindent 4 }}
+  upload.sh: |
+    {{- .Files.Get "files/upload.sh" | nindent 4 }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "yumi.labels" . | nindent 4 }}
+spec:
+  schedule: {{ $backup.schedule | quote }}
+  timeZone: {{ $backup.timeZone | quote }}
+  suspend: {{ $backup.suspend }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: {{ $backup.startingDeadlineSeconds }}
+  successfulJobsHistoryLimit: {{ $backup.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ $backup.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: {{ $backup.activeDeadlineSeconds }}
+      template:
+        metadata:
+          labels:
+            {{- include "yumi.backup.selectorLabels" . | nindent 12 }}
+        spec:
+          restartPolicy: Never
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          initContainers:
+            - name: dump
+              image: {{ printf "%s:%s" $backup.postgresImage.repository $backup.postgresImage.tag | quote }}
+              imagePullPolicy: {{ $backup.postgresImage.pullPolicy }}
+              command: ["/bin/sh", "/scripts/backup.sh"]
+              env:
+                - name: BACKUP_DIR
+                  value: /backup
+                - name: PGCONNECT_TIMEOUT
+                  value: "30"
+                {{- if or $backup.database.existingSecret (not .Values.postgresql.enabled) }}
+                - name: DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ default (include "yumi.secretName" .) $backup.database.existingSecret }}
+                      key: {{ $backup.database.secretKey }}
+                {{- else }}
+                - name: PGHOST
+                  value: {{ include "yumi.postgresql.fullname" . }}
+                - name: PGPORT
+                  value: "5432"
+                - name: PGUSER
+                  value: {{ .Values.postgresql.username | quote }}
+                - name: PGDATABASE
+                  value: {{ .Values.postgresql.database | quote }}
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "yumi.postgresql.secretName" . }}
+                      key: POSTGRES_PASSWORD
+                {{- end }}
+                {{- with $backup.extraEnv }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
+              resources:
+                {{- toYaml $backup.resources | nindent 16 }}
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: scripts
+                  mountPath: /scripts
+                  readOnly: true
+                - name: tmp
+                  mountPath: /tmp
+                {{- with $backup.extraVolumeMounts }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
+          containers:
+            - name: upload
+              image: {{ printf "%s:%s" $backup.uploadImage.repository $backup.uploadImage.tag | quote }}
+              imagePullPolicy: {{ $backup.uploadImage.pullPolicy }}
+              command: ["/bin/sh", "/scripts/upload.sh"]
+              envFrom:
+                - secretRef:
+                    name: {{ $backup.s3.existingSecret }}
+              env:
+                - name: BACKUP_DIR
+                  value: /backup
+                - name: BACKUP_ID
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.uid
+                - name: S3_BUCKET
+                  value: {{ $backup.s3.bucket | quote }}
+                - name: S3_PREFIX
+                  value: {{ $backup.s3.prefix | quote }}
+                - name: S3_ENDPOINT
+                  value: {{ $backup.s3.endpoint | quote }}
+                - name: S3_FORCE_PATH_STYLE
+                  value: {{ $backup.s3.forcePathStyle | quote }}
+                - name: AWS_DEFAULT_REGION
+                  value: {{ $backup.s3.region | quote }}
+                - name: AWS_EC2_METADATA_DISABLED
+                  value: "true"
+                - name: AWS_CONFIG_FILE
+                  value: /tmp/aws-config
+                - name: AWS_SHARED_CREDENTIALS_FILE
+                  value: /tmp/aws-credentials
+                # Avoid optional checksum extensions unsupported by some S3 providers.
+                - name: AWS_REQUEST_CHECKSUM_CALCULATION
+                  value: WHEN_REQUIRED
+                - name: AWS_RESPONSE_CHECKSUM_VALIDATION
+                  value: WHEN_REQUIRED
+                {{- with $backup.extraEnv }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
+              resources:
+                {{- toYaml $backup.resources | nindent 16 }}
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                  readOnly: true
+                - name: scripts
+                  mountPath: /scripts
+                  readOnly: true
+                - name: tmp
+                  mountPath: /tmp
+                {{- with $backup.extraVolumeMounts }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
+          volumes:
+            - name: backup
+              emptyDir:
+                sizeLimit: {{ $backup.scratchSizeLimit }}
+            - name: scripts
+              configMap:
+                name: {{ $name }}
+            - name: tmp
+              emptyDir: {}
+            {{- with $backup.extraVolumes }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with $backup.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $backup.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $backup.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}
