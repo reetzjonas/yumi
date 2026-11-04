@@ -72,6 +72,28 @@ describe("structured recipe extraction", () => {
     expect(extractRecipe(html, source).imageUrl).toBe(expected);
   });
 
+  test("drops a lone section heading from the cooking steps", () => {
+    const html = `<script type="application/ld+json">${JSON.stringify({
+      "@type": "Recipe",
+      name: "Curryrahm-Nudeln mit Hackfleisch",
+      recipeIngredient: ["500 g Nudeln"],
+      recipeInstructions: [
+        {
+          "@type": "HowToSection",
+          name: "Zubereitung",
+          itemListElement: [
+            { "@type": "HowToStep", text: "Nudeln kochen." },
+            { "@type": "HowToStep", text: "Hackfleisch anbraten." },
+          ],
+        },
+      ],
+    })}</script>`;
+    expect(extractRecipe(html, source).draft.steps).toEqual([
+      { text: "Nudeln kochen.", ingredientPositions: null },
+      { text: "Hackfleisch anbraten.", ingredientPositions: null },
+    ]);
+  });
+
   test("finds arrays and graphs after malformed JSON-LD and preserves section titles", async () => {
     const result = extractRecipe(await fixture("bbc-graph"), source);
     expect(result.draft.servings).toBe(6);
@@ -96,11 +118,7 @@ describe("structured recipe extraction", () => {
       prepMinutes: 10,
       cookMinutes: 35,
       ingredients: [{ quantity: 250 }, { rawText: "100 g Käse" }],
-      steps: [
-        { text: "Vorbereitung" },
-        { text: "Nudeln kochen." },
-        { text: "Mit Käse backen." },
-      ],
+      steps: [{ text: "Nudeln kochen." }, { text: "Mit Käse backen." }],
     });
     expect(result.imageUrl).toBe("https://recipes.example/gratin.png");
     expect(recipeInputSchema.safeParse(result.draft).success).toBe(true);

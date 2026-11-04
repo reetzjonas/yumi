@@ -92,14 +92,28 @@ function servings(value: unknown): number {
   return 2;
 }
 
-function steps(value: unknown, depth = 0): { text: string }[] {
+function isSection(data: Data | null): boolean {
+  return Boolean(
+    data && (isType(data["@type"], "HowToSection") || data.itemListElement),
+  );
+}
+
+function steps(
+  value: unknown,
+  depth = 0,
+  sectionTitles = true,
+): { text: string }[] {
   if (depth > 32) throw new RecipeImportError("invalid_recipe");
   return values(value).flatMap((entry) => {
     const data = object(entry);
     if (data) {
-      if (isType(data["@type"], "HowToSection") || data.itemListElement) {
+      if (isSection(data)) {
         const title = text(data.name);
         const children = steps(data.itemListElement ?? data.steps, depth + 1);
+        // A lone section is just an umbrella such as "Zubereitung", so its
+        // title would read as an extra cooking step. Only titles that separate
+        // several sections add information worth keeping.
+        if (!sectionTitles && children.length > 0) return children;
         return title ? [{ text: title }, ...children] : children;
       }
       const value = text(data.text ?? data.name);
@@ -113,6 +127,11 @@ function steps(value: unknown, depth = 0): { text: string }[] {
       .filter(Boolean)
       .map((text) => ({ text }));
   });
+}
+
+function instructions(value: unknown): { text: string }[] {
+  const top = values(value);
+  return steps(value, 0, top.length !== 1 || !isSection(object(top[0])));
 }
 
 function image(
@@ -171,7 +190,7 @@ function mapRecipe(
     cookMinutes: durationMinutes(data.cookTime),
     sourceUrl,
     ingredients,
-    steps: steps(data.recipeInstructions),
+    steps: instructions(data.recipeInstructions),
     tags: [],
   });
   return parsed.success
