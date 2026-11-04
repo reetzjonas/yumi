@@ -1,0 +1,31 @@
+.import-form > .recipe-actions,
+.import-form > form {
+  margin-bottom: 24px;
+}
+
+.import-form > form {
+  display: grid;
+  gap: 16px;
+}
+
+.import-form [aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.photo-import-pages {
+  padding-inline-start: 24px;
+  margin-block: 16px;
+}
+
+.photo-import-pages li {
+  padding-block: 4px;
+}
+
+.photo-import-pages li > span {
+  overflow-wrap: anywhere;
+}
+
+.photo-import-pages button {
+  margin-inline-start: 8px;
+}

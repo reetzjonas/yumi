@@ -29,4 +29,20 @@ URL entry points: paste a URL or share it from a mobile browser into the install
 The manifest registers a GET Web Share Target at `/recipes/import`; the landing page validates URLs
 from the share `url`, Android `text`, or a URL-only `title`. Login, signup and household creation
 preserve the source URL. Loading the page does not fetch or save a recipe; the user starts the import.
-Photo import is planned separately (vision LLM, same schema as step 4).
+
+Photo import uses `POST /api/recipes/import/photos` with ordered multipart
+`photos[]` files. The picker accepts multiple uploads and a camera input can
+append another page. Up to five JPEG, PNG or WebP pages are allowed, each nonempty
+and at most 10 MiB and 24 megapixels. The server verifies the decoded format,
+applies orientation and resizes each page inside 2400 x 2400 before sending WebP
+images to the configured recipe-import model.
+
+The model must support image input. `GET /api/recipes/import/capabilities`
+reports whether the recipe-import AI feature is configured and enabled. When it
+is unavailable, manual recipe entry becomes the primary action. Failed extraction
+keeps the selected pages and offers a retry or manual entry. Images are treated
+as untrusted source material and must describe one recipe.
+
+Vision extraction uses the same recipe schema and household catalog linking as
+URL import, then opens the same unsaved review editor. Cookbook pages are neither
+stored nor used as recipe cover images; only an explicit save creates the recipe.

@@ -163,6 +163,15 @@ On phones, tag filters are one horizontally scrolling strip. Safe-area insets ex
 
 ## 7. Component patterns
 
+Layout: Photo import - choose a link or ordered cookbook pages, then review the
+draft in the existing recipe editor -> stack inside the import section; scroll
+owner: `.app-main`; avoid nested scrolling and fixed-width file names.
+The primary action loads the selected source; manual entry stays beside the
+import controls and becomes primary when photo AI is unavailable. Reading
+priorities are source, upload limits and page order, then extraction. File and
+camera inputs, ordered removable pages, pending state, inline errors and the
+explicit unsaved review are required. Cookbook pages are not recipe cover images.
+
 - **Button:** primary (filled rust), outline, ghost, destructive. Fixed geometry
   in every state; press scales to 0.98.
 - **Queue row:** position, drag handle, thumbnail, title, meta line

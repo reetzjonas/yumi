@@ -59,6 +59,20 @@ export function translateApiError(
       return m["errors.import_failed"]({}, options);
     case "import_invalid_url":
       return m["errors.import_invalid_url"]({}, options);
+    case "photo_import_count":
+      return m["errors.photo_import_count"]({}, options);
+    case "photo_import_type":
+      return m["errors.photo_import_type"]({}, options);
+    case "photo_import_size":
+      return m["errors.photo_import_size"]({}, options);
+    case "photo_import_invalid":
+      return m["errors.photo_import_invalid"]({}, options);
+    case "photo_import_unavailable":
+      return m["errors.photo_import_unavailable"]({}, options);
+    case "photo_import_failed":
+      return m["errors.photo_import_failed"]({}, options);
+    case "photo_import_no_recipe":
+      return m["errors.photo_import_no_recipe"]({}, options);
     case "internal_error":
       return m["errors.internal_error"]({}, options);
     default:

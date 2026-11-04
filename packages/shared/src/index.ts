@@ -3,6 +3,7 @@ export * from "./cooking-timers";
 export * from "./health";
 export * from "./ingredient-line";
 export * from "./leftovers";
+export * from "./photo-import";
 export * from "./planning";
 export * from "./recipes";
 export * from "./recurring";

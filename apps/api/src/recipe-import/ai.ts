@@ -4,7 +4,7 @@ import type { ai } from "../ai";
 import type { RecipeExtractionError } from "./errors";
 import type { ExtractedRecipe } from "./extract";
 
-const extractionSchema = z.object({
+export const extractionSchema = z.object({
   recipe: z
     .object({
       title: z.string().trim().min(1).max(200),

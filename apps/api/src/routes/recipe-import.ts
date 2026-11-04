@@ -1,4 +1,6 @@
+import { PHOTO_IMPORT_MAX_BYTES, PHOTO_IMPORT_MAX_COUNT } from "@yumi/shared";
 import { Hono } from "hono";
+import { bodyLimit } from "hono/body-limit";
 import { HTTPException } from "hono/http-exception";
 import { validator } from "hono/validator";
 import { z } from "zod";
@@ -7,9 +9,11 @@ import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
 import { parseIngredientLines } from "../ingredient-parsing";
 import {
   importRecipe,
+  type RecipeImportDraft,
   RecipeImportError,
   type RecipeImportErrorCode,
 } from "../recipe-import";
+import { importPhotoRecipe } from "../recipe-import/photos";
 import type { RecipeHttpTransport } from "../recipe-import/transport";
 
 const importInputSchema = z.object({
@@ -51,12 +55,28 @@ export async function importRecipeDraft(
     if (error instanceof RecipeImportError) throw apiError(error.code);
     throw error;
   }
+  return {
+    draft: await linkDraftIngredients(householdId, imported.draft, client),
+    method: imported.method,
+    image: imported.image && {
+      mimeType: imported.image.mimeType,
+      dataBase64: Buffer.from(imported.image.bytes).toString("base64"),
+    },
+    warnings: imported.warnings,
+  };
+}
+
+async function linkDraftIngredients(
+  householdId: string,
+  draft: RecipeImportDraft,
+  client: typeof ai,
+) {
   const parsed = await parseIngredientLines(
     householdId,
-    imported.draft.ingredients.map((line) => line.rawText),
+    draft.ingredients.map((line) => line.rawText),
     client,
   );
-  const ingredients = imported.draft.ingredients.map((line, index) => {
+  const ingredients = draft.ingredients.map((line, index) => {
     const match = parsed[index];
     return {
       ...line,
@@ -67,19 +87,41 @@ export async function importRecipeDraft(
       ingredientId: match?.ingredient?.id ?? null,
     };
   });
-  return {
-    draft: { ...imported.draft, ingredients },
-    method: imported.method,
-    image: imported.image && {
-      mimeType: imported.image.mimeType,
-      dataBase64: Buffer.from(imported.image.bytes).toString("base64"),
-    },
-    warnings: imported.warnings,
-  };
+  return { ...draft, ingredients };
 }
 
 export const recipeImport = new Hono<HouseholdEnv>()
   .use(requireAuth, requireHousehold)
+  .get("/import/capabilities", (c) =>
+    c.json({ photos: ai.capability("recipe-import").available }),
+  )
+  .post(
+    "/import/photos",
+    bodyLimit({
+      maxSize: PHOTO_IMPORT_MAX_COUNT * PHOTO_IMPORT_MAX_BYTES + 64 * 1024,
+      onError: () => {
+        throw new HTTPException(413, { message: "photo_import_size" });
+      },
+    }),
+    validator("form", (value) => {
+      const files = z
+        .object({ "photos[]": z.array(z.instanceof(File)) })
+        .strict()
+        .safeParse(value);
+      if (!files.success)
+        throw new HTTPException(400, { message: "photo_import_count" });
+      return files.data;
+    }),
+    async (c) => {
+      const draft = await importPhotoRecipe(c.req.valid("form")["photos[]"]);
+      return c.json({
+        draft: await linkDraftIngredients(c.get("householdId"), draft, ai),
+        method: "photos" as const,
+        image: null,
+        warnings: [],
+      });
+    },
+  )
   .post(
     "/import",
     validator("json", (value) => importInputSchema.parse(value)),
