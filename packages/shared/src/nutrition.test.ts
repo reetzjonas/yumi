@@ -3,6 +3,7 @@ import { ingredientInputSchema } from "./catalog";
 import {
   calculateRecipeNutrition,
   type NutritionValues,
+  nutritionForPortions,
   nutritionValuesSchema,
   type RecipeNutritionLine,
 } from "./nutrition";
@@ -59,6 +60,21 @@ describe("nutrition input", () => {
       ).toBe(false);
     },
   );
+});
+
+describe("nutritionForPortions", () => {
+  test("scales every nutrient to the selected number of portions", () => {
+    expect(nutritionForPortions(profile, 3)).toEqual({
+      energyKcal: 600,
+      proteinG: 36,
+      fatG: 24,
+      carbsG: 90,
+      sugarG: 12,
+      fiberG: 18,
+      saltG: 0.75,
+    });
+    expect(nutritionForPortions(profile, 1)).toEqual(profile);
+  });
 });
 
 describe("calculateRecipeNutrition", () => {

@@ -17,6 +17,22 @@ export type NutritionValues = Readonly<z.infer<typeof nutritionValuesSchema>>;
 
 const nutrientKeys = nutritionValuesSchema.keyof().options;
 
+/** Scales per-serving values to a chosen number of portions. */
+export function nutritionForPortions(
+  perServing: NutritionValues,
+  portions: number,
+): NutritionValues {
+  return {
+    energyKcal: perServing.energyKcal * portions,
+    proteinG: perServing.proteinG * portions,
+    fatG: perServing.fatG * portions,
+    carbsG: perServing.carbsG * portions,
+    sugarG: perServing.sugarG * portions,
+    fiberG: perServing.fiberG * portions,
+    saltG: perServing.saltG * portions,
+  };
+}
+
 export type RecipeNutritionLine = {
   readonly quantity: number | null;
   readonly unit: Unit | null;

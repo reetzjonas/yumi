@@ -1,4 +1,6 @@
-import type { NutritionValues } from "@yumi/shared";
+import { type NutritionValues, nutritionForPortions } from "@yumi/shared";
+import { useState } from "react";
+import { ServingsStepper } from "@/components/recipes/servings-selector";
 import { formatNumber } from "@/lib/i18n";
 import type { RecipeDetail } from "@/lib/recipes";
 import { m } from "@/paraglide/messages";
@@ -22,15 +24,31 @@ export function RecipeNutrition({
 }: {
   nutrition: NonNullable<RecipeDetail["nutrition"]>;
 }) {
+  const [portions, setPortions] = useState(1);
+  const values = nutritionForPortions(nutrition.perServing, portions);
   return (
     <details className="recipe-nutrition-details">
       <summary>{m["recipes.nutrition_title"]()}</summary>
+      <div className="nutrition-portions">
+        <span>{m["recipes.nutrition_for"]()}</span>
+        <ServingsStepper
+          compact
+          value={portions}
+          onChange={setPortions}
+          label={m["recipes.servings"]()}
+        />
+        <span>
+          {portions === 1
+            ? m["recipes.nutrition_portion"]()
+            : m["recipes.nutrition_portions"]()}
+        </span>
+      </div>
       <dl className="recipe-nutrition">
         {NUTRIENTS.map(([key, label, unit]) => (
           <div key={key}>
             <dt>{label()}</dt>
             <dd>
-              {formatNumber(nutrition.perServing[key], {
+              {formatNumber(values[key], {
                 maximumFractionDigits: key === "energyKcal" ? 0 : 1,
               })}{" "}
               {unit}

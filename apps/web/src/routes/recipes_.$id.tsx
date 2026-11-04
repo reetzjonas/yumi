@@ -303,7 +303,10 @@ function Recipe() {
                   </>
                 )}
                 {recipe.nutrition && (
-                  <RecipeNutrition nutrition={recipe.nutrition} />
+                  <RecipeNutrition
+                    key={`${recipe.id}-nutrition`}
+                    nutrition={recipe.nutrition}
+                  />
                 )}
               </section>
             </div>

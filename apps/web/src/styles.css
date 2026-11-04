@@ -1144,6 +1144,16 @@ select:focus-visible {
   gap: 12px 24px;
   margin: 0;
 }
+.nutrition-portions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.nutrition-portions > span {
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
 .recipe-nutrition dt {
   color: var(--muted-foreground);
 }
