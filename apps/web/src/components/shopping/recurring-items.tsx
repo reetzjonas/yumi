@@ -89,12 +89,7 @@ export function RecurringItems({ listId }: { listId: string }) {
     onError: (error) => toast.error(errorMessage(error)),
   });
   return (
-    <details className="section shopping-catalog recurring-items">
-      <summary>
-        {m["recurring.title"]()}
-        {!!rules.data?.length && ` (${rules.data.length})`}
-      </summary>
-      <p className="section-description">{m["recurring.description"]()}</p>
+    <section className="recurring-items">
       {rules.isError && (
         <p className="form-error" role="alert">
           {errorMessage(rules.error)}
@@ -252,6 +247,6 @@ export function RecurringItems({ listId }: { listId: string }) {
           </Button>
         </fieldset>
       </form>
-    </details>
+    </section>
   );
 }

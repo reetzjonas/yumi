@@ -508,5 +508,22 @@
   "cooking.for_step": "For this step",
   "cooking.all_ingredients": "All ingredients",
   "cooking.enjoy": "Enjoy your meal!",
-  "cooking.how_was_it": "How was it?"
+  "cooking.how_was_it": "How was it?",
+  "more.stores_detail": "{count} stores · aisle order",
+  "more.pantry_detail": "Ingredients that are always at home",
+  "more.recurring_detail": "Added to the list automatically",
+  "more.settings_detail": "Language, appearance, AI status",
+  "more.footer": "yumi {version} · self-hosted",
+  "about.title": "About yumi",
+  "about.version": "Version",
+  "about.instance": "Instance",
+  "about.operation": "Operation",
+  "about.self_hosted": "self-hosted",
+  "about.source": "Source code",
+  "settings.ai_title": "AI help",
+  "settings.ai_on": "Available",
+  "settings.ai_off": "Off",
+  "settings.ai_on_text": "Provided by your instance. yumi only uses it when you trigger it: importing pages without recipe data and photo import.",
+  "settings.ai_off_text": "This instance has no AI configured. Add recipes by hand or from a link.",
+  "settings.theme_system_short": "System"
 }

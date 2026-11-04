@@ -11,7 +11,6 @@ import {
   ListManager,
 } from "@/components/shopping/list-manager";
 import { QuickAdd } from "@/components/shopping/quick-add";
-import { RecurringItems } from "@/components/shopping/recurring-items";
 import { ShoppingItems } from "@/components/shopping/shopping-items";
 import { StoreSelect } from "@/components/shopping/store-select";
 import { ShoppingSyncStatus } from "@/components/shopping/sync-status";
@@ -139,7 +138,6 @@ function HouseholdLists() {
           >
             {m["shopping.add_from_recipe"]()}
           </Button>
-          <RecurringItems key={`recurring-${listId}`} listId={listId} />
           {open > 0 && (
             <div className="sticky-action">
               <Button asChild className="w-full">

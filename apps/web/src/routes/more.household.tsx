@@ -132,7 +132,7 @@ function Household() {
       />
 
       <section className="section">
-        <h2>{m["household.members"]()}</h2>
+        <h2 className="section-label">{m["household.members"]()}</h2>
         {org.isPending ? (
           <Skeleton className="h-16 w-full" />
         ) : (
@@ -167,7 +167,7 @@ function Household() {
 
       {canManage && (
         <section className="section">
-          <h2>{m["household.invites"]()}</h2>
+          <h2 className="section-label">{m["household.invites"]()}</h2>
           <p className="section-description">
             {m["household.invites_description"]()}
           </p>
@@ -221,7 +221,7 @@ function Household() {
 
       {me && me.households.length > 1 && (
         <section className="section">
-          <h2>{m["household.switch"]()}</h2>
+          <h2 className="section-label">{m["household.switch"]()}</h2>
           <ul className="row-list">
             {me.households
               .filter((h) => h.id !== householdId)
@@ -241,10 +241,14 @@ function Household() {
       )}
 
       <section className="section section-actions">
-        <Button asChild variant="secondary">
+        <Button asChild variant="outline" className="w-full">
           <Link to="/onboarding">{m["household.create_title"]()}</Link>
         </Button>
-        <Button variant="ghost" onClick={() => void leave()}>
+        <Button
+          variant="outline"
+          className="w-full button-danger-text"
+          onClick={() => void leave()}
+        >
           {m["household.leave"]()}
         </Button>
       </section>

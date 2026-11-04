@@ -48,7 +48,7 @@ function Pantry() {
         back={<BackLink to="/more" label={m.nav_more()} />}
       />
       <section className="section">
-        <h2>{m["pantry.add"]()}</h2>
+        <h2 className="section-label">{m["pantry.add"]()}</h2>
         <p className="section-description">{m["pantry.description"]()}</p>
         <CatalogPicker
           onSelect={(ingredient) =>
@@ -70,7 +70,7 @@ function Pantry() {
         />
       ) : (
         <section className="section">
-          <h2>{m["pantry.title"]()}</h2>
+          <h2 className="section-label">{m["pantry.title"]()}</h2>
           <ul className="row-list store-list">
             {staples.data
               .map((staple) => ({ ...staple, name: ingredientName(staple) }))

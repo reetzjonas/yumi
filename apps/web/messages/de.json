@@ -508,5 +508,22 @@
   "cooking.for_step": "Für diesen Schritt",
   "cooking.all_ingredients": "Alle Zutaten",
   "cooking.enjoy": "Guten Appetit!",
-  "cooking.how_was_it": "Wie war’s?"
+  "cooking.how_was_it": "Wie war’s?",
+  "more.stores_detail": "{count} Läden · Reihenfolge der Gänge",
+  "more.pantry_detail": "Zutaten, die immer zu Hause sind",
+  "more.recurring_detail": "Kommen automatisch auf die Liste",
+  "more.settings_detail": "Sprache, Darstellung, KI-Status",
+  "more.footer": "yumi {version} · selbst gehostet",
+  "about.title": "Über yumi",
+  "about.version": "Version",
+  "about.instance": "Instanz",
+  "about.operation": "Betrieb",
+  "about.self_hosted": "selbst gehostet",
+  "about.source": "Quellcode",
+  "settings.ai_title": "KI-Hilfe",
+  "settings.ai_on": "Verfügbar",
+  "settings.ai_off": "Aus",
+  "settings.ai_on_text": "Von deiner Instanz bereitgestellt. yumi nutzt sie nur, wenn du sie auslöst: beim Import ohne Rezept-Daten und beim Foto-Import.",
+  "settings.ai_off_text": "Auf dieser Instanz ist keine KI eingerichtet. Rezepte legst du von Hand oder per Link an.",
+  "settings.theme_system_short": "System"
 }

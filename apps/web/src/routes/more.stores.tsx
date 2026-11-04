@@ -49,28 +49,6 @@ function Stores() {
         title={m["stores.title"]()}
         back={<BackLink to="/more" label={m.nav_more()} />}
       />
-      <section className="section">
-        <h2>{m["stores.create"]()}</h2>
-        <p className="section-description">{m["stores.description"]()}</p>
-        <form
-          className="shopping-list-form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            if (name.trim()) create.mutate();
-          }}
-        >
-          <Field
-            id="store-name"
-            label={m["stores.name"]()}
-            value={name}
-            maxLength={60}
-            onChange={(event) => setName(event.target.value)}
-          />
-          <Button disabled={create.isPending || !name.trim()}>
-            {m["stores.create"]()}
-          </Button>
-        </form>
-      </section>
       {error ? (
         <p className="form-error" role="alert">
           {errorMessage(error)}
@@ -85,7 +63,7 @@ function Stores() {
         />
       ) : (
         <section className="section">
-          <h2>{m["stores.title"]()}</h2>
+          <h2 className="section-label">{m["stores.title"]()}</h2>
           <ul className="row-list store-list">
             {stores.data.map((store) => (
               <li key={store.id} className="store-entry">
@@ -121,6 +99,28 @@ function Stores() {
           </ul>
         </section>
       )}
+      <section className="section">
+        <h2 className="section-label">{m["stores.create"]()}</h2>
+        <p className="section-description">{m["stores.description"]()}</p>
+        <form
+          className="shopping-list-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (name.trim()) create.mutate();
+          }}
+        >
+          <Field
+            id="store-name"
+            label={m["stores.name"]()}
+            value={name}
+            maxLength={60}
+            onChange={(event) => setName(event.target.value)}
+          />
+          <Button disabled={create.isPending || !name.trim()}>
+            {m["stores.create"]()}
+          </Button>
+        </form>
+      </section>
     </div>
   );
 }

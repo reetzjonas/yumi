@@ -1,4 +1,3 @@
-import { CookingPot } from "lucide-react";
 import type { ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -15,10 +14,7 @@ export function AuthLayout({
   return (
     <div className="auth-layout">
       <main className="auth-card">
-        <div className="brand auth-brand">
-          <CookingPot aria-hidden="true" strokeWidth={1.8} />
-          <span>yumi</span>
-        </div>
+        <p className="auth-brand">yumi</p>
         <h1>{title}</h1>
         {description && <p className="auth-description">{description}</p>}
         {children}
