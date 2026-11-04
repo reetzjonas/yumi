@@ -525,5 +525,6 @@
   "settings.ai_off": "Aus",
   "settings.ai_on_text": "Von deiner Instanz bereitgestellt. yumi nutzt sie nur, wenn du sie auslöst: beim Import ohne Rezept-Daten und beim Foto-Import.",
   "settings.ai_off_text": "Auf dieser Instanz ist keine KI eingerichtet. Rezepte legst du von Hand oder per Link an.",
-  "settings.theme_system_short": "System"
+  "settings.theme_system_short": "System",
+  "shopping.clear_done": "Erledigte entfernen"
 }

@@ -274,7 +274,7 @@ function FocusedList({ list }: { list: ShoppingList }) {
             events.mutate(checkedIds.map((id) => itemEvent(id, "item_removed")))
           }
         >
-          {m["shopping.clear_checked"]()}
+          {m["shopping.clear_done"]()}
         </Button>
         <Button type="button" onClick={() => void navigate({ to: "/list" })}>
           {m["shopping.finish"]()}

@@ -525,5 +525,6 @@
   "settings.ai_off": "Off",
   "settings.ai_on_text": "Provided by your instance. yumi only uses it when you trigger it: importing pages without recipe data and photo import.",
   "settings.ai_off_text": "This instance has no AI configured. Add recipes by hand or from a link.",
-  "settings.theme_system_short": "System"
+  "settings.theme_system_short": "System",
+  "shopping.clear_done": "Remove done"
 }
