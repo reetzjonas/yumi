@@ -13,6 +13,11 @@ Alpha sketch, the Drizzle schema is the source of truth once it exists. Every ho
 - `ingredient`: name_en, name_de, synonyms[], category_id, default_unit, density_g_per_ml?, piece_weight_g?,
   pack_sizes (jsonb), icon, `household_id` nullable (null = global seed, set = household-specific),
   `key` (unique slug of global seed entries; the seed in `packages/db/src/seed` upserts by it).
+- Household ingredient creation reviews German/English names, synonyms, category, default unit,
+  pack sizes and icon. `POST /api/ingredients/suggest` returns an unsaved AI proposal or a manual
+  draft when AI is unavailable; only the explicit `POST /api/ingredients` confirmation persists it.
+  AI category keys are resolved against the catalog on the server. Pack sizes use positive
+  quantities and canonical units. Shopping quick-add and recipe import share the review dialog.
 
 ## Recipes
 

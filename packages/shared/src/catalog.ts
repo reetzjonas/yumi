@@ -12,6 +12,15 @@ export const ingredientInputSchema = z
     defaultUnit: unitSchema.nullable().default(null),
     densityGPerMl: z.number().positive().max(25).nullable().default(null),
     pieceWeightG: z.number().positive().max(100_000).nullable().default(null),
+    packSizes: z
+      .array(
+        z.object({
+          quantity: z.number().positive().max(1_000_000),
+          unit: unitSchema,
+        }),
+      )
+      .max(20)
+      .default([]),
     icon: z.string().max(16).nullable().default(null),
   })
   .refine((v) => v.nameDe || v.nameEn, { message: "name_required" })

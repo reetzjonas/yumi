@@ -2,21 +2,18 @@ import { ingredient, ingredientCategory } from "@yumi/db/schema";
 import {
   ingredientInputSchema,
   ingredientSearchSchema,
-  parseIngredientLine,
   parseLinesSchema,
 } from "@yumi/shared";
 import { and, asc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { validator } from "hono/validator";
 import { z } from "zod";
-import {
-  ingredientColumns,
-  matchParsedLine,
-  searchIngredients,
-  visibleTo,
-} from "../catalog";
+import { ingredientColumns, searchIngredients, visibleTo } from "../catalog";
 import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
 import { db } from "../db";
+import { parseIngredientLines } from "../ingredient-parsing";
+import { suggestIngredient } from "../ingredient-suggestions";
 
 async function assertCategoryExists(categoryId: string | null) {
   if (!categoryId) return;
@@ -73,13 +70,16 @@ export const ingredients = new Hono<HouseholdEnv>()
   .post("/parse", async (c) => {
     const { lines } = parseLinesSchema.parse(await c.req.json());
     const householdId = c.get("householdId");
-    const parsed = await Promise.all(
-      lines.map((line) =>
-        matchParsedLine(householdId, parseIngredientLine(line)),
-      ),
-    );
+    const parsed = await parseIngredientLines(householdId, lines);
     return c.json(parsed);
   })
+  .post(
+    "/suggest",
+    validator("json", (value) =>
+      z.object({ name: z.string().trim().min(1).max(100) }).parse(value),
+    ),
+    async (c) => c.json(await suggestIngredient(c.req.valid("json").name)),
+  )
   .get("/:id{[0-9a-f-]{36}}", async (c) => {
     const [row] = await db
       .select(ingredientColumns)
@@ -94,15 +94,19 @@ export const ingredients = new Hono<HouseholdEnv>()
     if (!row) throw new HTTPException(404, { message: "not_found" });
     return c.json(row);
   })
-  .post("/", async (c) => {
-    const input = ingredientInputSchema.parse(await c.req.json());
-    await assertCategoryExists(input.categoryId);
-    const [row] = await db
-      .insert(ingredient)
-      .values({ ...input, householdId: c.get("householdId") })
-      .returning(ingredientColumns);
-    return c.json(row, 201);
-  })
+  .post(
+    "/",
+    validator("json", (value) => ingredientInputSchema.parse(value)),
+    async (c) => {
+      const input = c.req.valid("json");
+      await assertCategoryExists(input.categoryId);
+      const [row] = await db
+        .insert(ingredient)
+        .values({ ...input, householdId: c.get("householdId") })
+        .returning(ingredientColumns);
+      return c.json(row, 201);
+    },
+  )
   .put("/:id{[0-9a-f-]{36}}", async (c) => {
     const input = ingredientInputSchema.parse(await c.req.json());
     await assertCategoryExists(input.categoryId);

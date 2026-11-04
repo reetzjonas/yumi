@@ -885,6 +885,48 @@ select:focus-visible {
   border-radius: var(--radius);
   min-width: 0;
 }
+.ingredient-create-form {
+  min-width: 0;
+}
+.ingredient-draft-fields {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.ingredient-name-fields,
+.ingredient-conversion-fields,
+.ingredient-pack-sizes {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.ingredient-draft-fields input,
+.ingredient-draft-fields select {
+  width: 100%;
+  min-width: 0;
+}
+.ingredient-pack-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+.ingredient-pack-row > button {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+.ingredient-draft-fields summary {
+  min-height: 44px;
+  cursor: pointer;
+}
+.ingredient-create-form .form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 .recipe-fields {
   display: grid;
   gap: 20px;

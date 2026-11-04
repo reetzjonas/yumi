@@ -11,7 +11,8 @@ Pipeline, cheapest step first:
 5. **Ingredient lines** ("200 g Mehl, gesiebt") go through the rule-based parser in `packages/shared`
    (quantity incl. fractions and ranges, unit aliases de/en, name, note). `POST /api/ingredients/parse`
    parses and links lines to the catalog in one call. Lines with confidence below ~0.7 or no catalog
-   match go to the LLM in one batched call, which also proposes new catalog ingredients.
+   match go to the LLM in one batched call. Unlinked lines offer a separate catalog creation
+   dialog with optional AI suggestions and explicit user confirmation.
 6. The user always gets a **review screen** before saving.
 
 Status: steps 1-6 are implemented. `POST /api/recipes/import` (`apps/api/src/routes/recipe-import.ts`,

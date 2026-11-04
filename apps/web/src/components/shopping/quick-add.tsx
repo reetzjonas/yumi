@@ -2,6 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { parseIngredientLine, quickAddFields } from "@yumi/shared";
 import { useId, useState } from "react";
 import { toast } from "sonner";
+import {
+  type CreatedIngredient,
+  CreateIngredient,
+} from "@/components/ingredients/create-ingredient";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import { ensureOk, errorMessage } from "@/lib/api-error";
@@ -15,6 +19,7 @@ export function QuickAdd({ listId }: { listId: string }) {
   const householdId = useMe()?.activeHouseholdId;
   const events = useShoppingEvents(listId);
   const [text, setText] = useState("");
+  const [created, setCreated] = useState<CreatedIngredient | null>(null);
   const parsed = parseIngredientLine(text);
   const q = (parsed.name || text).trim();
   const suggestions = useQuery({
@@ -28,13 +33,36 @@ export function QuickAdd({ listId }: { listId: string }) {
   const [matching, setMatching] = useState(false);
   const busy = events.isPending || matching;
   const add = (fields: ReturnType<typeof quickAddFields>) =>
-    events.mutate([addItemEvent(fields)], { onSuccess: () => setText("") });
+    events.mutate([addItemEvent(fields)], {
+      onSuccess: () => {
+        setText("");
+        setCreated(null);
+      },
+    });
+  const knownName = suggestions.data?.some(
+    (ingredient) =>
+      ingredient.nameDe.toLocaleLowerCase() === q.toLocaleLowerCase() ||
+      ingredient.nameEn.toLocaleLowerCase() === q.toLocaleLowerCase(),
+  );
   return (
     <form
       className="quick-add"
       onSubmit={async (event) => {
         event.preventDefault();
         if (!text.trim()) return;
+        if (created) {
+          add(
+            quickAddFields(
+              { ...parsed, unitText: null },
+              {
+                id: created.id,
+                name: ingredientName(created),
+                categoryId: created.categoryId,
+              },
+            ),
+          );
+          return;
+        }
         setMatching(true);
         try {
           const [line] = await (
@@ -71,7 +99,10 @@ export function QuickAdd({ listId }: { listId: string }) {
           maxLength={200}
           placeholder={m["shopping.quick_placeholder"]()}
           aria-describedby={`${id}-hint`}
-          onChange={(event) => setText(event.target.value)}
+          onChange={(event) => {
+            setText(event.target.value);
+            setCreated(null);
+          }}
         />
         <Button variant="secondary" disabled={busy || !text.trim()}>
           {m["shopping.add"]()}
@@ -80,6 +111,19 @@ export function QuickAdd({ listId }: { listId: string }) {
       <p id={`${id}-hint`} className="row-detail">
         {m["shopping.quick_hint"]()}
       </p>
+      {created && (
+        <p className="row-detail" role="status">
+          {m["ingredients.linked"]({ name: ingredientName(created) })}
+        </p>
+      )}
+      {!created && q.length > 1 && q.length <= 100 && !knownName && (
+        <CreateIngredient
+          key={q}
+          name={q}
+          disabled={busy}
+          onCreated={setCreated}
+        />
+      )}
       {suggestions.isError && (
         <p className="form-error" role="alert">
           {errorMessage(suggestions.error)}

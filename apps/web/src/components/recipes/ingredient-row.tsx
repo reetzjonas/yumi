@@ -1,8 +1,9 @@
 import { UNITS, unitSchema } from "@yumi/shared";
 import { Field } from "@/components/auth-layout";
+import { CreateIngredient } from "@/components/ingredients/create-ingredient";
 import { RowControls } from "@/components/recipes/row-controls";
 import type { IngredientRow } from "@/lib/recipe-editor";
-import { unitLabel } from "@/lib/recipes";
+import { ingredientName, unitLabel } from "@/lib/recipes";
 import { m } from "@/paraglide/messages";
 
 export function IngredientEditorRow({
@@ -99,6 +100,24 @@ export function IngredientEditorRow({
       </label>
       {row.confidence < 0.7 && (
         <p className="muted">{m["recipes.ingredient_check"]()}</p>
+      )}
+      {!row.ingredientId &&
+        row.name.trim() &&
+        row.name.trim().length <= 100 && (
+          <CreateIngredient
+            key={row.name}
+            name={row.name}
+            onCreated={(ingredient) =>
+              update({
+                name: ingredientName(ingredient),
+                ingredientId: ingredient.id,
+                confidence: 1,
+              })
+            }
+          />
+        )}
+      {row.ingredientId && (
+        <p className="muted">{m["ingredients.linked"]({ name: row.name })}</p>
       )}
       <RowControls
         item={item}
