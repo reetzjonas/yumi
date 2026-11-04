@@ -43,8 +43,12 @@ async function rankIngredients(householdId: string, q: string, limit: number) {
     or exists (select 1 from unnest(${ingredient.synonyms}) s where lower(s) = ${lower}))`;
   const startsWith = sql<boolean>`(lower(${ingredient.nameDe}) like ${prefix} or lower(${ingredient.nameEn}) like ${prefix}
     or exists (select 1 from unnest(${ingredient.synonyms}) s where lower(s) like ${prefix}))`;
+  // A canonical name containing the query outranks a fuzzy synonym phrase:
+  // "Öl" must not become "Thunfisch in Öl" just because that synonym is longer.
+  const contains = sql<boolean>`(position(${lower} in lower(${ingredient.nameDe})) > 0
+    or position(${lower} in lower(${ingredient.nameEn})) > 0)`;
   return db
-    .select({ ...ingredientColumns, score, exact, startsWith })
+    .select({ ...ingredientColumns, score, exact, startsWith, contains })
     .from(ingredient)
     .where(
       and(
@@ -55,6 +59,7 @@ async function rankIngredients(householdId: string, q: string, limit: number) {
     .orderBy(
       sql`${exact} desc`,
       sql`${startsWith} desc`,
+      sql`${contains} desc`,
       sql`${score} desc`,
       sql`length(${ingredient.nameDe})`,
     )
@@ -67,7 +72,9 @@ export async function searchIngredients(
   limit: number,
 ) {
   const rows = await rankIngredients(householdId, q, limit);
-  return rows.map(({ score: _s, exact: _e, startsWith: _p, ...row }) => row);
+  return rows.map(
+    ({ score: _s, exact: _e, startsWith: _p, contains: _c, ...row }) => row,
+  );
 }
 
 async function bestMatch(householdId: string, name: string, strict: boolean) {
@@ -75,7 +82,7 @@ async function bestMatch(householdId: string, name: string, strict: boolean) {
   if (!top) return null;
   const good = strict ? top.exact : top.exact || top.score >= MIN_MATCH_SCORE;
   if (!good) return null;
-  const { score: _s, exact: _e, startsWith: _p, ...row } = top;
+  const { score: _s, exact: _e, startsWith: _p, contains: _c, ...row } = top;
   return row;
 }
 

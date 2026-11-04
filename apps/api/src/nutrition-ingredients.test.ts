@@ -157,6 +157,67 @@ describe("ingredient nutrition persistence", () => {
     });
   });
 
+  test("generic recipe lines reach full nutrition coverage after catalog fixes", async () => {
+    const c = await householdMember("nutrition-generic-lines");
+    const lines = [
+      "2 Möhre(n)",
+      "250 g Nudeln (kurze)",
+      "Salz und Pfeffer",
+      "1 Zwiebel(n)",
+      "1 Lauchstange(n)",
+      "1 EL Öl",
+      "300 g Hackfleisch, gemischtes",
+      "Currypulver",
+      "200 g Schlagsahne",
+      "125 ml Brühe",
+    ];
+    const parsedResponse = await c.request("/api/ingredients/parse", {
+      method: "POST",
+      body: JSON.stringify({ lines }),
+    });
+    expect(parsedResponse.status).toBe(200);
+    const parsed = z
+      .array(
+        z.object({
+          quantity: z.number().nullable(),
+          unit: z.string().nullable(),
+          note: z.string().nullable(),
+          optional: z.boolean(),
+          ingredient: z.object({ id: z.uuid() }).nullable(),
+        }),
+      )
+      .parse(await parsedResponse.json());
+
+    const created = await c.request("/api/recipes", {
+      method: "POST",
+      body: JSON.stringify({
+        title: "Curryrahm-Nudeln",
+        servings: 4,
+        ingredients: parsed.map((line, index) => ({
+          rawText: lines[index],
+          quantity: line.quantity,
+          unit: line.unit,
+          note: line.note,
+          optional: line.optional,
+          ingredientId: line.ingredient?.id ?? null,
+        })),
+      }),
+    });
+
+    expect(created.status).toBe(201);
+    const { nutrition } = z
+      .object({ nutrition: z.unknown() })
+      .parse(await created.json());
+    expect(nutrition).toMatchObject({
+      includedIngredients: 8,
+      totalIngredients: 10,
+      excludedIngredients: [
+        { position: 2, reason: "quantity" },
+        { position: 7, reason: "quantity" },
+      ],
+    });
+  });
+
   test("household nutrition cannot overwrite foreign or global ingredients", async () => {
     const owner = await householdMember("nutrition-owner");
     const other = await householdMember("nutrition-other");

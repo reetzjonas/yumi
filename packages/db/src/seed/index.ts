@@ -6,6 +6,17 @@ import { CATEGORY_KEYS, SEED_CATEGORIES } from "./categories";
 import { SEED_INGREDIENTS } from "./ingredients";
 import { NUTRITION_SOURCE, SEED_NUTRITION } from "./nutrition";
 
+function nutritionFor(key: string) {
+  const entry = SEED_NUTRITION[key];
+  if (!entry) return { nutritionPer100g: null, nutritionSource: null };
+  return {
+    nutritionPer100g: entry.values,
+    nutritionSource:
+      entry.source ??
+      (entry.fdcId ? `${NUTRITION_SOURCE}, FDC ${entry.fdcId}` : null),
+  };
+}
+
 /** Upserts the global categories and ingredients; safe to run on every start. */
 export async function seedCatalog(db: PostgresJsDatabase<typeof schema>) {
   await db.transaction(async (tx) => {
@@ -49,10 +60,7 @@ export async function seedCatalog(db: PostgresJsDatabase<typeof schema>) {
             unit,
           })),
           icon: i.icon ?? null,
-          nutritionPer100g: SEED_NUTRITION[i.key]?.values ?? null,
-          nutritionSource: SEED_NUTRITION[i.key]
-            ? `${NUTRITION_SOURCE}, FDC ${SEED_NUTRITION[i.key]?.fdcId}`
-            : null,
+          ...nutritionFor(i.key),
         })),
       )
       .onConflictDoUpdate({

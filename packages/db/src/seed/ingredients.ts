@@ -2494,7 +2494,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
     en: "Vegetable stock",
     category: "pantry",
     unit: "ml",
-    synonyms: ["Gemüsefond", "Gemüsebrühpulver", "vegetable broth"],
+    synonyms: ["Brühe", "Gemüsefond", "Gemüsebrühpulver", "vegetable broth"],
     densityGPerMl: 1.0,
   },
   {
@@ -2563,7 +2563,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
     en: "Vegetable oil",
     category: "pantry",
     unit: "ml",
-    synonyms: ["Speiseöl", "Bratöl", "cooking oil"],
+    synonyms: ["Öl", "Speiseöl", "Bratöl", "cooking oil"],
     densityGPerMl: 0.92,
     packs: [[1, "l"]],
   },
@@ -2995,6 +2995,16 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
 
   // pasta, rice, grains, legumes
+  {
+    key: "pasta",
+    de: "Nudeln",
+    en: "Pasta",
+    category: "pasta-grains",
+    unit: "g",
+    synonyms: ["Nudel", "Teigwaren", "noodles"],
+    packs: [[500, "g"]],
+    icon: "🍝",
+  },
   {
     key: "spaghetti",
     de: "Spaghetti",

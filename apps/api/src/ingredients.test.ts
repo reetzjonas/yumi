@@ -41,8 +41,16 @@ describe("ingredient catalog", () => {
     ["onion", "onion"],
     ["Paradeiser", "tomato"],
     ["Kartoffeln", "potato"],
+    ["Öl", "vegetable-oil"],
+    ["Brühe", "vegetable-stock"],
+    ["Nudeln", "pasta"],
   ])("search %p ranks %p first", async (q, key) => {
-    const c = await householdMember(`search-${key}-${q}`.toLowerCase());
+    const c = await householdMember(
+      `search-${key}-${q}`
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase(),
+    );
     const [first] = await search(c, q);
     expect(first?.key).toBe(key);
   });
@@ -146,5 +154,34 @@ describe("ingredient catalog", () => {
       null,
     ]);
     expect(rows[2]).toMatchObject({ quantity: 3, unit: "pcs" });
+  });
+
+  test("parse keeps generic recipe lines away from fuzzy catalog surprises", async () => {
+    const c = await householdMember("parse-generic");
+    const res = await c.request("/api/ingredients/parse", {
+      method: "POST",
+      body: JSON.stringify({
+        lines: [
+          "2 Möhre(n)",
+          "250 g Nudeln (kurze)",
+          "Salz und Pfeffer",
+          "1 Zwiebel(n)",
+          "1 Lauchstange(n)",
+          "1 EL Öl",
+          "300 g Hackfleisch, gemischtes",
+          "Currypulver",
+          "200 g Schlagsahne",
+          "125 ml Brühe",
+        ],
+      }),
+    });
+    expect(res.status).toBe(200);
+    const rows = (await res.json()) as Array<{
+      ingredient: { key: string | null } | null;
+    }>;
+    expect(rows[1]?.ingredient?.key).toBe("pasta");
+    expect(rows[5]?.ingredient?.key).toBe("vegetable-oil");
+    expect(rows[6]?.ingredient?.key).toBe("mixed-mince");
+    expect(rows[9]?.ingredient?.key).toBe("vegetable-stock");
   });
 });

@@ -5,10 +5,14 @@ import type { NutritionValues } from "@yumi/shared";
 
 export const NUTRITION_SOURCE = "USDA FoodData Central SR Legacy 2018";
 
-export const SEED_NUTRITION: Record<
-  string,
-  { fdcId: number; values: NutritionValues }
-> = {
+export type SeedNutrition = {
+  fdcId?: number;
+  values: NutritionValues;
+  /** Overrides the generated USDA source, e.g. for averaged profiles. */
+  source?: string;
+};
+
+export const SEED_NUTRITION: Record<string, SeedNutrition> = {
   "agave-syrup": {
     fdcId: 170277,
     values: {
@@ -2517,6 +2521,21 @@ export const SEED_NUTRITION: Record<
       saltG: 9.32,
     },
   },
+  // German "gemischtes Hackfleisch" is typically half beef and half pork.
+  // USDA has no mixed entry, so this is the mean of the two profiles above.
+  "mixed-mince": {
+    source:
+      "50/50 average of USDA FoodData Central SR Legacy 2018, FDC 171796 and FDC 168372",
+    values: {
+      energyKcal: 216.5,
+      proteinG: 18.29,
+      fatG: 15.5,
+      carbsG: 0.22,
+      sugarG: 0,
+      fiberG: 0,
+      saltG: 0.1675,
+    },
+  },
   "mixed-bread": {
     fdcId: 172684,
     values: {
@@ -2803,6 +2822,18 @@ export const SEED_NUTRITION: Record<
       sugarG: 11.2,
       fiberG: 10.4,
       saltG: 0.07,
+    },
+  },
+  pasta: {
+    fdcId: 169736,
+    values: {
+      energyKcal: 371,
+      proteinG: 13,
+      fatG: 1.51,
+      carbsG: 71.5,
+      sugarG: 2.67,
+      fiberG: 3.2,
+      saltG: 0.015,
     },
   },
   "pasta-sauce": {
