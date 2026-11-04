@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ListRouteImport } from './routes/list'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as MoreRouteImport } from './routes/more'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PlanRouteImport } from './routes/plan'
 import { Route as RecipesRouteImport } from './routes/recipes'
@@ -43,11 +42,6 @@ const ListRoute = ListRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MoreRoute = MoreRouteImport.update({
-  id: '/more',
-  path: '/more',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -81,29 +75,29 @@ const InviteTokenRoute = InviteTokenRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const MoreIndexRoute = MoreIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => MoreRoute,
+  id: '/more/',
+  path: '/more/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const MoreHouseholdRoute = MoreHouseholdRouteImport.update({
-  id: '/household',
-  path: '/household',
-  getParentRoute: () => MoreRoute,
+  id: '/more/household',
+  path: '/more/household',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const MorePantryRoute = MorePantryRouteImport.update({
-  id: '/pantry',
-  path: '/pantry',
-  getParentRoute: () => MoreRoute,
+  id: '/more/pantry',
+  path: '/more/pantry',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const MoreSettingsRoute = MoreSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => MoreRoute,
+  id: '/more/settings',
+  path: '/more/settings',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const MoreStoresRoute = MoreStoresRouteImport.update({
-  id: '/stores',
-  path: '/stores',
-  getParentRoute: () => MoreRoute,
+  id: '/more/stores',
+  path: '/more/stores',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const RecipesIdRoute = RecipesIdRouteImport.update({
   id: '/recipes_/$id',
@@ -135,7 +129,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/list': typeof ListRoute
   '/login': typeof LoginRoute
-  '/more': typeof MoreRouteWithChildren
   '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
   '/recipes': typeof RecipesRoute
@@ -179,7 +172,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/list': typeof ListRoute
   '/login': typeof LoginRoute
-  '/more': typeof MoreRouteWithChildren
   '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
   '/recipes': typeof RecipesRoute
@@ -203,7 +195,6 @@ export interface FileRouteTypes {
     | '/'
     | '/list'
     | '/login'
-    | '/more'
     | '/onboarding'
     | '/plan'
     | '/recipes'
@@ -246,7 +237,6 @@ export interface FileRouteTypes {
     | '/'
     | '/list'
     | '/login'
-    | '/more'
     | '/onboarding'
     | '/plan'
     | '/recipes'
@@ -269,17 +259,21 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ListRoute: typeof ListRoute
   LoginRoute: typeof LoginRoute
-  MoreRoute: typeof MoreRouteWithChildren
   OnboardingRoute: typeof OnboardingRoute
   PlanRoute: typeof PlanRoute
   RecipesRoute: typeof RecipesRoute
   SignupRoute: typeof SignupRoute
   CookIdRoute: typeof CookIdRoute
   InviteTokenRoute: typeof InviteTokenRoute
+  MoreHouseholdRoute: typeof MoreHouseholdRoute
+  MorePantryRoute: typeof MorePantryRoute
+  MoreSettingsRoute: typeof MoreSettingsRoute
+  MoreStoresRoute: typeof MoreStoresRoute
   RecipesIdRoute: typeof RecipesIdRoute
   RecipesImportRoute: typeof RecipesImportRoute
   RecipesNewRoute: typeof RecipesNewRoute
   ShopListIdRoute: typeof ShopListIdRoute
+  MoreIndexRoute: typeof MoreIndexRoute
   RecipesIdEditRoute: typeof RecipesIdEditRoute
 }
 
@@ -304,13 +298,6 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/more': {
-      id: '/more'
-      path: '/more'
-      fullPath: '/more'
-      preLoaderRoute: typeof MoreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -357,38 +344,38 @@ declare module '@tanstack/react-router' {
     }
     '/more/': {
       id: '/more/'
-      path: '/'
+      path: '/more'
       fullPath: '/more/'
       preLoaderRoute: typeof MoreIndexRouteImport
-      parentRoute: typeof MoreRoute
+      parentRoute: typeof rootRouteImport
     }
     '/more/household': {
       id: '/more/household'
-      path: '/household'
+      path: '/more/household'
       fullPath: '/more/household'
       preLoaderRoute: typeof MoreHouseholdRouteImport
-      parentRoute: typeof MoreRoute
+      parentRoute: typeof rootRouteImport
     }
     '/more/pantry': {
       id: '/more/pantry'
-      path: '/pantry'
+      path: '/more/pantry'
       fullPath: '/more/pantry'
       preLoaderRoute: typeof MorePantryRouteImport
-      parentRoute: typeof MoreRoute
+      parentRoute: typeof rootRouteImport
     }
     '/more/settings': {
       id: '/more/settings'
-      path: '/settings'
+      path: '/more/settings'
       fullPath: '/more/settings'
       preLoaderRoute: typeof MoreSettingsRouteImport
-      parentRoute: typeof MoreRoute
+      parentRoute: typeof rootRouteImport
     }
     '/more/stores': {
       id: '/more/stores'
-      path: '/stores'
+      path: '/more/stores'
       fullPath: '/more/stores'
       preLoaderRoute: typeof MoreStoresRouteImport
-      parentRoute: typeof MoreRoute
+      parentRoute: typeof rootRouteImport
     }
     '/recipes_/$id': {
       id: '/recipes_/$id'
@@ -428,39 +415,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface MoreRouteChildren {
-  MoreHouseholdRoute: typeof MoreHouseholdRoute
-  MorePantryRoute: typeof MorePantryRoute
-  MoreSettingsRoute: typeof MoreSettingsRoute
-  MoreStoresRoute: typeof MoreStoresRoute
-  MoreIndexRoute: typeof MoreIndexRoute
-}
-
-const MoreRouteChildren: MoreRouteChildren = {
-  MoreHouseholdRoute: MoreHouseholdRoute,
-  MorePantryRoute: MorePantryRoute,
-  MoreSettingsRoute: MoreSettingsRoute,
-  MoreStoresRoute: MoreStoresRoute,
-  MoreIndexRoute: MoreIndexRoute,
-}
-
-const MoreRouteWithChildren = MoreRoute._addFileChildren(MoreRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ListRoute: ListRoute,
   LoginRoute: LoginRoute,
-  MoreRoute: MoreRouteWithChildren,
   OnboardingRoute: OnboardingRoute,
   PlanRoute: PlanRoute,
   RecipesRoute: RecipesRoute,
   SignupRoute: SignupRoute,
   CookIdRoute: CookIdRoute,
   InviteTokenRoute: InviteTokenRoute,
+  MoreHouseholdRoute: MoreHouseholdRoute,
+  MorePantryRoute: MorePantryRoute,
+  MoreSettingsRoute: MoreSettingsRoute,
+  MoreStoresRoute: MoreStoresRoute,
   RecipesIdRoute: RecipesIdRoute,
   RecipesImportRoute: RecipesImportRoute,
   RecipesNewRoute: RecipesNewRoute,
   ShopListIdRoute: ShopListIdRoute,
+  MoreIndexRoute: MoreIndexRoute,
   RecipesIdEditRoute: RecipesIdEditRoute,
 }
 export const routeTree = rootRouteImport

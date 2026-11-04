@@ -233,7 +233,6 @@
   "invite.decline": "Jetzt nicht",
   "invite.back": "Zu yumi",
   "household.title": "Haushalt",
-  "household.active": "Haushalt",
   "household.members": "Mitglieder",
   "household.role_owner": "Besitzer:in",
   "household.role_member": "Mitglied",
@@ -447,8 +446,6 @@
   "queue.edit": "Bearbeiten",
   "queue.move_up_short": "Nach oben",
   "queue.move_down_short": "Nach unten",
-  "recipes.choose_title": "Wähle ein Rezept",
-  "recipes.choose_description": "Zutaten und Schritte erscheinen hier.",
   "queue.close_menu": "Schließen",
   "sheet.close": "Schließen",
   "shopping.new_list": "Neue Liste",
@@ -467,5 +464,6 @@
   "nutrition.salt": "Salz",
   "ingredients.nutrition": "Nährwerte pro 100 g (optional)",
   "ingredients.nutrition_hint": "Fülle alle sieben Werte aus oder lass alle leer.",
-  "ingredients.nutrition_incomplete": "Bitte fülle alle sieben Nährwerte aus oder lass alle leer."
+  "ingredients.nutrition_incomplete": "Bitte fülle alle sieben Nährwerte aus oder lass alle leer.",
+  "recipes.detail_title": "Rezept"
 }

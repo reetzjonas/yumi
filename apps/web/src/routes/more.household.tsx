@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, Copy, Link2, Plus, Share2, Trash2 } from "lucide-react";
+import { Copy, Link2, Plus, Share2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useSwitchHousehold } from "@/components/account-menu";
-import { PageHeader } from "@/components/page";
+import { BackLink, PageHeader } from "@/components/page";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
@@ -126,12 +126,10 @@ function Household() {
 
   return (
     <div className="settings-page">
-      <PageHeader title={m["household.title"]()}>
-        <Link to="/more" className="back-link">
-          <ArrowLeft aria-hidden="true" size={18} />
-          {m.nav_more()}
-        </Link>
-      </PageHeader>
+      <PageHeader
+        title={m["household.title"]()}
+        back={<BackLink to="/more" label={m.nav_more()} />}
+      />
 
       <section className="section">
         <h2>{m["household.members"]()}</h2>

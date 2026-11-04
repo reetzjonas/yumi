@@ -4,7 +4,7 @@ import { PHOTO_IMPORT_MIME_TYPES, photoImportUploadError } from "@yumi/shared";
 import { Download } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { Field, FormError } from "@/components/auth-layout";
-import { PageHeader } from "@/components/page";
+import { BackLink, PageHeader } from "@/components/page";
 import { RecipeEditor } from "@/components/recipes/recipe-editor";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
@@ -86,7 +86,10 @@ function ImportRecipe({ sharedUrl }: { sharedUrl?: string }) {
 
   return (
     <>
-      <PageHeader title={m["recipes.import_title"]()} />
+      <PageHeader
+        title={m["recipes.import_title"]()}
+        back={<BackLink to="/recipes" label={m.nav_recipes()} />}
+      />
       {load.data && householdId ? (
         <>
           <section ref={reviewRef} className="section import-review">

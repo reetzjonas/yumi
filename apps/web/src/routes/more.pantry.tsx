@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Archive, ArrowLeft, Trash2 } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { Archive, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { EmptyState, PageHeader } from "@/components/page";
+import { BackLink, EmptyState, PageHeader } from "@/components/page";
 import { CatalogPicker } from "@/components/shopping/catalog-picker";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -43,12 +43,10 @@ function Pantry() {
   });
   return (
     <div className="settings-page">
-      <PageHeader title={m["pantry.title"]()}>
-        <Link to="/more" className="back-link">
-          <ArrowLeft aria-hidden="true" size={18} />
-          {m.nav_more()}
-        </Link>
-      </PageHeader>
+      <PageHeader
+        title={m["pantry.title"]()}
+        back={<BackLink to="/more" label={m.nav_more()} />}
+      />
       <section className="section">
         <h2>{m["pantry.add"]()}</h2>
         <p className="section-description">{m["pantry.description"]()}</p>

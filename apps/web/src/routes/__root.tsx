@@ -5,7 +5,7 @@ import {
   redirect,
   useRouterState,
 } from "@tanstack/react-router";
-import { AccountSlot, MoreAccountEntries } from "@/components/account-menu";
+import { MoreAccountEntries } from "@/components/account-menu";
 import { AppShell } from "@/components/app-shell";
 import { TimerProvider } from "@/components/cooking/timer-provider";
 import { PwaProvider } from "@/components/pwa-provider";
@@ -58,7 +58,6 @@ function Root() {
             <Outlet />
           ) : (
             <AppShell
-              accountSlot={<AccountSlot me={me} />}
               moreSlot={<MoreAccountEntries me={me} />}
               householdName={
                 me.households.find((h) => h.id === me.activeHouseholdId)?.name

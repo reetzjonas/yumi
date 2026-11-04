@@ -34,36 +34,6 @@ export function useSignOut() {
   };
 }
 
-/** Sidebar slot (tablet/desktop): active household switcher and account. */
-export function AccountSlot({ me }: { me: Me }) {
-  const switchHousehold = useSwitchHousehold();
-  return (
-    <div className="account-menu">
-      {me.households.length > 1 ? (
-        <>
-          <label htmlFor="household-switch" className="account-label">
-            {m["household.active"]()}
-          </label>
-          <select
-            id="household-switch"
-            value={me.activeHouseholdId ?? ""}
-            onChange={(event) => void switchHousehold(event.target.value)}
-          >
-            {me.households.map((h) => (
-              <option key={h.id} value={h.id}>
-                {h.name}
-              </option>
-            ))}
-          </select>
-        </>
-      ) : (
-        <p className="account-household">{me.households[0]?.name}</p>
-      )}
-      <p className="account-user">{me.user.name}</p>
-    </div>
-  );
-}
-
 /** Entries on the More page. */
 export function MoreAccountEntries({ me }: { me: Me }) {
   const signOut = useSignOut();

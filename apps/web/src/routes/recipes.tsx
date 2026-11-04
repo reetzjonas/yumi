@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BookOpen, Download, Plus } from "lucide-react";
-import { EmptyState, PageHeader } from "@/components/page";
+import { Download, Plus } from "lucide-react";
+import { PageHeader } from "@/components/page";
 import { RecipeLibrary } from "@/components/recipes/recipe-library";
 import { Button } from "@/components/ui/button";
 import { m } from "@/paraglide/messages";
@@ -27,18 +27,7 @@ function Recipes() {
           </Button>
         </div>
       </div>
-      <div className="split recipe-split">
-        <div className="split-pane">
-          <RecipeLibrary />
-        </div>
-        <div className="split-placeholder">
-          <EmptyState
-            icon={BookOpen}
-            title={m["recipes.choose_title"]()}
-            description={m["recipes.choose_description"]()}
-          />
-        </div>
-      </div>
+      <RecipeLibrary />
     </>
   );
 }

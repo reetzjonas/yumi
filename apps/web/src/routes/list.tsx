@@ -92,12 +92,12 @@ function HouseholdLists() {
               {errorMessage(categories.error)}
             </p>
           )}
-          <div className="list-split">
-            <section className="section list-split-add">
+          <div>
+            <section className="section">
               <h2>{m["shopping.add_item"]()}</h2>
               <QuickAdd key={listId} listId={listId} />
             </section>
-            <div className="list-split-items">
+            <div>
               {detail.isPending ? (
                 <Skeleton className="h-32 w-full" />
               ) : detail.isError ? (
@@ -119,7 +119,7 @@ function HouseholdLists() {
                 )
               )}
             </div>
-            <div className="section list-split-browse">
+            <div className="section">
               {detail.data && (
                 <ItemTiles
                   key={`tiles-${listId}`}
@@ -136,7 +136,7 @@ function HouseholdLists() {
                 />
               </details>
             </div>
-            <div className="list-split-recurring">
+            <div>
               <RecurringItems key={`recurring-${listId}`} listId={listId} />
             </div>
           </div>

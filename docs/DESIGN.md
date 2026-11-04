@@ -158,7 +158,8 @@ dock starts collapsed, supports parallel countdowns, pause/resume and cancellati
 and distinguishes completed alarms with a bell and status text. Only completion
 is announced to assistive technology.
 
-The page title stays in the content as the one h1. The content column owns its scroll;
+The page title in the top bar is the page's h1; when the content carries its
+own title (recipe detail) the top bar label is plain text. The content column owns its scroll;
 there is no page scroll behind it and no horizontal page scroll down to 320 px.
 On phones, tag filters are one horizontally scrolling strip. Safe-area insets extend bars, tabs and sidebar. On
 > = 1200 px, `/` focuses search and `n` starts a new recipe.

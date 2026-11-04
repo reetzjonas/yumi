@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Store as StoreIcon } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { Store as StoreIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Field } from "@/components/auth-layout";
-import { EmptyState, PageHeader } from "@/components/page";
+import { BackLink, EmptyState, PageHeader } from "@/components/page";
 import { StoreEditor } from "@/components/stores/store-editor";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -45,12 +45,10 @@ function Stores() {
   const error = stores.error ?? categories.error;
   return (
     <div className="settings-page">
-      <PageHeader title={m["stores.title"]()}>
-        <Link to="/more" className="back-link">
-          <ArrowLeft aria-hidden="true" size={18} />
-          {m.nav_more()}
-        </Link>
-      </PageHeader>
+      <PageHeader
+        title={m["stores.title"]()}
+        back={<BackLink to="/more" label={m.nav_more()} />}
+      />
       <section className="section">
         <h2>{m["stores.create"]()}</h2>
         <p className="section-description">{m["stores.description"]()}</p>

@@ -1,6 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
-import { PageHeader } from "@/components/page";
+import { createFileRoute } from "@tanstack/react-router";
+import { BackLink, PageHeader } from "@/components/page";
 import { type Theme, useTheme } from "@/components/theme-provider";
 import { type Locale, useLocale } from "@/lib/i18n";
 import { m } from "@/paraglide/messages";
@@ -12,12 +11,10 @@ function Settings() {
   const { locale, setLocale } = useLocale();
   return (
     <div className="settings-page">
-      <PageHeader title={m.settings_title()}>
-        <Link to="/more" className="back-link">
-          <ArrowLeft aria-hidden="true" size={18} />
-          {m.nav_more()}
-        </Link>
-      </PageHeader>
+      <PageHeader
+        title={m.settings_title()}
+        back={<BackLink to="/more" label={m.nav_more()} />}
+      />
       <div className="preference-row">
         <label htmlFor="language">{m.settings_language()}</label>
         <select

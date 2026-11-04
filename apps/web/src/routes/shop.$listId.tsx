@@ -1,13 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import {
   type MergedItem,
   mergeShoppingItems,
   sortShoppingItems,
 } from "@yumi/shared";
-import { ArrowLeft, Check, Circle, ShoppingBasket } from "lucide-react";
+import { Check, Circle, ShoppingBasket } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { EmptyState, PageHeader } from "@/components/page";
+import { BackLink, EmptyState, PageHeader } from "@/components/page";
 import { ShoppingSyncStatus } from "@/components/shopping/sync-status";
 import { Skeleton } from "@/components/ui/skeleton";
 import { errorMessage } from "@/lib/api-error";
@@ -35,12 +35,10 @@ function ShoppingMode() {
   const detail = useShoppingList(listId);
   return (
     <>
-      <PageHeader title={detail.data?.name ?? m["shopping.mode"]()}>
-        <Link to="/list" className="back-link">
-          <ArrowLeft aria-hidden="true" size={18} />
-          {m["shopping.exit"]()}
-        </Link>
-      </PageHeader>
+      <PageHeader
+        title={detail.data?.name ?? m["shopping.mode"]()}
+        back={<BackLink to="/list" label={m["shopping.exit"]()} />}
+      />
       <ShoppingSyncStatus listId={listId} />
       {detail.data ? (
         <FocusedList key={`${householdId}-${listId}`} list={detail.data} />

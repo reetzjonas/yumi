@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FormError } from "@/components/auth-layout";
-import { PageHeader } from "@/components/page";
+import { BackLink, PageHeader } from "@/components/page";
 import { RecipeEditor } from "@/components/recipes/recipe-editor";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -26,7 +26,16 @@ function EditRecipe() {
   });
   return (
     <>
-      <PageHeader title={m["recipes.edit_title"]()} />
+      <PageHeader
+        title={m["recipes.edit_title"]()}
+        back={
+          <BackLink
+            to="/recipes/$id"
+            params={{ id }}
+            label={m["recipes.detail_title"]()}
+          />
+        }
+      />
       {recipe.isPending && <Skeleton className="recipe-image" />}
       {recipe.isError && <FormError message={errorMessage(recipe.error)} />}
       {recipe.data && (

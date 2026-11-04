@@ -1,18 +1,60 @@
-import type { LucideIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import { createLink } from "@tanstack/react-router";
+import { ChevronLeft, type LucideIcon } from "lucide-react";
+import {
+  type AnchorHTMLAttributes,
+  createContext,
+  type ReactNode,
+  type Ref,
+  useContext,
+} from "react";
+import { createPortal } from "react-dom";
 
-export function PageHeader({
-  title,
-  children,
-}: {
-  title: string;
-  children?: ReactNode;
+export const TitleSlotContext = createContext<HTMLElement | null>(null);
+
+function BackAnchor({
+  ref,
+  label,
+  ...props
+}: AnchorHTMLAttributes<HTMLAnchorElement> & {
+  ref?: Ref<HTMLAnchorElement>;
+  label: string;
 }) {
   return (
-    <header className="page-header">
-      {children}
-      <h1>{title}</h1>
-    </header>
+    <a ref={ref} {...props} className="top-back">
+      <ChevronLeft aria-hidden="true" size={24} strokeWidth={1.8} />
+      <span className="sr-only">{label}</span>
+    </a>
+  );
+}
+
+export const BackLink = createLink(BackAnchor);
+
+/**
+ * Page title. Inside the app shell it renders into the top bar; `back` is a
+ * `BackLink` shown before the title. `heading={false}` keeps the
+ * top bar label out of the outline when the content has its own h1.
+ */
+export function PageHeader({
+  title,
+  back,
+  heading = true,
+}: {
+  title: string;
+  back?: ReactNode;
+  heading?: boolean;
+}) {
+  const slot = useContext(TitleSlotContext);
+  const Title = heading ? "h1" : "p";
+  const content = (
+    <>
+      {back}
+      <Title className="top-title">{title}</Title>
+    </>
+  );
+  return slot ? (
+    createPortal(content, slot)
+  ) : (
+    <header className="page-header">{content}</header>
   );
 }
 
