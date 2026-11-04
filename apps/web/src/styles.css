@@ -844,6 +844,31 @@ select:focus-visible {
   gap: 24px;
   margin: 0;
 }
+.servings-selector,
+.servings-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.servings-selector {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.servings-controls .button {
+  min-width: 48px;
+  padding-inline: 12px;
+}
+.servings-controls input {
+  width: 80px;
+  min-height: 48px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--card);
+  color: var(--foreground);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
 .recipe-meta dt {
   color: var(--muted-foreground);
 }

@@ -253,6 +253,8 @@
   "recipes.delete_confirm": "Möchtest du „{title}“ wirklich löschen?",
   "recipes.deleted": "Rezept gelöscht.",
   "recipes.servings": "Portionen",
+  "recipes.servings_decrease": "Weniger Portionen",
+  "recipes.servings_increase": "Mehr Portionen",
   "recipes.prep_time": "Vorbereitung",
   "recipes.cook_time": "Kochzeit",
   "recipes.source": "Quelle",

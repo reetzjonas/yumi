@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/page";
 import { AddRecipeToQueue } from "@/components/queue/add-recipe";
 import { RecipeLibrary } from "@/components/recipes/recipe-library";
+import { ServingsSelector } from "@/components/recipes/servings-selector";
 import { AddRecipeToList } from "@/components/shopping/add-recipe";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
@@ -22,18 +23,23 @@ import { api } from "@/lib/api";
 import { ensureOk, errorMessage } from "@/lib/api-error";
 import {
   formatMinutes,
-  formatQuantity,
+  formatScaledQuantity,
   groupBySection,
   ingredientName,
   recipeImageUrl,
+  servingsSearch,
 } from "@/lib/recipes";
 import { useMe } from "@/lib/session";
 import { m } from "@/paraglide/messages";
 
-export const Route = createFileRoute("/recipes_/$id")({ component: Recipe });
+export const Route = createFileRoute("/recipes_/$id")({
+  validateSearch: servingsSearch,
+  component: Recipe,
+});
 
 function Recipe() {
   const { id } = Route.useParams();
+  const { servings } = Route.useSearch();
   const householdId = useMe()?.activeHouseholdId;
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -90,11 +96,18 @@ function Recipe() {
               {recipe.description && (
                 <p className="recipe-description">{recipe.description}</p>
               )}
+              <ServingsSelector
+                value={servings ?? recipe.servings}
+                onChange={(next) =>
+                  void navigate({
+                    to: "/recipes/$id",
+                    params: { id },
+                    search: { servings: next },
+                    replace: true,
+                  })
+                }
+              />
               <dl className="recipe-meta">
-                <div>
-                  <dt>{m["recipes.servings"]()}</dt>
-                  <dd>{recipe.servings}</dd>
-                </div>
                 {recipe.prepMinutes !== null && (
                   <div>
                     <dt>{m["recipes.prep_time"]()}</dt>
@@ -122,7 +135,7 @@ function Recipe() {
               )}
               <div className="recipe-actions">
                 <Button asChild>
-                  <Link to="/cook/$id" params={{ id }}>
+                  <Link to="/cook/$id" params={{ id }} search={{ servings }}>
                     <CookingPot size={18} aria-hidden="true" />
                     {m["cooking.start"]()}
                   </Link>
@@ -173,9 +186,9 @@ function Recipe() {
                 meta={recipe.title}
               >
                 <AddRecipeToQueue
-                  key={`queue-${householdId}-${id}`}
+                  key={`queue-${householdId}-${id}-${servings ?? recipe.servings}`}
                   recipeId={id}
-                  servings={recipe.servings}
+                  servings={servings ?? recipe.servings}
                 />
               </Sheet>
               <Sheet
@@ -184,9 +197,9 @@ function Recipe() {
                 meta={recipe.title}
               >
                 <AddRecipeToList
-                  key={`${householdId}-${id}`}
+                  key={`${householdId}-${id}-${servings ?? recipe.servings}`}
                   recipeId={id}
-                  servings={recipe.servings}
+                  servings={servings ?? recipe.servings}
                 />
               </Sheet>
               <section className="recipe-section">
@@ -205,13 +218,15 @@ function Recipe() {
                           : parsed.name || line.rawText;
                         const unit =
                           unitSchema.safeParse(line.unit).data ?? null;
+                        const quantity = formatScaledQuantity(
+                          line.quantity,
+                          unit,
+                          recipe.servings,
+                          servings ?? recipe.servings,
+                        );
                         return (
                           <li key={line.id}>
-                            {line.quantity !== null && (
-                              <strong>
-                                {formatQuantity(line.quantity, unit)}{" "}
-                              </strong>
-                            )}
+                            {quantity !== null && <strong>{quantity} </strong>}
                             {parsed.unitText && `${parsed.unitText} `}
                             {name}
                             {line.note && (

@@ -253,6 +253,8 @@
   "recipes.delete_confirm": "Do you really want to delete \"{title}\"?",
   "recipes.deleted": "Recipe deleted.",
   "recipes.servings": "Servings",
+  "recipes.servings_decrease": "Fewer servings",
+  "recipes.servings_increase": "More servings",
   "recipes.prep_time": "Prep time",
   "recipes.cook_time": "Cooking time",
   "recipes.source": "Source",

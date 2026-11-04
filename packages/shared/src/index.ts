@@ -5,6 +5,7 @@ export * from "./ingredient-line";
 export * from "./planning";
 export * from "./recipes";
 export * from "./recurring";
+export * from "./servings";
 export * from "./shopping";
 export * from "./step-ingredients";
 export * from "./step-timers";

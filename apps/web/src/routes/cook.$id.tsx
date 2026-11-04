@@ -9,23 +9,29 @@ import { parseIngredientLine, unitSchema } from "@yumi/shared";
 import { ArrowLeft, ArrowRight, Check, Sun, SunDim, X } from "lucide-react";
 import { useRef, useState, useSyncExternalStore } from "react";
 import { StepTimers } from "@/components/cooking/step-timers";
+import { ServingsSelector } from "@/components/recipes/servings-selector";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
 import { ensureOk, errorMessage } from "@/lib/api-error";
 import {
-  formatQuantity,
+  formatScaledQuantity,
   ingredientName,
   type RecipeDetail,
+  servingsSearch,
 } from "@/lib/recipes";
 import { useMe } from "@/lib/session";
 import { useWakeLock } from "@/lib/wake-lock";
 import { m } from "@/paraglide/messages";
 
-export const Route = createFileRoute("/cook/$id")({ component: Cooking });
+export const Route = createFileRoute("/cook/$id")({
+  validateSearch: servingsSearch,
+  component: Cooking,
+});
 
 function Cooking() {
   const { id } = Route.useParams();
+  const search = Route.useSearch();
   const householdId = useMe()?.activeHouseholdId;
   const query = useQuery({
     queryKey: ["recipes", householdId, "detail", id],
@@ -43,6 +49,7 @@ function Cooking() {
               <Link
                 to="/recipes/$id"
                 params={{ id }}
+                search={search}
                 aria-label={m["cooking.close"]()}
                 title={m["cooking.close"]()}
               >
@@ -85,6 +92,9 @@ function Cooking() {
 }
 
 function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
+  const search = Route.useSearch();
+  const servings = search.servings ?? recipe.servings;
+  const navigate = Route.useNavigate();
   const [index, setIndex] = useState(0);
   const [finished, setFinished] = useState(false);
   const [requestId] = useState(() => crypto.randomUUID());
@@ -126,6 +136,7 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
           <Link
             to="/recipes/$id"
             params={{ id: recipe.id }}
+            search={{ servings }}
             aria-label={m["cooking.close"]()}
             title={m["cooking.close"]()}
           >
@@ -183,7 +194,11 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
             <Check size={32} aria-hidden="true" />
             <h2>{m["cooking.finished"]()}</h2>
             <Button asChild>
-              <Link to="/recipes/$id" params={{ id: recipe.id }}>
+              <Link
+                to="/recipes/$id"
+                params={{ id: recipe.id }}
+                search={{ servings }}
+              >
                 {m["cooking.close"]()}
               </Link>
             </Button>
@@ -222,22 +237,30 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
               <h2 id="cooking-ingredients-title">
                 {m["recipes.ingredients"]()}
               </h2>
+              <ServingsSelector
+                value={servings}
+                onChange={(next) =>
+                  void navigate({
+                    search: { servings: next },
+                    replace: true,
+                  })
+                }
+              />
               {lines.length === 0 ? (
                 <p className="row-detail">{m["cooking.no_ingredients"]()}</p>
               ) : (
                 <ul className="recipe-ingredient-list">
                   {lines.map((line) => {
                     const parsed = parseIngredientLine(line.rawText);
+                    const quantity = formatScaledQuantity(
+                      line.quantity,
+                      unitSchema.safeParse(line.unit).data ?? null,
+                      recipe.servings,
+                      servings,
+                    );
                     return (
                       <li key={line.id}>
-                        {line.quantity !== null && (
-                          <strong>
-                            {formatQuantity(
-                              line.quantity,
-                              unitSchema.safeParse(line.unit).data ?? null,
-                            )}{" "}
-                          </strong>
-                        )}
+                        {quantity !== null && <strong>{quantity} </strong>}
                         {parsed.unitText && `${parsed.unitText} `}
                         {line.ingredient
                           ? ingredientName(line.ingredient)

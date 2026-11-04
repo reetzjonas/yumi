@@ -6,6 +6,12 @@ Tablet-first, landscape and portrait.
 - Ingredients used in the current step are shown next to it (step <-> ingredient refs, auto-detected by
   name matching at save time, editable).
 - Servings selector scales all quantities live.
+- Recipe and cooking views share the selected servings through the URL (1-100),
+  including navigation back to the recipe and defaults for planning/shopping.
+  Scaling always starts from the saved base servings and original ingredient
+  quantities, so repeated changes do not accumulate rounding errors or edit the
+  recipe. Pieces stay whole; spoons and cups show quarter fractions. Mass and
+  volume use the existing cook-friendly rounding and unit conversion.
 - Screen Wake Lock while the view is open.
 - Timers: durations in step text ("15 Minuten", "1-2 hours") are detected and shown as tappable timers.
   Multiple timers run in parallel, survive navigation, and alert with sound + vibration.

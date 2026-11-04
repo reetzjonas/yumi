@@ -1,4 +1,9 @@
-import { humanizeQuantity, type Unit } from "@yumi/shared";
+import {
+  humanizeQuantity,
+  recipeInputSchema,
+  scaleRecipeQuantity,
+  type Unit,
+} from "@yumi/shared";
 import type { InferResponseType } from "hono/client";
 import type { api } from "@/lib/api";
 import { ensureOk } from "@/lib/api-error";
@@ -38,6 +43,32 @@ const UNIT_LABELS = {
 
 export function unitLabel(unit: Unit, locale: Locale = getLocale()) {
   return UNIT_LABELS[unit]({}, { locale });
+}
+
+export function servingsSearch(search: Record<string, unknown>): {
+  servings?: number;
+} {
+  const parsed = recipeInputSchema.shape.servings.safeParse(
+    Number(search.servings),
+  );
+  return parsed.success ? { servings: parsed.data } : {};
+}
+
+export function formatScaledQuantity(
+  quantity: number | null,
+  unit: Unit | null,
+  baseServings: number,
+  servings: number,
+  locale: Locale = getLocale(),
+) {
+  const scaled = scaleRecipeQuantity(quantity, unit, baseServings, servings);
+  if (scaled === null) return null;
+  if (unit === "tbsp" || unit === "tsp" || unit === "cup") {
+    const whole = Math.floor(scaled);
+    const fraction = ["", "\u00bc", "\u00bd", "\u00be"][(scaled - whole) * 4];
+    return `${whole ? formatNumber(whole, {}, locale) : ""}${fraction} ${unitLabel(unit, locale)}`;
+  }
+  return formatQuantity(scaled, unit, locale);
 }
 
 /** Display form of a stored quantity: "1,25 kg", "2 EL", "3". */
