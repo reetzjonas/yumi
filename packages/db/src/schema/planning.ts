@@ -4,8 +4,11 @@ import {
   integer,
   pgEnum,
   pgTable,
+  real,
+  text,
   uuid,
 } from "drizzle-orm/pg-core";
+import { ingredient } from "./catalog";
 import { householdId, id, timestamps } from "./common";
 import { recipe } from "./recipes";
 
@@ -30,4 +33,20 @@ export const mealQueueEntry = pgTable(
     ...timestamps,
   },
   (t) => [index("meal_queue_household_idx").on(t.householdId, t.status)],
+);
+
+export const leftover = pgTable(
+  "leftover",
+  {
+    id: id(),
+    householdId: householdId(),
+    ingredientId: uuid()
+      .notNull()
+      .references(() => ingredient.id, { onDelete: "cascade" }),
+    quantity: real().notNull(),
+    unit: text().notNull(),
+    sourceEntryIds: uuid().array().notNull().default([]),
+    ...timestamps,
+  },
+  (t) => [index("leftover_household_idx").on(t.householdId)],
 );

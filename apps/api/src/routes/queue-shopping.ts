@@ -16,6 +16,7 @@ import { validator } from "hono/validator";
 import { z } from "zod";
 import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
 import { db } from "../db";
+import { recordExpectedLeftovers } from "../leftovers";
 import { queueShoppingEventId, queueShoppingPreview } from "../queue-shopping";
 import { publishListChange } from "../shopping-bus";
 import { applyShoppingEventsInTransaction } from "../shopping-events";
@@ -82,13 +83,22 @@ export const queueShopping = new Hono<HouseholdEnv>()
                 payload,
               }),
           );
-        return (
-          await applyShoppingEventsInTransaction(
+        const applied = await applyShoppingEventsInTransaction(
+          tx,
+          { householdId, listId: list.id, userId: c.get("user").id },
+          events,
+        );
+        if (applied.length) {
+          await recordExpectedLeftovers(
             tx,
-            { householdId, listId: list.id, userId: c.get("user").id },
-            events,
-          )
-        ).length;
+            householdId,
+            input.requestId,
+            preview.lines.filter(
+              (line) => !line.staple || input.includeStaples,
+            ),
+          );
+        }
+        return applied.length;
       });
       if (added) await publishListChange(householdId, input.listId);
       return c.json({ added }, 201);

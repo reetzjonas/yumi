@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Field } from "@/components/auth-layout";
 import { Button } from "@/components/ui/button";
 import { errorMessage } from "@/lib/api-error";
+import { leftoversKey } from "@/lib/leftovers";
 import { addQueueEntry, queueKey } from "@/lib/queue";
 import { useMe } from "@/lib/session";
 import { m } from "@/paraglide/messages";
@@ -25,7 +26,10 @@ export function AddRecipeToQueue({
   const add = useMutation({
     mutationFn: addQueueEntry,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queueKey(householdId) });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queueKey(householdId) }),
+        queryClient.invalidateQueries({ queryKey: leftoversKey(householdId) }),
+      ]);
       toast.success(m["queue.added"]());
     },
   });

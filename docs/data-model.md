@@ -50,4 +50,7 @@ Alpha sketch, the Drizzle schema is the source of truth once it exists. Every ho
   after the shopping item is removed.
 - `pantry_item`: ingredient_id (always at home).
 - `recurring_item`: ingredient_id/label, quantity, rule (e.g. weekly on Saturday).
-- `leftover`: ingredient_id, quantity, unit, created_from (queue entry), expires_hint.
+- `leftover`: household_id, ingredient_id, quantity, unit, source_entry_ids (queue
+  entries whose combined purchase produced the expected remainder). Confirmation
+  uses deterministic IDs for idempotency. Cooking other entries consumes these
+  estimates; users can adjust or dismiss them in planning.

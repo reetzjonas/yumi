@@ -8,6 +8,7 @@ import { type AppEnv, loadSession } from "./context";
 import { env } from "./env";
 import { ingredients } from "./routes/ingredients";
 import { householdInvites, invites } from "./routes/invites";
+import { leftovers } from "./routes/leftovers";
 import { me } from "./routes/me";
 import { pantry } from "./routes/pantry";
 import { queue } from "./routes/queue";
@@ -31,6 +32,7 @@ const api = new Hono<AppEnv>()
   .route("/recipes", recipeImport)
   .route("/recipes", recipes)
   .route("/pantry", pantry)
+  .route("/leftovers", leftovers)
   .route("/queue", queue)
   .route("/queue", queueShopping)
   .route("/shopping", shopping)

@@ -11,6 +11,7 @@ import { validator } from "hono/validator";
 import { z } from "zod";
 import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
 import { db } from "../db";
+import { consumeLeftovers } from "../leftovers";
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -138,6 +139,7 @@ export const queue = new Hono<HouseholdEnv>()
           .returning();
         if (!updated) throw new HTTPException(404, { message: "not_found" });
         if (input.status === "cooked") {
+          await consumeLeftovers(tx, householdId, updated);
           await tx.insert(cookLog).values({
             householdId,
             recipeId: updated.recipeId,

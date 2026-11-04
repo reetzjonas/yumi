@@ -122,6 +122,18 @@ Layout: Step ingredient assignments - associate automatic/manual choices with
 their step -> stack inside the existing recipe editor; scroll owner: `.app-main`;
 avoid nested scrollers and fixed-width checkbox labels.
 
+Layout: Expected leftovers and reuse suggestions - follow the queue's shopping
+workflow in the main Plan pane, including when the queue is empty; scroll owner:
+`.split-main` on desktop, `.app-main` below 1200 px. Keep the shopping preview
+and active list in their existing places. Reading priorities are planned meals,
+shopping, expected leftovers, then recipes that use them. Leftover rows show
+localized ingredient names and amounts, with secondary edit and dismiss actions.
+Editing expands one compact quantity/unit form beneath its row; failures stay
+beside the affected row. Suggestions use compact recipe rows with secondary add
+actions and the recipe's original servings. A checkbox expands suggestions to
+recipes sharing ingredients with queued meals. Avoid extra primary buttons,
+recipe-card grids, and adding controls inside the dense queue rows.
+
 Cooking view brief: the primary action is Next, becoming Mark cooked on the last
 step. Reading priorities are the current instruction, its ingredients, then
 progress. Required controls are close, previous, next, step overview, wake-lock

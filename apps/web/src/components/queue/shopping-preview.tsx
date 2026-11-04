@@ -5,6 +5,7 @@ import { useId, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ApiError, errorMessage } from "@/lib/api-error";
 import { getLocale } from "@/lib/i18n";
+import { leftoversKey } from "@/lib/leftovers";
 import {
   addQueueShopping,
   previewQueueShopping,
@@ -83,9 +84,14 @@ export function QueueShoppingPreview({
     mutationFn: addQueueShopping,
     onMutate: () => onPendingChange(true),
     onSuccess: async ({ added }) => {
-      await queryClient.invalidateQueries({
-        queryKey: ["shopping", householdId],
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["shopping", householdId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: leftoversKey(householdId),
+        }),
+      ]);
       onAdded(added);
     },
     onSettled: () => onPendingChange(false),
