@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { parseIngredientLine, quickAddFields } from "@yumi/shared";
+import { LayoutGrid, Plus } from "lucide-react";
 import { useId, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -14,7 +15,13 @@ import { useMe } from "@/lib/session";
 import { addItemEvent, useShoppingEvents } from "@/lib/shopping";
 import { m } from "@/paraglide/messages";
 
-export function QuickAdd({ listId }: { listId: string }) {
+export function QuickAdd({
+  listId,
+  onTiles,
+}: {
+  listId: string;
+  onTiles: () => void;
+}) {
   const id = useId();
   const householdId = useMe()?.activeHouseholdId;
   const events = useShoppingEvents(listId);
@@ -88,7 +95,9 @@ export function QuickAdd({ listId }: { listId: string }) {
         }
       }}
     >
-      <label htmlFor={id}>{m["shopping.quick_label"]()}</label>
+      <label htmlFor={id} className="sr-only">
+        {m["shopping.quick_label"]()}
+      </label>
       <div className="quick-add-row">
         <input
           id={id}
@@ -104,11 +113,26 @@ export function QuickAdd({ listId }: { listId: string }) {
             setCreated(null);
           }}
         />
-        <Button variant="secondary" disabled={busy || !text.trim()}>
-          {m["shopping.add"]()}
+        <Button
+          variant="outline"
+          className="icon-action"
+          aria-label={m["shopping.add"]()}
+          disabled={busy || !text.trim()}
+        >
+          <Plus size={20} aria-hidden="true" />
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          className="icon-action"
+          aria-label={m["shopping.quick_sheet"]()}
+          aria-haspopup="dialog"
+          onClick={onTiles}
+        >
+          <LayoutGrid size={20} aria-hidden="true" />
         </Button>
       </div>
-      <p id={`${id}-hint`} className="row-detail">
+      <p id={`${id}-hint`} className="sr-only">
         {m["shopping.quick_hint"]()}
       </p>
       {created && (

@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ShoppingBasket } from "lucide-react";
-import { useState } from "react";
+import { ShoppingBasket, Store } from "lucide-react";
+import { useRef, useState } from "react";
 import { EmptyState, PageHeader } from "@/components/page";
+import { RecipePicker } from "@/components/queue/recipe-picker";
+import { AddRecipeToList } from "@/components/shopping/add-recipe";
 import { ItemForm } from "@/components/shopping/item-form";
 import { ItemTiles } from "@/components/shopping/item-tiles";
 import {
@@ -14,6 +16,7 @@ import { ShoppingItems } from "@/components/shopping/shopping-items";
 import { StoreSelect } from "@/components/shopping/store-select";
 import { ShoppingSyncStatus } from "@/components/shopping/sync-status";
 import { Button } from "@/components/ui/button";
+import { Sheet } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { errorMessage } from "@/lib/api-error";
 import { useMe } from "@/lib/session";
@@ -43,33 +46,16 @@ function HouseholdLists() {
     ? selectedId
     : (lists.data?.[0]?.id ?? "");
   const detail = useShoppingList(listId);
+  const quickSheet = useRef<HTMLDialogElement>(null);
+  const recipeSheet = useRef<HTMLDialogElement>(null);
+  const store = stores.data?.find(
+    (item) => item.id === detail.data?.defaultStoreId,
+  );
+  const open = detail.data?.items.filter((item) => !item.checked).length ?? 0;
+  const total = detail.data?.items.length ?? 0;
   return (
     <>
-      <div className="list-heading">
-        <PageHeader title={m.nav_list()} />
-        {listId && detail.data && (
-          <Button asChild className="list-start">
-            <Link to="/shop/$listId" params={{ listId }}>
-              {m["shopping.start"]()}
-            </Link>
-          </Button>
-        )}
-        {listId && (
-          <ListManager
-            selectedId={listId}
-            onSelect={setSelectedId}
-            store={
-              detail.data && (
-                <StoreSelect
-                  listId={listId}
-                  storeId={detail.data.defaultStoreId}
-                  stores={stores.data ?? []}
-                />
-              )
-            }
-          />
-        )}
-      </div>
+      <PageHeader title={m["shopping.title"]()} />
       {lists.isPending ? (
         <Skeleton className="h-32 w-full" />
       ) : lists.isError ? (
@@ -85,62 +71,114 @@ function HouseholdLists() {
           <CreateListForm onSelect={setSelectedId} />
         </EmptyState>
       ) : (
-        <>
-          <ShoppingSyncStatus listId={listId} />
+        <div className="shopping-page">
+          <ListManager
+            selectedId={listId}
+            onSelect={setSelectedId}
+            storeName={store?.name}
+            store={
+              detail.data && (
+                <StoreSelect
+                  listId={listId}
+                  storeId={detail.data.defaultStoreId}
+                  stores={stores.data ?? []}
+                />
+              )
+            }
+          />
+          <QuickAdd
+            key={listId}
+            listId={listId}
+            onTiles={() => quickSheet.current?.showModal()}
+          />
+          {total > 0 && (
+            <div className="list-progress">
+              <div className="list-progress-row">
+                <ShoppingSyncStatus listId={listId} />
+                <span className="meta">
+                  {m["shopping.list_progress"]({ done: total - open, total })}
+                </span>
+              </div>
+              <progress
+                className="progress-bar"
+                max={total}
+                value={total - open}
+                aria-label={m["shopping.progress_label"]()}
+              />
+            </div>
+          )}
+          {total === 0 && <ShoppingSyncStatus listId={listId} />}
           {categories.isError && (
             <p className="form-error" role="alert">
               {errorMessage(categories.error)}
             </p>
           )}
-          <div>
-            <section className="section">
-              <h2>{m["shopping.add_item"]()}</h2>
-              <QuickAdd key={listId} listId={listId} />
-            </section>
-            <div>
-              {detail.isPending ? (
-                <Skeleton className="h-32 w-full" />
-              ) : detail.isError ? (
-                <p className="form-error" role="alert">
-                  {errorMessage(detail.error)}
-                </p>
-              ) : (
-                detail.data && (
-                  <ShoppingItems
-                    key={listId}
-                    list={detail.data}
-                    categories={categories.data ?? []}
-                    categoryOrder={
-                      stores.data?.find(
-                        (store) => store.id === detail.data.defaultStoreId,
-                      )?.categoryOrder
-                    }
-                  />
-                )
-              )}
+          {detail.isPending ? (
+            <Skeleton className="h-32 w-full" />
+          ) : detail.isError ? (
+            <p className="form-error" role="alert">
+              {errorMessage(detail.error)}
+            </p>
+          ) : (
+            detail.data && (
+              <ShoppingItems
+                key={listId}
+                list={detail.data}
+                categories={categories.data ?? []}
+                categoryOrder={store?.categoryOrder}
+                onQuickAdd={() => quickSheet.current?.showModal()}
+              />
+            )
+          )}
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            aria-haspopup="dialog"
+            onClick={() => recipeSheet.current?.showModal()}
+          >
+            {m["shopping.add_from_recipe"]()}
+          </Button>
+          <RecurringItems key={`recurring-${listId}`} listId={listId} />
+          {open > 0 && (
+            <div className="sticky-action">
+              <Button asChild className="w-full">
+                <Link to="/shop/$listId" params={{ listId }}>
+                  <Store aria-hidden="true" size={20} />
+                  {m["shopping.start"]()}
+                </Link>
+              </Button>
             </div>
-            <div className="section">
-              {detail.data && (
-                <ItemTiles
-                  key={`tiles-${listId}`}
-                  list={detail.data}
-                  categories={categories.data ?? []}
+          )}
+          <Sheet ref={quickSheet} title={m["shopping.quick_sheet"]()}>
+            {detail.data && (
+              <ItemTiles
+                key={`tiles-${listId}`}
+                list={detail.data}
+                categories={categories.data ?? []}
+              />
+            )}
+            <details className="shopping-catalog">
+              <summary>{m["shopping.more_options"]()}</summary>
+              <ItemForm
+                key={listId}
+                listId={listId}
+                categories={categories.data ?? []}
+              />
+            </details>
+          </Sheet>
+          <Sheet ref={recipeSheet} title={m["shopping.add_recipe"]()}>
+            <RecipePicker
+              renderPicked={(recipe) => (
+                <AddRecipeToList
+                  key={recipe.id}
+                  recipeId={recipe.id}
+                  servings={recipe.servings}
                 />
               )}
-              <details className="shopping-catalog">
-                <summary>{m["shopping.more_options"]()}</summary>
-                <ItemForm
-                  key={listId}
-                  listId={listId}
-                  categories={categories.data ?? []}
-                />
-              </details>
-            </div>
-            <div>
-              <RecurringItems key={`recurring-${listId}`} listId={listId} />
-            </div>
-          </div>
-        </>
+            />
+          </Sheet>
+        </div>
       )}
     </>
   );

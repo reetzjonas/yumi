@@ -108,8 +108,8 @@ size. From 768 px the cooking view uses two columns: ingredients for the step
 left, the step right.
 
 Layout: Learned shopping route - follow the store's observed item order -> stack
-inside the existing shopping mode; scroll owner: `.app-main`; avoid grouping
-items back into categories when ingredient scores cross category boundaries.
+inside the full-screen shopping mode; scroll owner: `.mode-body`; rows keep the
+route order and only consecutive rows of one category share a heading.
 The shopping rows remain the primary action. Reading priorities are store,
 remaining items in route order, then checked items. The store editor offers a
 secondary reset with an inline failure message; manual category order overrides

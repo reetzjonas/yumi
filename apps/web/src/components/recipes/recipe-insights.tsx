@@ -154,7 +154,7 @@ export function RecipeInsights({ recipe }: { recipe: RecipeDetail }) {
           </p>
         )}
         <section className="recipe-history-list">
-          <h3 className="overline">
+          <h3 className="section-label">
             {count > 0 ? m["recipes.cooked_count"]({ count }) : cooked}
           </h3>
           {history.isPending ? (

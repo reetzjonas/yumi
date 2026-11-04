@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Ellipsis, Pencil, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, Pencil, Plus, Store, Trash2 } from "lucide-react";
 import { type ReactNode, useId, useRef, useState } from "react";
 import { Field, FormError } from "@/components/auth-layout";
 import { Button } from "@/components/ui/button";
@@ -119,10 +119,12 @@ export function ListManager({
   selectedId,
   onSelect,
   store,
+  storeName,
 }: {
   selectedId: string;
   onSelect: (id: string) => void;
   store?: ReactNode;
+  storeName?: string;
 }) {
   const lists = useShoppingLists();
   const selected = lists.data?.find((list) => list.id === selectedId);
@@ -134,28 +136,11 @@ export function ListManager({
 
   return (
     <div className="list-toolbar">
-      <div className="field list-select">
-        <label htmlFor="shopping-list" className="sr-only">
-          {m["shopping.choose_list"]()}
-        </label>
-        <select
-          id="shopping-list"
-          value={selectedId}
-          onChange={(event) => onSelect(event.target.value)}
-        >
-          {lists.data?.map((list) => (
-            <option key={list.id} value={list.id}>
-              {list.name} ({list.openCount})
-            </option>
-          ))}
-        </select>
-      </div>
       <Button
         type="button"
-        variant="ghost"
-        className="icon-action"
+        variant="outline"
+        className="list-switch"
         aria-label={m["shopping.list_actions"]({ name })}
-        title={m["shopping.list_actions"]({ name })}
         aria-haspopup="dialog"
         onClick={() => {
           setPanel("menu");
@@ -163,11 +148,47 @@ export function ListManager({
           sheet.current?.showModal();
         }}
       >
-        <Ellipsis size={20} aria-hidden="true" />
+        <span>{name}</span>
+        <ChevronDown size={18} aria-hidden="true" />
       </Button>
-      <Sheet ref={sheet} title={name} onClose={() => setPanel("menu")}>
+      {storeName && (
+        <span className="list-store meta">
+          <Store size={16} aria-hidden="true" />
+          {storeName}
+        </span>
+      )}
+      <Sheet
+        ref={sheet}
+        title={m["shopping.lists_title"]()}
+        onClose={() => setPanel("menu")}
+      >
         {panel === "menu" && (
           <>
+            <ul className="list-rows">
+              {lists.data?.map((list) => (
+                <li key={list.id}>
+                  <button
+                    type="button"
+                    className="list-row"
+                    aria-current={list.id === selectedId}
+                    onClick={() => {
+                      onSelect(list.id);
+                      sheet.current?.close();
+                    }}
+                  >
+                    <span className="picker-row-main">
+                      <span className="picker-row-title">{list.name}</span>
+                      <span className="meta">
+                        {m["shopping.open_count"]({ count: list.openCount })}
+                      </span>
+                    </span>
+                    {list.id === selectedId && (
+                      <span className="badge">{m["shopping.active"]()}</span>
+                    )}
+                  </button>
+                </li>
+              ))}
+            </ul>
             <ul className="queue-menu">
               <li>
                 <Button

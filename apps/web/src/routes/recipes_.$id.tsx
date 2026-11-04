@@ -227,7 +227,7 @@ function Recipe() {
                 {groupBySection(recipe.ingredients).map((group) => (
                   <div key={group.section ?? ""}>
                     {group.section && (
-                      <h3 className="overline">{group.section}</h3>
+                      <h3 className="section-label">{group.section}</h3>
                     )}
                     <ul className="ingredient-rows">
                       {group.lines.map((line) => {

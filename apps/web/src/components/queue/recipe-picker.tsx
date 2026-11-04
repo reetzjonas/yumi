@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { AddRecipeToQueue } from "@/components/queue/add-recipe";
 import { api } from "@/lib/api";
 import { ensureOk, errorMessage } from "@/lib/api-error";
@@ -8,7 +8,19 @@ import { cookedAgoLabel, formatMinutes, totalMinutes } from "@/lib/recipes";
 import { useMe } from "@/lib/session";
 import { m } from "@/paraglide/messages";
 
-export function RecipePicker() {
+type PickedRecipe = { id: string; servings: number };
+
+export function RecipePicker({
+  renderPicked = (recipe) => (
+    <AddRecipeToQueue
+      key={recipe.id}
+      recipeId={recipe.id}
+      servings={recipe.servings}
+    />
+  ),
+}: {
+  renderPicked?: (recipe: PickedRecipe) => ReactNode;
+}) {
   const householdId = useMe()?.activeHouseholdId;
   const [search, setSearch] = useState("");
   const [q, setQ] = useState("");
@@ -69,13 +81,7 @@ export function RecipePicker() {
           ))}
         </fieldset>
       )}
-      {picked && (
-        <AddRecipeToQueue
-          key={picked.id}
-          recipeId={picked.id}
-          servings={picked.servings}
-        />
-      )}
+      {picked && renderPicked(picked)}
     </div>
   );
 }
