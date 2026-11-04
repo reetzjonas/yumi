@@ -1,0 +1,1 @@
+ALTER TABLE "store" ADD COLUMN "learning_reset_at" timestamp with time zone;

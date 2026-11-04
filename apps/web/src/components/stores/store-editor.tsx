@@ -59,7 +59,18 @@ export function StoreEditor({
     },
     onError: (error) => toast.error(errorMessage(error)),
   });
-  const busy = save.isPending || remove.isPending;
+  const reset = useMutation({
+    mutationFn: async () =>
+      ensureOk(
+        await api.stores[":id"].order.$delete({ param: { id: store.id } }),
+      ),
+    onSuccess: async () => {
+      setOrder(defaultOrder);
+      await invalidate();
+      toast.success(m["stores.learning_reset"]());
+    },
+  });
+  const busy = save.isPending || remove.isPending || reset.isPending;
   return (
     <form
       className="store-editor"
@@ -85,6 +96,12 @@ export function StoreEditor({
         order={order}
         onChange={setOrder}
       />
+      <p className="muted">{m["stores.learning_hint"]()}</p>
+      {reset.isError && (
+        <p className="form-error" role="alert">
+          {errorMessage(reset.error)}
+        </p>
+      )}
       <div className="recipe-actions">
         <Button disabled={busy || !name.trim()}>{m["shopping.save"]()}</Button>
         <Button
@@ -97,6 +114,14 @@ export function StoreEditor({
         </Button>
         <Button type="button" variant="ghost" disabled={busy} onClick={onDone}>
           {m["stores.cancel"]()}
+        </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={busy}
+          onClick={() => reset.mutate()}
+        >
+          {m["stores.reset_learning"]()}
         </Button>
         <Button
           type="button"

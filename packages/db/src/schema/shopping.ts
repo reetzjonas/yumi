@@ -24,6 +24,7 @@ export const store = pgTable(
     name: text().notNull(),
     /** manual category order override: ingredient_category ids */
     categoryOrder: uuid().array(),
+    learningResetAt: timestamp({ withTimezone: true }),
     ...timestamps,
   },
   (t) => [index("store_household_idx").on(t.householdId)],

@@ -7,6 +7,7 @@ export * from "./recipes";
 export * from "./recurring";
 export * from "./servings";
 export * from "./shopping";
+export * from "./shopping-order";
 export * from "./step-ingredients";
 export * from "./step-timers";
 export * from "./stores";

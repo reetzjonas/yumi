@@ -2,6 +2,7 @@ import {
   ingredient,
   ingredientCategory,
   shoppingEvent,
+  shoppingList,
   shoppingListItem,
   store,
 } from "@yumi/db/schema";
@@ -56,6 +57,22 @@ async function applyEvent(
   },
   event: Event,
 ) {
+  const [observed] =
+    event.type === "item_checked"
+      ? await tx
+          .select({
+            ingredientId: shoppingListItem.ingredientId,
+            categoryId: shoppingListItem.categoryId,
+            checked: shoppingListItem.checked,
+          })
+          .from(shoppingListItem)
+          .where(
+            and(
+              eq(shoppingListItem.id, event.itemId),
+              eq(shoppingListItem.listId, ctx.listId),
+            ),
+          )
+      : [];
   const [logged] = await tx
     .insert(shoppingEvent)
     .values({
@@ -63,7 +80,15 @@ async function applyEvent(
       listId: ctx.listId,
       itemId: event.itemId,
       type: event.type,
-      payload: "payload" in event ? event.payload : null,
+      payload:
+        "payload" in event
+          ? event.payload
+          : observed && !observed.checked
+            ? {
+                ingredientId: observed.ingredientId,
+                categoryId: observed.categoryId,
+              }
+            : null,
       userId: ctx.userId,
       storeId:
         event.storeId && ctx.storeIds.has(event.storeId) ? event.storeId : null,
@@ -133,6 +158,16 @@ export async function applyShoppingEventsInTransaction(
   ctx: { listId: string; householdId: string; userId: string },
   events: Event[],
 ) {
+  await tx
+    .select({ id: shoppingList.id })
+    .from(shoppingList)
+    .where(
+      and(
+        eq(shoppingList.id, ctx.listId),
+        eq(shoppingList.householdId, ctx.householdId),
+      ),
+    )
+    .for("update");
   const storeIdsInEvents = [
     ...new Set(events.flatMap((e) => (e.storeId ? [e.storeId] : []))),
   ];

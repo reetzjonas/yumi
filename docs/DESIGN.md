@@ -105,6 +105,14 @@ Shopping mode and cooking view are full-screen modes outside the shell at every
 size. From 768 px the cooking view uses two columns: ingredients for the step
 left, the step right.
 
+Layout: Learned shopping route - follow the store's observed item order -> stack
+inside the existing shopping mode; scroll owner: `.app-main`; avoid grouping
+items back into categories when ingredient scores cross category boundaries.
+The shopping rows remain the primary action. Reading priorities are store,
+remaining items in route order, then checked items. The store editor offers a
+secondary reset with an inline failure message; manual category order overrides
+learning until reset.
+
 Layout: Cooking view - keep the current instruction and its ingredients visible
 inside a bounded viewport -> scroll-body-shell; scroll owner: `.cooking-body`;
 header and navigation stay fixed, with a step overview in landscape. Avoid

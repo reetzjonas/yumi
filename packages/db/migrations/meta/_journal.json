@@ -50,6 +50,13 @@
       "when": 1793776579350,
       "tag": "0006_dazzling_polaris",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793795862767,
+      "tag": "0007_strange_maddog",
+      "breakpoints": true
     }
   ]
 }

@@ -15,3 +15,18 @@ export function useStores() {
     queryFn: async () => (await ensureOk(await api.stores.$get())).json(),
   });
 }
+
+export function useStoreOrder(storeId: string) {
+  const householdId = useMe()?.activeHouseholdId;
+  return useQuery({
+    queryKey: ["stores", householdId, storeId, "order"],
+    enabled: !!householdId && !!storeId,
+    networkMode: "offlineFirst",
+    queryFn: async () =>
+      (
+        await ensureOk(
+          await api.stores[":id"].order.$get({ param: { id: storeId } }),
+        )
+      ).json(),
+  });
+}

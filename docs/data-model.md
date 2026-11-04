@@ -43,8 +43,11 @@ Alpha sketch, the Drizzle schema is the source of truth once it exists. Every ho
 - `shopping_list`: name (a household can have several, e.g. "Supermarket", "Drugstore").
 - `shopping_list_item`: list_id, ingredient_id?, label, quantity?, unit?, category_id, checked, sources (recipe refs).
 - `shopping_event`: id (client UUID), list_id, item_id, type, user_id, store_id?, client_ts, server_ts.
-- `store`: name, category_order (manual override).
-- `learned_order`: store_id, ingredient_id / category_id, score, sample_count.
+- `store`: name, category_order (manual override), learning_reset_at.
+- Learned order scores and session sample counts are derived per store from
+  `shopping_event` check-off snapshots after `learning_reset_at`; no separate
+  score table is needed. Event payloads retain the ingredient and category even
+  after the shopping item is removed.
 - `pantry_item`: ingredient_id (always at home).
 - `recurring_item`: ingredient_id/label, quantity, rule (e.g. weekly on Saturday).
 - `leftover`: ingredient_id, quantity, unit, created_from (queue entry), expires_hint.

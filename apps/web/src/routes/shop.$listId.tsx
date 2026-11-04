@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   type MergedItem,
   mergeShoppingItems,
-  orderCategories,
+  sortShoppingItems,
 } from "@yumi/shared";
 import { ArrowLeft, Check, Circle, ShoppingBasket } from "lucide-react";
 import { useState } from "react";
@@ -21,7 +21,7 @@ import {
   useShoppingList,
 } from "@/lib/shopping";
 import { useShoppingRealtime } from "@/lib/shopping-sync";
-import { useStores } from "@/lib/stores";
+import { useStoreOrder, useStores } from "@/lib/stores";
 import { m } from "@/paraglide/messages";
 
 export const Route = createFileRoute("/shop/$listId")({
@@ -60,6 +60,7 @@ function FocusedList({ list }: { list: ShoppingList }) {
   const categories = useShoppingCategories();
   const events = useShoppingEvents(list.id);
   const [storeId, setStoreId] = useState(list.defaultStoreId ?? "");
+  const learned = useStoreOrder(storeId);
   const rows = mergeShoppingItems(
     list.items.map((item) => ({
       ...item,
@@ -74,13 +75,12 @@ function FocusedList({ list }: { list: ShoppingList }) {
   );
   const checked = rows.filter((row) => row.checked);
   const checkedCount = list.items.filter((item) => item.checked).length;
-  const groups = [
-    ...orderCategories(
-      categories.data ?? [],
-      stores.data?.find((store) => store.id === storeId)?.categoryOrder,
-    ),
-    { id: null, nameDe: "", nameEn: "", icon: null },
-  ];
+  const ordered = sortShoppingItems(
+    rows.filter((row) => !row.checked),
+    categories.data ?? [],
+    stores.data?.find((store) => store.id === storeId)?.categoryOrder,
+    learned.data ?? { ingredients: [], categories: [] },
+  );
 
   function toggle(row: MergedItem) {
     const selectedStore = storeId || null;
@@ -167,6 +167,12 @@ function FocusedList({ list }: { list: ShoppingList }) {
             {errorMessage(stores.error)}
           </p>
         )}
+        <p className="muted">{m["stores.learning_hint"]()}</p>
+        {learned.isError && (
+          <p className="form-error" role="alert">
+            {errorMessage(learned.error)}
+          </p>
+        )}
       </section>
       <div className="shopping-progress">
         <p aria-live="polite">
@@ -197,29 +203,12 @@ function FocusedList({ list }: { list: ShoppingList }) {
               {errorMessage(categories.error)}
             </p>
           )}
-          {groups.map((category) => {
-            const group = rows.filter(
-              (row) =>
-                !row.checked &&
-                (category.id === null
-                  ? !categories.data?.some(
-                      (known) => known.id === row.categoryId,
-                    )
-                  : row.categoryId === category.id),
-            );
-            if (!group.length) return null;
-            return (
-              <section key={category.id ?? "none"} className="section">
-                <h2>
-                  {category.icon && `${category.icon} `}
-                  {category.id
-                    ? ingredientName(category)
-                    : m["shopping.uncategorized"]()}
-                </h2>
-                {renderRows(group)}
-              </section>
-            );
-          })}
+          {ordered.length > 0 && (
+            <section className="section">
+              <h2>{m["shopping.route"]()}</h2>
+              {renderRows(ordered)}
+            </section>
+          )}
           {checked.length > 0 && (
             <details className="shopping-checked">
               <summary>

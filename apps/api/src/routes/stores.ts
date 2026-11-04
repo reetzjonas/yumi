@@ -8,6 +8,7 @@ import { z } from "zod";
 import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
 import { db } from "../db";
 import { publishListChange } from "../shopping-bus";
+import { loadShoppingOrder } from "../shopping-order";
 
 const fields = {
   id: store.id,
@@ -45,6 +46,27 @@ export const stores = new Hono<HouseholdEnv>()
       .values({ ...input, householdId: c.get("householdId") })
       .returning(fields);
     return c.json(row, 201);
+  })
+  .get("/:id/order", async (c) => {
+    const householdId = c.get("householdId");
+    const id = z.uuid().parse(c.req.param("id"));
+    const [owned] = await db
+      .select({ resetAt: store.learningResetAt })
+      .from(store)
+      .where(and(eq(store.id, id), eq(store.householdId, householdId)));
+    if (!owned) throw new HTTPException(404, { message: "not_found" });
+    return c.json(await loadShoppingOrder(householdId, id, owned.resetAt));
+  })
+  .delete("/:id/order", async (c) => {
+    const householdId = c.get("householdId");
+    const id = z.uuid().parse(c.req.param("id"));
+    const [owned] = await db
+      .update(store)
+      .set({ categoryOrder: [], learningResetAt: new Date() })
+      .where(and(eq(store.id, id), eq(store.householdId, householdId)))
+      .returning({ id: store.id });
+    if (!owned) throw new HTTPException(404, { message: "not_found" });
+    return c.body(null, 204);
   })
   .put("/:id", storeBody, async (c) => {
     const input = c.req.valid("json");
