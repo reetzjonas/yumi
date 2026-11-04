@@ -65,6 +65,7 @@ export const recipeIngredient = pgTable(
     unit: text(),
     note: text(),
     optional: boolean().notNull().default(false),
+    excludeFromNutrition: boolean().notNull().default(false),
   },
   (t) => [index("recipe_ingredient_recipe_idx").on(t.recipeId)],
 );

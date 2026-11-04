@@ -17,6 +17,8 @@ const recipeSchema = z.object({
       quantity: z.number().nullable(),
       unit: z.string().nullable(),
       ingredientId: z.uuid().nullable(),
+      optional: z.boolean(),
+      excludeFromNutrition: z.boolean(),
       ingredient: z.object({ nameDe: z.string() }).nullable(),
     }),
   ),
@@ -74,6 +76,10 @@ describe("recipes", () => {
     ]);
     expect(created.ingredients[1]?.ingredient?.nameDe).toBe("Zwiebel");
     expect(created.ingredients[0]?.ingredient).toBeNull();
+    expect(created.ingredients.map((i) => i.excludeFromNutrition)).toEqual([
+      false,
+      false,
+    ]);
 
     const updated = await c.request(`/api/recipes/${created.id}`, {
       method: "PUT",

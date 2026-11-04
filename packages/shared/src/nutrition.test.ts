@@ -92,6 +92,7 @@ describe("calculateRecipeNutrition", () => {
         },
         includedIngredients: 1,
         totalIngredients: 1,
+        ignoredIngredients: 0,
         excludedIngredients: [],
       });
     },
@@ -131,6 +132,7 @@ describe("calculateRecipeNutrition", () => {
       },
       includedIngredients: 2,
       totalIngredients: 7,
+      ignoredIngredients: 0,
       excludedIngredients: [
         { position: 1, reason: "quantity" },
         { position: 2, reason: "nutrition" },
@@ -138,6 +140,33 @@ describe("calculateRecipeNutrition", () => {
         { position: 4, reason: "conversion" },
         { position: 5, reason: "conversion" },
       ],
+    });
+  });
+
+  test("explicitly excluded lines leave the sum and the coverage denominator", () => {
+    const result = calculateRecipeNutrition(
+      [
+        line,
+        { ...line, excludeFromNutrition: true },
+        { ...line, quantity: null },
+      ],
+      2,
+    );
+
+    expect(result).toEqual({
+      perServing: {
+        energyKcal: 100,
+        proteinG: 6,
+        fatG: 4,
+        carbsG: 15,
+        sugarG: 2,
+        fiberG: 3,
+        saltG: 0.125,
+      },
+      includedIngredients: 1,
+      totalIngredients: 2,
+      ignoredIngredients: 1,
+      excludedIngredients: [{ position: 2, reason: "quantity" }],
     });
   });
 
@@ -159,6 +188,7 @@ describe("calculateRecipeNutrition", () => {
     { lines: [{ ...line, quantity: null }] },
     { lines: [{ ...line, ingredient: null }] },
     { lines: [{ ...line, unit: "pack" }] },
+    { lines: [{ ...line, excludeFromNutrition: true }] },
   ] satisfies readonly { readonly lines: readonly RecipeNutritionLine[] }[])(
     "returns no estimate when no line has usable data: %p",
     ({ lines }) => {
@@ -192,6 +222,7 @@ describe("calculateRecipeNutrition", () => {
       perServing: zeroProfile,
       includedIngredients: 2,
       totalIngredients: 2,
+      ignoredIngredients: 0,
       excludedIngredients: [],
     });
   });

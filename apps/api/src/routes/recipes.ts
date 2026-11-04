@@ -153,6 +153,7 @@ async function loadRecipe(householdId: string, id: string, userId: string) {
         unit: recipeIngredient.unit,
         note: recipeIngredient.note,
         optional: recipeIngredient.optional,
+        excludeFromNutrition: recipeIngredient.excludeFromNutrition,
         ingredientId: recipeIngredient.ingredientId,
         ingredient: {
           nameDe: ingredient.nameDe,
@@ -203,6 +204,7 @@ async function loadRecipe(householdId: string, id: string, userId: string) {
         quantity: line.quantity,
         unit: unitSchema.nullable().parse(line.unit),
         ingredient: line.ingredientId ? line.factors : null,
+        excludeFromNutrition: line.excludeFromNutrition,
       })),
       row.servings,
     ),

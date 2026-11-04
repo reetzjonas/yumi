@@ -18,6 +18,7 @@ export const recipeIngredientInputSchema = z.object({
   ingredientId: z.uuid().nullable().default(null),
   note: optionalText(500),
   optional: z.boolean().default(false),
+  excludeFromNutrition: z.boolean().default(false),
 });
 
 export const recipeStepInputSchema = z.object({

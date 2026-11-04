@@ -71,6 +71,13 @@
       "when": 1793815740394,
       "tag": "0009_curvy_rattler",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793830039206,
+      "tag": "0010_amusing_mole_man",
+      "breakpoints": true
     }
   ]
 }

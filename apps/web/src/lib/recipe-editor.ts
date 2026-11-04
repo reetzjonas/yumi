@@ -24,6 +24,7 @@ export type IngredientRow = {
   note: string;
   section: string;
   optional: boolean;
+  excludeFromNutrition: boolean;
   ingredientId: string | null;
   confidence: number;
   changed: boolean;
@@ -65,6 +66,7 @@ export function newIngredient(): IngredientRow {
     note: "",
     section: "",
     optional: false,
+    excludeFromNutrition: false,
     ingredientId: null,
     confidence: 1,
     changed: true,
@@ -95,6 +97,7 @@ export function storedIngredient(
     | "note"
     | "section"
     | "optional"
+    | "excludeFromNutrition"
     | "ingredientId"
   >,
 ): IngredientRow {
@@ -109,6 +112,7 @@ export function storedIngredient(
     note: preservedNote(parsed, line.note),
     section: line.section ?? "",
     optional: line.optional,
+    excludeFromNutrition: line.excludeFromNutrition,
     ingredientId: line.ingredientId,
     confidence: line.ingredientId ? parsed.confidence : 0,
     changed: false,
@@ -133,6 +137,7 @@ export function ingredientInput(
     unit: row.unit,
     note: row.note.trim() || null,
     optional: row.optional,
+    excludeFromNutrition: row.excludeFromNutrition,
     ingredientId: row.ingredientId,
   };
 }

@@ -30,26 +30,40 @@ const page = `<html><head><script type="application/ld+json">${JSON.stringify({
     },
   ],
 })}</script></head><body></body></html>`;
+const spicePage = `<html><head><script type="application/ld+json">${JSON.stringify(
+  {
+    "@type": "Recipe",
+    name: "Gewürztest",
+    recipeIngredient: ["Salz und Pfeffer", "1 EL Öl"],
+    recipeInstructions: [{ "@type": "HowToStep", text: "Würzen." }],
+  },
+)}</script></head><body></body></html>`;
 const png = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jBmkAAAAASUVORK5CYII=",
   "base64",
 );
 
-const transport: RecipeHttpTransport = {
-  resolve: async () => [{ address: "93.184.216.34", family: 4 }],
-  request: async (url) =>
-    url.pathname.endsWith(".png")
-      ? {
-          status: 200,
-          headers: new Headers({ "content-type": "image/png" }),
-          body: Readable.from([png]),
-        }
-      : {
-          status: 200,
-          headers: new Headers({ "content-type": "text/html; charset=utf-8" }),
-          body: Readable.from([page]),
-        },
-};
+function transportFor(html: string): RecipeHttpTransport {
+  return {
+    resolve: async () => [{ address: "93.184.216.34", family: 4 }],
+    request: async (url) =>
+      url.pathname.endsWith(".png")
+        ? {
+            status: 200,
+            headers: new Headers({ "content-type": "image/png" }),
+            body: Readable.from([png]),
+          }
+        : {
+            status: 200,
+            headers: new Headers({
+              "content-type": "text/html; charset=utf-8",
+            }),
+            body: Readable.from([html]),
+          },
+  };
+}
+const transport = transportFor(page);
+const spiceTransport = transportFor(spicePage);
 
 async function householdId() {
   const c = await signUp(`import-${crypto.randomUUID().slice(0, 8)}`);
@@ -150,6 +164,24 @@ test("an import uses AI suggestions for newly created ingredients", async () => 
     nutritionPer100g: nutrition,
     nutritionSource: "AI estimate",
   });
+});
+
+test("unquantified spice lines are excluded from nutrition during import", async () => {
+  const result = await importRecipeDraft(
+    await householdId(),
+    "https://example.org/gewuerze",
+    spiceTransport,
+  );
+
+  expect(
+    result.draft.ingredients.map((line) => ({
+      rawText: line.rawText,
+      excludeFromNutrition: line.excludeFromNutrition,
+    })),
+  ).toEqual([
+    { rawText: "Salz und Pfeffer", excludeFromNutrition: true },
+    { rawText: "1 EL Öl", excludeFromNutrition: false },
+  ]);
 });
 
 test.each([

@@ -44,6 +44,13 @@ export function RecipeNutrition({
           total: nutrition.totalIngredients,
         })}
       </p>
+      {nutrition.ignoredIngredients > 0 && (
+        <p className="row-detail">
+          {m["recipes.nutrition_ignored"]({
+            count: nutrition.ignoredIngredients,
+          })}
+        </p>
+      )}
       <p className="row-detail">{m["recipes.nutrition_source"]()}</p>
     </details>
   );

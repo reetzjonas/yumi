@@ -24,6 +24,9 @@ Alpha sketch, the Drizzle schema is the source of truth once it exists. Every ho
 - Recipe detail returns `nutrition` per serving of the base recipe, or null when no line counts.
   Lines without quantity, linked nutrition or a gram conversion (density, piece weight; never for
   pinch, bunch, can, pack) are listed in `excludedIngredients` and reported as partial coverage.
+  Lines marked `exclude_from_nutrition` are intentionally ignored: they leave both the sum and the
+  coverage denominator, and the result reports them as `ignoredIngredients` (e.g. salt and pepper
+  to taste).
 - Household ingredient creation reviews German/English names, synonyms, category, default unit,
   pack sizes, icon and optional nutrition per 100 g. `POST /api/ingredients/suggest` returns an unsaved AI proposal or a manual
   draft when AI is unavailable; only the explicit `POST /api/ingredients` confirmation persists it.
@@ -33,7 +36,7 @@ Alpha sketch, the Drizzle schema is the source of truth once it exists. Every ho
 ## Recipes
 
 - `recipe`: title, description, servings, prep_min, cook_min, source_url, image, language, tags[].
-- `recipe_ingredient`: recipe_id, section, position, ingredient_id?, raw_text, quantity?, unit?, note, optional.
+- `recipe_ingredient`: recipe_id, section, position, ingredient_id?, raw_text, quantity?, unit?, note, optional, exclude_from_nutrition (boolean, default false; keeps the line out of nutrition coverage, e.g. seasoning to taste).
 - `recipe_step`: recipe_id, position, text, ingredient refs (`recipe_ingredient.id` UUIDs), ingredient_refs_manual (boolean, default false), detected timers (jsonb).
 - Recipe step input uses zero-based `ingredientPositions`: omitted or `null` matches German/English catalog names and parsed raw ingredient names when saving; an array overrides matching, including `[]` for no references. Positions must belong to the submitted recipe. Recipe edits recreate ingredient rows and bind step references to their new IDs.
 - Recipe detail returns resolved `ingredientRefs` and `ingredientPositions`. Automatic steps (`ingredient_refs_manual = false`, including legacy steps) match names when loaded and return `ingredientPositions: null`; manually selected steps return stored references and their positions, preserving deliberate empty arrays. Saves persist both the resolved references and whether positions were explicitly supplied.

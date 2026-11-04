@@ -1,5 +1,6 @@
-import { ingredient } from "@yumi/db/schema";
+import { ingredient, ingredientCategory } from "@yumi/db/schema";
 import { PHOTO_IMPORT_MAX_BYTES, PHOTO_IMPORT_MAX_COUNT } from "@yumi/shared";
+import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { HTTPException } from "hono/http-exception";
@@ -96,7 +97,11 @@ async function createMissingIngredient(
     unitText: null,
   });
   if (existing.ingredient)
-    return { id: existing.ingredient.id, created: false };
+    return {
+      id: existing.ingredient.id,
+      categoryId: existing.ingredient.categoryId,
+      created: false,
+    };
   const [created] = await db
     .insert(ingredient)
     .values({
@@ -107,8 +112,10 @@ async function createMissingIngredient(
           ? AI_NUTRITION_SOURCE
           : null,
     })
-    .returning({ id: ingredient.id });
-  return created ? { id: created.id, created: true } : null;
+    .returning({ id: ingredient.id, categoryId: ingredient.categoryId });
+  return created
+    ? { id: created.id, categoryId: created.categoryId, created: true }
+    : null;
 }
 
 async function linkDraftIngredients(
@@ -121,11 +128,17 @@ async function linkDraftIngredients(
     draft.ingredients.map((line) => line.rawText),
     client,
   );
+  const [spices] = await db
+    .select({ id: ingredientCategory.id })
+    .from(ingredientCategory)
+    .where(eq(ingredientCategory.key, "spices"))
+    .limit(1);
   let createdIngredients = 0;
   const ingredients: RecipeImportDraft["ingredients"] = [];
   for (const [index, line] of draft.ingredients.entries()) {
     const match = parsed[index];
     let ingredientId = match?.ingredient?.id ?? null;
+    let categoryId = match?.ingredient?.categoryId ?? null;
     if (
       !ingredientId &&
       match &&
@@ -133,6 +146,7 @@ async function linkDraftIngredients(
     ) {
       const created = await createMissingIngredient(householdId, match, client);
       ingredientId = created?.id ?? null;
+      categoryId = created?.categoryId ?? categoryId;
       if (created?.created) createdIngredients += 1;
     }
     ingredients.push({
@@ -141,6 +155,10 @@ async function linkDraftIngredients(
       unit: match?.unit ?? line.unit,
       note: match?.note ?? line.note,
       optional: match?.optional ?? line.optional,
+      excludeFromNutrition:
+        match?.quantity === null &&
+        categoryId !== null &&
+        categoryId === spices?.id,
       ingredientId,
     });
   }

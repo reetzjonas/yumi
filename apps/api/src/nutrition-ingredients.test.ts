@@ -218,6 +218,67 @@ describe("ingredient nutrition persistence", () => {
     });
   });
 
+  test("excluded lines stay visible but leave nutrition coverage", async () => {
+    const c = await householdMember("nutrition-excluded");
+    const own = await create(c, { nutritionPer100g: profile });
+    const [salt] = await db
+      .select({ id: ingredient.id })
+      .from(ingredient)
+      .where(eq(ingredient.key, "salt"));
+    if (!salt) throw new Error("seed salt missing");
+    const response = await c.request("/api/recipes", {
+      method: "POST",
+      body: JSON.stringify({
+        title: "Seasoned fixture",
+        servings: 2,
+        ingredients: [
+          {
+            rawText: "200 g fixture",
+            quantity: 200,
+            unit: "g",
+            ingredientId: own.id,
+          },
+          {
+            rawText: "Salz nach Geschmack",
+            quantity: null,
+            unit: null,
+            ingredientId: salt.id,
+            excludeFromNutrition: true,
+          },
+        ],
+      }),
+    });
+
+    expect(response.status).toBe(201);
+    const body = z
+      .object({
+        nutrition: z.object({
+          perServing: z.unknown(),
+          includedIngredients: z.number(),
+          totalIngredients: z.number(),
+          ignoredIngredients: z.number(),
+          excludedIngredients: z.array(z.unknown()),
+        }),
+        ingredients: z.array(
+          z.object({
+            rawText: z.string(),
+            excludeFromNutrition: z.boolean(),
+          }),
+        ),
+      })
+      .parse(await response.json());
+    expect(body.nutrition).toMatchObject({
+      includedIngredients: 1,
+      totalIngredients: 1,
+      ignoredIngredients: 1,
+      excludedIngredients: [],
+    });
+    expect(body.ingredients[1]).toEqual({
+      rawText: "Salz nach Geschmack",
+      excludeFromNutrition: true,
+    });
+  });
+
   test("household nutrition cannot overwrite foreign or global ingredients", async () => {
     const owner = await householdMember("nutrition-owner");
     const other = await householdMember("nutrition-other");

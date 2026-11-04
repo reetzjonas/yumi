@@ -98,6 +98,21 @@ export function IngredientEditorRow({
         />
         {m["recipes.ingredient_optional"]()}
       </label>
+      <label className="checkbox-label">
+        <input
+          type="checkbox"
+          checked={row.excludeFromNutrition}
+          onChange={(event) =>
+            update({ excludeFromNutrition: event.target.checked }, false)
+          }
+        />
+        {m["recipes.ingredient_exclude_nutrition"]()}
+      </label>
+      {row.excludeFromNutrition && (
+        <p className="muted">
+          {m["recipes.ingredient_exclude_nutrition_hint"]()}
+        </p>
+      )}
       {row.confidence < 0.7 && (
         <p className="muted">{m["recipes.ingredient_check"]()}</p>
       )}

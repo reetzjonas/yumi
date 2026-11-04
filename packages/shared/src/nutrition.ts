@@ -25,12 +25,15 @@ export type RecipeNutritionLine = {
     readonly densityGPerMl: number | null;
     readonly pieceWeightG: number | null;
   } | null;
+  /** Intentionally left out, e.g. salt and pepper to taste. */
+  readonly excludeFromNutrition?: boolean;
 };
 
 export type RecipeNutrition = {
   readonly perServing: NutritionValues;
   readonly includedIngredients: number;
   readonly totalIngredients: number;
+  readonly ignoredIngredients: number;
   readonly excludedIngredients: readonly {
     readonly position: number;
     readonly reason: "quantity" | "nutrition" | "conversion";
@@ -57,8 +60,13 @@ export function calculateRecipeNutrition(
     reason: "quantity" | "nutrition" | "conversion";
   }[] = [];
   let includedIngredients = 0;
+  let ignoredIngredients = 0;
 
   for (const [position, line] of lines.entries()) {
+    if (line.excludeFromNutrition) {
+      ignoredIngredients += 1;
+      continue;
+    }
     if (line.quantity === null) {
       excludedIngredients.push({ position, reason: "quantity" });
       continue;
@@ -89,7 +97,8 @@ export function calculateRecipeNutrition(
   return {
     perServing,
     includedIngredients,
-    totalIngredients: lines.length,
+    totalIngredients: lines.length - ignoredIngredients,
+    ignoredIngredients,
     excludedIngredients,
   };
 }
