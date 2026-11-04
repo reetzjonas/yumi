@@ -37,56 +37,64 @@ export function ImageEditor({
       ? recipeImageUrl(recipe.id, recipe.imageKey, "full")
       : null);
   return (
-    <section className="recipe-form" aria-labelledby="recipe-image-title">
-      <h2 id="recipe-image-title">{m["recipes.image"]()}</h2>
-      {source && (
+    <section
+      className="recipe-image-field"
+      aria-labelledby="recipe-image-title"
+    >
+      <h2 id="recipe-image-title" className="field-label">
+        {m["recipes.image"]()}
+      </h2>
+      {source ? (
         <img
-          className="recipe-image"
+          className="recipe-image-preview"
           src={source}
           alt={m["recipes.image_preview"]()}
         />
+      ) : (
+        <div className="recipe-image-preview is-empty" />
       )}
-      <div className="field">
-        <label htmlFor="recipe-image">
+      <div className="recipe-image-actions">
+        <label className="button button-outline file-button">
+          <input
+            className="sr-only"
+            type="file"
+            accept={IMAGE_TYPES}
+            aria-describedby="recipe-image-hint"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              event.target.value = "";
+              if (!file) return;
+              if (file.size > MAX_IMAGE_BYTES) {
+                onError(m["errors.image_too_large"]());
+                return;
+              }
+              if (!IMAGE_TYPES.split(",").includes(file.type)) {
+                onError(m["errors.invalid_image"]());
+                return;
+              }
+              onError(null);
+              onChange({ file, remove: false });
+            }}
+          />
           {source ? m["recipes.image_replace"]() : m["recipes.image_choose"]()}
         </label>
-        <input
-          id="recipe-image"
-          type="file"
-          accept={IMAGE_TYPES}
-          aria-describedby="recipe-image-hint"
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            event.target.value = "";
-            if (!file) return;
-            if (file.size > MAX_IMAGE_BYTES) {
-              onError(m["errors.image_too_large"]());
-              return;
-            }
-            if (!IMAGE_TYPES.split(",").includes(file.type)) {
-              onError(m["errors.invalid_image"]());
-              return;
-            }
-            onError(null);
-            onChange({ file, remove: false });
-          }}
-        />
-        <p id="recipe-image-hint" className="muted">
-          {m["recipes.image_hint"]()}
-        </p>
+        {source && (
+          <Button
+            type="button"
+            variant="ghost"
+            className="button-danger-text"
+            onClick={() => {
+              onError(null);
+              onChange({ file: null, remove: true });
+            }}
+          >
+            {m["recipes.image_remove"]()}
+          </Button>
+        )}
       </div>
-      {source && (
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() => {
-            onError(null);
-            onChange({ file: null, remove: true });
-          }}
-        >
-          {m["recipes.image_remove"]()}
-        </Button>
-      )}
+      <p id="recipe-image-hint" className="meta">
+        {m["recipes.image_hint"]()}
+      </p>
     </section>
   );
 }

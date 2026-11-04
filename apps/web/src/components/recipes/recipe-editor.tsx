@@ -149,6 +149,12 @@ export function RecipeEditor({
   return (
     <form onSubmit={onSubmit}>
       <fieldset className="recipe-form" disabled={save.isPending}>
+        <ImageEditor
+          recipe={recipe}
+          value={image}
+          onChange={setImage}
+          onError={setError}
+        />
         <RecipeFields recipe={source} />
         <IngredientEditor
           rows={ingredients}
@@ -156,12 +162,6 @@ export function RecipeEditor({
           onParsingChange={setParsing}
         />
         <StepEditor rows={steps} setRows={setSteps} ingredients={ingredients} />
-        <ImageEditor
-          recipe={recipe}
-          value={image}
-          onChange={setImage}
-          onError={setError}
-        />
         <FormError message={error} />
         {uploading && <p role="status">{m["recipes.image_uploading"]()}</p>}
         <div className="recipe-actions">

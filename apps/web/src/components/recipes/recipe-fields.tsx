@@ -49,7 +49,7 @@ export function RecipeFields({
         />
         <Field
           id="prepMinutes"
-          label={m["recipes.prep_time"]()}
+          label={m["recipes.prep_short"]()}
           type="number"
           min={0}
           max={10000}
@@ -58,26 +58,26 @@ export function RecipeFields({
         />
         <Field
           id="cookMinutes"
-          label={m["recipes.cook_time"]()}
+          label={m["recipes.cook_short"]()}
           type="number"
           min={0}
           max={10000}
           step={1}
           defaultValue={recipe?.cookMinutes ?? ""}
         />
-        <Field
-          id="sourceUrl"
-          label={m["recipes.source_url"]()}
-          type="url"
-          pattern="https?://.*"
-          maxLength={2000}
-          defaultValue={recipe?.sourceUrl ?? ""}
-        />
       </div>
       <Field
         id="tags"
         label={m["recipes.tags"]()}
         defaultValue={recipe?.tags.join(", ") ?? ""}
+      />
+      <Field
+        id="sourceUrl"
+        label={m["recipes.source_url"]()}
+        type="url"
+        pattern="https?://.*"
+        maxLength={2000}
+        defaultValue={recipe?.sourceUrl ?? ""}
       />
     </>
   );

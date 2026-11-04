@@ -1,20 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { parseIngredientLine, unitSchema } from "@yumi/shared";
-import {
-  CalendarPlus,
-  CookingPot,
-  ListPlus,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { Clock, Flame, Link as LinkIcon, Pencil, Trash2 } from "lucide-react";
 import { useRef } from "react";
 import { toast } from "sonner";
 import { BackLink, PageHeader } from "@/components/page";
 import { AddRecipeToQueue } from "@/components/queue/add-recipe";
 import { RecipeInsights } from "@/components/recipes/recipe-insights";
 import { RecipeNutrition } from "@/components/recipes/recipe-nutrition";
-import { ServingsSelector } from "@/components/recipes/servings-selector";
+import { ServingsStepper } from "@/components/recipes/servings-selector";
 import { AddRecipeToList } from "@/components/shopping/add-recipe";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
@@ -28,6 +22,7 @@ import {
   ingredientName,
   recipeImageUrl,
   servingsSearch,
+  totalMinutes,
 } from "@/lib/recipes";
 import { useMe } from "@/lib/session";
 import { m } from "@/paraglide/messages";
@@ -61,6 +56,7 @@ function Recipe() {
     onError: (e) => toast.error(errorMessage(e)),
   });
   const recipe = query.data;
+  const currentServings = servings ?? recipe?.servings ?? 1;
   return (
     <article className="recipe-detail">
       <PageHeader
@@ -77,62 +73,50 @@ function Recipe() {
       ) : (
         recipe && (
           <>
-            <h1 className="recipe-title">{recipe.title}</h1>
-            {recipe.imageKey && (
+            {recipe.imageKey ? (
               <img
-                className="recipe-image"
+                className="recipe-hero"
                 src={recipeImageUrl(id, recipe.imageKey, "full")}
                 alt={m["recipes.image_alt"]({ title: recipe.title })}
                 width={1200}
                 height={750}
               />
+            ) : (
+              <div className="recipe-hero is-empty" />
             )}
+            <h1 className="recipe-title">{recipe.title}</h1>
             {recipe.description && (
               <p className="recipe-description">{recipe.description}</p>
             )}
-            <ServingsSelector
-              value={servings ?? recipe.servings}
-              onChange={(next) =>
-                void navigate({
-                  to: "/recipes/$id",
-                  params: { id },
-                  search: { servings: next },
-                  replace: true,
-                })
-              }
-            />
-            <dl className="recipe-meta">
-              {recipe.prepMinutes !== null && (
-                <div>
-                  <dt>{m["recipes.prep_time"]()}</dt>
-                  <dd>{formatMinutes(recipe.prepMinutes)}</dd>
-                </div>
-              )}
-              {recipe.cookMinutes !== null && (
-                <div>
-                  <dt>{m["recipes.cook_time"]()}</dt>
-                  <dd>{formatMinutes(recipe.cookMinutes)}</dd>
-                </div>
-              )}
-            </dl>
+            {(totalMinutes(recipe) > 0 || recipe.tags.length > 0) && (
+              <div className="recipe-meta">
+                {totalMinutes(recipe) > 0 && (
+                  <span className="recipe-meta-time">
+                    <Clock size={16} aria-hidden="true" />
+                    {formatMinutes(totalMinutes(recipe))}
+                  </span>
+                )}
+                {recipe.prepMinutes !== null && recipe.cookMinutes !== null && (
+                  <span>
+                    {m["recipes.prep_cook"]({
+                      prep: recipe.prepMinutes,
+                      cook: recipe.cookMinutes,
+                    })}
+                  </span>
+                )}
+                {recipe.tags.map((tag) => (
+                  <span key={tag} className="badge">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
             <RecipeInsights key={`${householdId}-${id}`} recipe={recipe} />
-            {recipe.tags.length > 0 && (
-              <p className="row-detail">{recipe.tags.join(" · ")}</p>
-            )}
-            {recipe.sourceUrl && (
-              <a
-                href={recipe.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {m["recipes.source"]()}
-              </a>
-            )}
-            <div className="recipe-actions">
+            <div className="recipe-primary-actions">
               <Button asChild>
                 <Link to="/cook/$id" params={{ id }} search={{ servings }}>
-                  <CookingPot size={18} aria-hidden="true" />
-                  {m["cooking.start"]()}
+                  <Flame size={20} aria-hidden="true" />
+                  {m["recipes.cook_action"]()}
                 </Link>
               </Button>
               <Button
@@ -141,7 +125,6 @@ function Recipe() {
                 aria-haspopup="dialog"
                 onClick={() => queueSheet.current?.showModal()}
               >
-                <CalendarPlus size={18} aria-hidden="true" />
                 {m["recipes.plan_action"]()}
               </Button>
               <Button
@@ -150,17 +133,19 @@ function Recipe() {
                 aria-haspopup="dialog"
                 onClick={() => listSheet.current?.showModal()}
               >
-                <ListPlus size={18} aria-hidden="true" />
                 {m["recipes.list_action"]()}
               </Button>
-              <Button asChild variant="outline">
+            </div>
+            <div className="recipe-secondary-actions">
+              <Button asChild variant="ghost">
                 <Link to="/recipes/$id/edit" params={{ id }}>
                   <Pencil size={18} aria-hidden="true" />
                   {m["recipes.edit"]()}
                 </Link>
               </Button>
               <Button
-                variant="destructive"
+                variant="ghost"
+                className="button-danger-text"
                 disabled={remove.isPending}
                 onClick={() => {
                   if (
@@ -174,6 +159,18 @@ function Recipe() {
                 <Trash2 size={18} aria-hidden="true" />
                 {m["recipes.delete"]()}
               </Button>
+              {recipe.sourceUrl && (
+                <Button asChild variant="ghost">
+                  <a
+                    href={recipe.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <LinkIcon size={18} aria-hidden="true" />
+                    {new URL(recipe.sourceUrl).hostname.replace(/^www\./, "")}
+                  </a>
+                </Button>
+              )}
             </div>
             <Sheet
               ref={queueSheet}
@@ -181,9 +178,9 @@ function Recipe() {
               meta={recipe.title}
             >
               <AddRecipeToQueue
-                key={`queue-${householdId}-${id}-${servings ?? recipe.servings}`}
+                key={`queue-${householdId}-${id}-${currentServings}`}
                 recipeId={id}
-                servings={servings ?? recipe.servings}
+                servings={currentServings}
               />
             </Sheet>
             <Sheet
@@ -192,68 +189,124 @@ function Recipe() {
               meta={recipe.title}
             >
               <AddRecipeToList
-                key={`${householdId}-${id}-${servings ?? recipe.servings}`}
+                key={`${householdId}-${id}-${currentServings}`}
                 recipeId={id}
-                servings={servings ?? recipe.servings}
+                servings={currentServings}
               />
             </Sheet>
-            <section className="recipe-section">
-              <h2>{m["recipes.ingredients"]()}</h2>
-              {recipe.ingredients.length === 0 && (
-                <p>{m["recipes.no_ingredients"]()}</p>
-              )}
-              {groupBySection(recipe.ingredients).map((group) => (
-                <div key={group.section ?? ""}>
-                  {group.section && <h3>{group.section}</h3>}
-                  <ul className="recipe-ingredient-list">
-                    {group.lines.map((line) => {
-                      const parsed = parseIngredientLine(line.rawText);
-                      const name = line.ingredient
-                        ? ingredientName(line.ingredient)
-                        : parsed.name || line.rawText;
-                      const unit = unitSchema.safeParse(line.unit).data ?? null;
-                      const quantity = formatScaledQuantity(
-                        line.quantity,
-                        unit,
-                        recipe.servings,
-                        servings ?? recipe.servings,
-                      );
-                      return (
-                        <li key={line.id}>
-                          {quantity !== null && <strong>{quantity} </strong>}
-                          {parsed.unitText && `${parsed.unitText} `}
-                          {name}
-                          {line.note && (
-                            <span className="row-detail">, {line.note}</span>
-                          )}
-                          {line.optional && (
-                            <span className="row-detail">
-                              {" "}
-                              ({m["recipes.optional"]()})
-                            </span>
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ul>
+            <div className="recipe-columns">
+              <section className="recipe-column">
+                <div className="recipe-column-heading">
+                  <h2>{m["recipes.ingredients"]()}</h2>
+                  <ServingsStepper
+                    value={currentServings}
+                    onChange={(next) =>
+                      void navigate({
+                        to: "/recipes/$id",
+                        params: { id },
+                        search: { servings: next },
+                        replace: true,
+                      })
+                    }
+                  />
                 </div>
-              ))}
-            </section>
-            {recipe.nutrition && (
-              <RecipeNutrition nutrition={recipe.nutrition} />
-            )}
-            <section className="recipe-section">
-              <h2>{m["recipes.steps"]()}</h2>
-              {recipe.steps.length === 0 ? (
-                <p>{m["recipes.no_steps"]()}</p>
-              ) : (
-                <ol className="recipe-step-list">
-                  {recipe.steps.map((step) => (
-                    <li key={step.id}>{step.text}</li>
-                  ))}
-                </ol>
-              )}
-            </section>
+                {currentServings !== recipe.servings && (
+                  <p className="meta">
+                    <span className="badge badge-warning">
+                      {m["recipes.scaled_badge"]()}
+                    </span>{" "}
+                    {m["recipes.scaled_hint"]({
+                      servings: currentServings,
+                      base: recipe.servings,
+                    })}
+                  </p>
+                )}
+                {recipe.ingredients.length === 0 && (
+                  <p>{m["recipes.no_ingredients"]()}</p>
+                )}
+                {groupBySection(recipe.ingredients).map((group) => (
+                  <div key={group.section ?? ""}>
+                    {group.section && (
+                      <h3 className="overline">{group.section}</h3>
+                    )}
+                    <ul className="ingredient-rows">
+                      {group.lines.map((line) => {
+                        const parsed = parseIngredientLine(line.rawText);
+                        const name = line.ingredient
+                          ? ingredientName(line.ingredient)
+                          : parsed.name || line.rawText;
+                        const unit =
+                          unitSchema.safeParse(line.unit).data ?? null;
+                        const quantity = formatScaledQuantity(
+                          line.quantity,
+                          unit,
+                          recipe.servings,
+                          currentServings,
+                        );
+                        return (
+                          <li key={line.id}>
+                            <span className="ingredient-quantity">
+                              {quantity ?? ""}
+                              {parsed.unitText && ` ${parsed.unitText}`}
+                            </span>
+                            <span>
+                              {name}
+                              {line.note && (
+                                <span className="meta">, {line.note}</span>
+                              )}
+                              {line.optional && (
+                                <span className="meta">
+                                  {" "}
+                                  · {m["recipes.optional"]()}
+                                </span>
+                              )}
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))}
+              </section>
+              <section className="recipe-column">
+                <div className="recipe-column-heading">
+                  <h2>{m["recipes.steps"]()}</h2>
+                  {recipe.steps.length > 0 && (
+                    <span className="meta">
+                      {m["recipes.steps_count"]({ count: recipe.steps.length })}
+                    </span>
+                  )}
+                </div>
+                {recipe.steps.length === 0 ? (
+                  <p>{m["recipes.no_steps"]()}</p>
+                ) : (
+                  <>
+                    <ol className="step-rows">
+                      {recipe.steps.map((step, index) => (
+                        <li key={step.id}>
+                          <span className="step-number">{index + 1}</span>
+                          <span className="recipe-step-text">{step.text}</span>
+                        </li>
+                      ))}
+                    </ol>
+                    <Button asChild variant="outline" className="w-full">
+                      <Link
+                        to="/cook/$id"
+                        params={{ id }}
+                        search={{ servings }}
+                      >
+                        {m["recipes.cook_view_link"]({
+                          count: recipe.steps.length,
+                        })}
+                      </Link>
+                    </Button>
+                  </>
+                )}
+                {recipe.nutrition && (
+                  <RecipeNutrition nutrition={recipe.nutrition} />
+                )}
+              </section>
+            </div>
           </>
         )
       )}

@@ -23,8 +23,8 @@ export function RecipeNutrition({
   nutrition: NonNullable<RecipeDetail["nutrition"]>;
 }) {
   return (
-    <section className="recipe-section">
-      <h2>{m["recipes.nutrition_title"]()}</h2>
+    <details className="recipe-nutrition-details">
+      <summary>{m["recipes.nutrition_title"]()}</summary>
       <dl className="recipe-nutrition">
         {NUTRIENTS.map(([key, label, unit]) => (
           <div key={key}>
@@ -45,6 +45,6 @@ export function RecipeNutrition({
         })}
       </p>
       <p className="row-detail">{m["recipes.nutrition_source"]()}</p>
-    </section>
+    </details>
   );
 }
