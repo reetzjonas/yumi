@@ -8,6 +8,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { parseIngredientLine, unitSchema } from "@yumi/shared";
 import { ArrowLeft, ArrowRight, Check, Sun, SunDim, X } from "lucide-react";
 import { useRef, useState, useSyncExternalStore } from "react";
+import { StepTimers } from "@/components/cooking/step-timers";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
@@ -205,6 +206,14 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
               <p className="cooking-step-text" aria-live="polite">
                 {step.text}
               </p>
+              <StepTimers
+                text={step.text}
+                recipeTitle={recipe.title}
+                stepLabel={m["cooking.progress"]({
+                  current: index + 1,
+                  total: recipe.steps.length,
+                })}
+              />
             </section>
             <section
               className="cooking-ingredients"

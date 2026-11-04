@@ -123,6 +123,19 @@ badges and duplicate recipe metadata are left out.
 Ingredient text retains the project's 16 px body and 14 px secondary roles;
 the active instruction uses the larger cook-step role.
 
+Layout: Timer dock - follow active timers across routes -> compact floating
+utility above the cooking footer or shell navigation; scroll owner:
+`.timer-dock-content`; avoid nested scrolling and covering the cooking controls.
+Main scroll regions reserve the dock's measured height so their final actions
+remain reachable above it, including when the dock is expanded.
+Reserve this space as scrollable trailing content, not container padding that
+can exceed a short viewport. Expanded cooking timers stay between the measured
+header and footer, keeping both navigation bars reachable.
+Detected durations are outline buttons beneath the current instruction. The
+dock starts collapsed, supports parallel countdowns, pause/resume and cancellation,
+and distinguishes completed alarms with a bell and status text. Only completion
+is announced to assistive technology.
+
 The page title stays in the content as the one h1. Each pane owns its scroll;
 there is no page scroll behind it and no horizontal page scroll down to 320 px.
 On phones, tag filters are one horizontally scrolling strip. Safe-area insets extend bars, rail and sidebar. On

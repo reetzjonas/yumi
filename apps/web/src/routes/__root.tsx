@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 import { AccountSlot, MoreAccountEntries } from "@/components/account-menu";
 import { AppShell } from "@/components/app-shell";
+import { TimerProvider } from "@/components/cooking/timer-provider";
 import { PwaProvider } from "@/components/pwa-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { meQuery, useMe } from "@/lib/session";
@@ -51,21 +52,23 @@ function Root() {
   useShoppingSync();
   return (
     <ThemeProvider>
-      <PwaProvider>
-        {matches(pathname, BARE_PATHS) || !me ? (
-          <Outlet />
-        ) : (
-          <AppShell
-            accountSlot={<AccountSlot me={me} />}
-            moreSlot={<MoreAccountEntries me={me} />}
-            householdName={
-              me.households.find((h) => h.id === me.activeHouseholdId)?.name
-            }
-          >
+      <TimerProvider householdId={me?.activeHouseholdId}>
+        <PwaProvider>
+          {matches(pathname, BARE_PATHS) || !me ? (
             <Outlet />
-          </AppShell>
-        )}
-      </PwaProvider>
+          ) : (
+            <AppShell
+              accountSlot={<AccountSlot me={me} />}
+              moreSlot={<MoreAccountEntries me={me} />}
+              householdName={
+                me.households.find((h) => h.id === me.activeHouseholdId)?.name
+              }
+            >
+              <Outlet />
+            </AppShell>
+          )}
+        </PwaProvider>
+      </TimerProvider>
     </ThemeProvider>
   );
 }
