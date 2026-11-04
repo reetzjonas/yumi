@@ -437,7 +437,7 @@
   "recipes.list_action": "Auf die Liste",
   "recipes.nutrition_title": "Nährwerte pro Portion",
   "recipes.nutrition_coverage": "Ungefähre Werte: {included} von {total} Zutaten berücksichtigt.",
-  "recipes.nutrition_source": "Richtwerte aus USDA FoodData Central und euren eigenen Zutatenangaben. Zutaten ohne Menge, Gramm-Umrechnung oder Nährwerte fehlen in der Summe.",
+  "recipes.nutrition_source": "Richtwerte aus USDA FoodData Central, euren eigenen Zutatenangaben und geschätzten AI-Angaben. Zutaten ohne Menge, Gramm-Umrechnung oder Nährwerte fehlen in der Summe.",
   "nutrition.energy": "Energie",
   "nutrition.protein": "Eiweiß",
   "nutrition.fat": "Fett",

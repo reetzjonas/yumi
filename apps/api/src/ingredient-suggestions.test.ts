@@ -9,12 +9,24 @@ import { db } from "./db";
 import { suggestIngredient } from "./ingredient-suggestions";
 import { client, createHousehold, signUp } from "./test/client";
 
+const nutrition = {
+  energyKcal: 25,
+  proteinG: 0.1,
+  fatG: 0,
+  carbsG: 5,
+  sugarG: 2,
+  fiberG: 1,
+  saltG: 0.01,
+};
 const suggestion = {
   nameDe: "Yuzusaft",
   nameEn: "Yuzu juice",
   synonyms: ["Yuzu"],
   categoryKey: "fruit",
   defaultUnit: "ml",
+  densityGPerMl: 1,
+  pieceWeightG: null,
+  nutritionPer100g: nutrition,
   packSizes: [{ quantity: 100, unit: "ml" }],
   icon: null,
 };

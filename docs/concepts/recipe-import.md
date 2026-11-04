@@ -12,19 +12,22 @@ Pipeline, cheapest step first:
 5. **Ingredient lines** ("200 g Mehl, gesiebt") go through the rule-based parser in `packages/shared`
    (quantity incl. fractions and ranges, unit aliases de/en, name, note). `POST /api/ingredients/parse`
    parses and links lines to the catalog in one call. Lines with confidence below ~0.7 or no catalog
-   match go to the LLM in one batched call. Unlinked lines offer a separate catalog creation
-   dialog with optional AI suggestions and explicit user confirmation.
+   match go to the LLM in one batched call. Lines that still have no catalog match create a household
+   ingredient during import. The AI ingredient-create feature proposes name, category, unit, pack sizes,
+   density or piece weight and a nutrition estimate; without AI the parsed name is used.
 6. The user always gets a **review screen** before saving.
 
 Status: steps 1-6 are implemented. `POST /api/recipes/import` (`apps/api/src/routes/recipe-import.ts`,
 core in `apps/api/src/recipe-import/`) returns an unsaved draft with catalog-linked ingredients and the
-image as base64; `/recipes/import` shows it in the regular recipe editor, and nothing is stored until the
-user saves. If structured extraction fails, the AI module receives at most 60,000 characters of readable
-text and returns a validated recipe draft. Pages without a recipe, unavailable AI and failed AI calls
-retain `import_no_recipe`, allowing manual entry. Structured imports do not need the recipe AI feature.
-Low-confidence or unmatched ingredient lines are sent in one batch to the ingredient parsing feature;
-failed or incomplete batches retain the rule-based results. Catalog linking always runs server-side
-against the active household, and no AI response creates catalog entries automatically.
+image as base64; `/recipes/import` shows it in the regular recipe editor, and the recipe itself is only
+stored when the user saves. If structured extraction fails, the AI module receives at most 60,000
+characters of readable text and returns a validated recipe draft. Pages without a recipe, unavailable AI
+and failed AI calls retain `import_no_recipe`, allowing manual entry. Structured imports do not need the
+recipe AI feature. Low-confidence or unmatched ingredient lines are sent in one batch to the ingredient
+parsing feature; failed or incomplete batches retain the rule-based results. Catalog linking always runs
+server-side against the active household. Missing ingredients are created only in that household and
+capped per import; AI-suggested fields, including nutrition, are marked as estimates and never touch the
+global catalog. Created ingredients remain in the household catalog even if the recipe is not saved.
 
 URL entry points: paste a URL or share it from a mobile browser into the installed PWA.
 The manifest registers a GET Web Share Target at `/recipes/import`; the landing page validates URLs

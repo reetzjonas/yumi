@@ -1,6 +1,9 @@
 import { expect, test } from "bun:test";
 import { Readable } from "node:stream";
+import { ingredient } from "@yumi/db/schema";
+import { eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
+import { db } from "./db";
 import type { RecipeHttpTransport } from "./recipe-import/transport";
 import { importRecipeDraft } from "./routes/recipe-import";
 import {
@@ -54,8 +57,9 @@ async function householdId() {
 }
 
 test("an import returns an unsaved draft with catalog links and the image", async () => {
+  const id = await householdId();
   const result = await importRecipeDraft(
-    await householdId(),
+    id,
     "https://example.org/zwiebelsuppe",
     transport,
   );
@@ -70,10 +74,81 @@ test("an import returns an unsaved draft with catalog links and the image", asyn
   });
   const [onion, unknown] = result.draft.ingredients;
   expect(onion?.ingredientId).toEqual(expect.any(String));
-  expect(unknown?.ingredientId).toBeNull();
+  expect(unknown?.ingredientId).toEqual(expect.any(String));
+  const createdId = unknown?.ingredientId;
+  if (!createdId) throw new Error("missing auto-created ingredient");
+  const [created] = await db
+    .select({
+      nameDe: ingredient.nameDe,
+      householdId: ingredient.householdId,
+    })
+    .from(ingredient)
+    .where(eq(ingredient.id, createdId));
+  expect(created).toEqual({ nameDe: "Glitzerstaub", householdId: id });
   expect(result.image).toEqual({
     mimeType: "image/png",
     dataBase64: png.toString("base64"),
+  });
+});
+
+test("an import uses AI suggestions for newly created ingredients", async () => {
+  const nutrition = {
+    energyKcal: 120,
+    proteinG: 2,
+    fatG: 1,
+    carbsG: 20,
+    sugarG: 4,
+    fiberG: 3,
+    saltG: 0.02,
+  };
+  const suggestionClient = {
+    capability: (feature: string) =>
+      feature === "ingredient-create"
+        ? { available: true, model: "test-model" }
+        : { available: false, reason: "disabled" },
+    generateStructured: async () => ({
+      status: "success",
+      value: {
+        nameDe: "Sternenstaub",
+        nameEn: "Stardust",
+        synonyms: [],
+        categoryKey: null,
+        defaultUnit: "tsp",
+        densityGPerMl: null,
+        pieceWeightG: 2,
+        nutritionPer100g: nutrition,
+        packSizes: [],
+        icon: null,
+      },
+      usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
+    }),
+  } as unknown as Parameters<typeof importRecipeDraft>[3];
+
+  const result = await importRecipeDraft(
+    await householdId(),
+    "https://example.org/zwiebelsuppe",
+    transport,
+    suggestionClient,
+  );
+
+  const createdId = result.draft.ingredients[1]?.ingredientId;
+  if (!createdId) throw new Error("missing AI-created ingredient");
+  const [created] = await db
+    .select({
+      nameDe: ingredient.nameDe,
+      defaultUnit: ingredient.defaultUnit,
+      pieceWeightG: ingredient.pieceWeightG,
+      nutritionPer100g: ingredient.nutritionPer100g,
+      nutritionSource: ingredient.nutritionSource,
+    })
+    .from(ingredient)
+    .where(eq(ingredient.id, createdId));
+  expect(created).toEqual({
+    nameDe: "Sternenstaub",
+    defaultUnit: "tsp",
+    pieceWeightG: 2,
+    nutritionPer100g: nutrition,
+    nutritionSource: "AI estimate",
   });
 });
 

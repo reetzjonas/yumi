@@ -18,7 +18,9 @@ Alpha sketch, the Drizzle schema is the source of truth once it exists. Every ho
 - Seed nutrition comes from USDA FoodData Central SR Legacy 2018 (public domain), generated into
   `packages/db/src/seed/nutrition.ts`: carbs are available carbohydrate (by difference minus fibre),
   salt is sodium x 2.5. Ingredients without a matching complete profile, and non-food items, stay
-  null instead of getting a guessed value.
+  null instead of getting a guessed value. Where USDA has no combined entry (e.g. German mixed minced
+  meat), the seed documents a computed average in its `source`. Household ingredients created during
+  import can carry an AI-estimated profile with `nutrition_source = "AI estimate"`.
 - Recipe detail returns `nutrition` per serving of the base recipe, or null when no line counts.
   Lines without quantity, linked nutrition or a gram conversion (density, piece weight; never for
   pinch, bunch, can, pack) are listed in `excludedIngredients` and reported as partial coverage.
