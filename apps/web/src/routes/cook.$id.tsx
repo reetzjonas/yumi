@@ -6,16 +6,26 @@ import {
 } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { parseIngredientLine, unitSchema } from "@yumi/shared";
-import { ArrowLeft, ArrowRight, Check, Sun, SunDim, X } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Star,
+  Sun,
+  SunDim,
+  X,
+} from "lucide-react";
 import { useRef, useState, useSyncExternalStore } from "react";
 import { StepTimers } from "@/components/cooking/step-timers";
-import { ServingsSelector } from "@/components/recipes/servings-selector";
+import { ServingsStepper } from "@/components/recipes/servings-selector";
 import { Button } from "@/components/ui/button";
+import { Sheet } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
 import { ensureOk, errorMessage } from "@/lib/api-error";
 import {
   formatScaledQuantity,
+  groupBySection,
   ingredientName,
   type RecipeDetail,
   servingsSearch,
@@ -100,6 +110,7 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
   const [requestId] = useState(() => crypto.randomUUID());
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const body = useRef<HTMLDivElement>(null);
+  const allSheet = useRef<HTMLDialogElement>(null);
   const active = useWakeLock();
   const online = useSyncExternalStore(
     (listener) => onlineManager.subscribe(listener),
@@ -143,25 +154,45 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
             <X size={24} aria-hidden="true" />
           </Link>
         </Button>
-        <h1>{recipe.title}</h1>
-        <p className="cooking-progress">
-          {step &&
-            m["cooking.progress"]({
-              current: index + 1,
-              total: recipe.steps.length,
-            })}
-          <span title={active ? m["cooking.awake"]() : m["cooking.sleep"]()}>
-            {active ? (
-              <Sun size={20} aria-hidden="true" />
-            ) : (
-              <SunDim size={20} aria-hidden="true" />
-            )}
-            <span className="sr-only">
-              {active ? m["cooking.awake"]() : m["cooking.sleep"]()}
-            </span>
-          </span>
-        </p>
+        <div className="cooking-title">
+          <h1>{recipe.title}</h1>
+          <p className="cooking-progress">
+            {[
+              step &&
+                m["cooking.progress"]({
+                  current: index + 1,
+                  total: recipe.steps.length,
+                }),
+              m["recipes.servings_count"]({ count: servings }),
+            ]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+        </div>
+        <span
+          className={
+            active ? "badge wake-chip" : "badge badge-warning wake-chip"
+          }
+        >
+          {active ? (
+            <Sun size={16} aria-hidden="true" />
+          ) : (
+            <SunDim size={16} aria-hidden="true" />
+          )}
+          {active ? m["cooking.awake"]() : m["cooking.sleep"]()}
+        </span>
       </header>
+      {step && !finished && (
+        <progress
+          className="progress-bar cooking-bar"
+          value={index + 1}
+          max={recipe.steps.length}
+          aria-label={m["cooking.progress"]({
+            current: index + 1,
+            total: recipe.steps.length,
+          })}
+        />
+      )}
       <div
         className="cooking-body"
         ref={body}
@@ -190,10 +221,20 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
           </p>
         )}
         {finished ? (
-          <section className="cooking-empty">
-            <Check size={32} aria-hidden="true" />
-            <h2>{m["cooking.finished"]()}</h2>
-            <Button asChild>
+          <section className="cooking-finish">
+            <span className="cooking-finish-icon">
+              <Check size={32} aria-hidden="true" />
+            </span>
+            <h2>{m["cooking.enjoy"]()}</h2>
+            <p className="meta" role="status">
+              {m["cooking.finished"]()} ·{" "}
+              {m["recipes.servings_count"]({ count: servings })}
+            </p>
+            <div className="import-card">
+              <h3 className="import-card-title">{m["cooking.how_was_it"]()}</h3>
+              <FinishRating recipe={recipe} />
+            </div>
+            <Button asChild className="w-full">
               <Link
                 to="/recipes/$id"
                 params={{ id: recipe.id }}
@@ -218,6 +259,9 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
               className="cooking-instruction"
               aria-label={m["recipes.steps"]()}
             >
+              <p className="cooking-step-label">
+                {m["cooking.step_label"]({ number: index + 1 })}
+              </p>
               <p className="cooking-step-text" aria-live="polite">
                 {step.text}
               </p>
@@ -234,10 +278,17 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
               className="cooking-ingredients"
               aria-labelledby="cooking-ingredients-title"
             >
-              <h2 id="cooking-ingredients-title">
-                {m["recipes.ingredients"]()}
-              </h2>
-              <ServingsSelector
+              <h2 id="cooking-ingredients-title">{m["cooking.for_step"]()}</h2>
+              {lines.length === 0 ? (
+                <p className="meta">{m["cooking.no_ingredients"]()}</p>
+              ) : (
+                <IngredientLines
+                  lines={lines}
+                  base={recipe.servings}
+                  servings={servings}
+                />
+              )}
+              <ServingsStepper
                 value={servings}
                 onChange={(next) =>
                   void navigate({
@@ -246,39 +297,33 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
                   })
                 }
               />
-              {lines.length === 0 ? (
-                <p className="row-detail">{m["cooking.no_ingredients"]()}</p>
-              ) : (
-                <ul className="recipe-ingredient-list">
-                  {lines.map((line) => {
-                    const parsed = parseIngredientLine(line.rawText);
-                    const quantity = formatScaledQuantity(
-                      line.quantity,
-                      unitSchema.safeParse(line.unit).data ?? null,
-                      recipe.servings,
-                      servings,
-                    );
-                    return (
-                      <li key={line.id}>
-                        {quantity !== null && <strong>{quantity} </strong>}
-                        {parsed.unitText && `${parsed.unitText} `}
-                        {line.ingredient
-                          ? ingredientName(line.ingredient)
-                          : parsed.name || line.rawText}
-                        {line.note && (
-                          <span className="row-detail">, {line.note}</span>
-                        )}
-                        {line.optional && (
-                          <span className="row-detail">
-                            {" "}
-                            ({m["recipes.optional"]()})
-                          </span>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                aria-haspopup="dialog"
+                onClick={() => allSheet.current?.showModal()}
+              >
+                {m["cooking.all_ingredients"]()}
+              </Button>
+              <Sheet
+                ref={allSheet}
+                title={m["cooking.all_ingredients"]()}
+                meta={m["recipes.servings_count"]({ count: servings })}
+              >
+                {groupBySection(recipe.ingredients).map((group) => (
+                  <div key={group.section ?? ""}>
+                    {group.section && (
+                      <h3 className="section-label">{group.section}</h3>
+                    )}
+                    <IngredientLines
+                      lines={group.lines}
+                      base={recipe.servings}
+                      servings={servings}
+                    />
+                  </div>
+                ))}
+              </Sheet>
             </section>
             <nav
               className="cooking-overview"
@@ -347,6 +392,95 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
             )}
           </Button>
         </footer>
+      )}
+    </>
+  );
+}
+
+function IngredientLines({
+  lines,
+  base,
+  servings,
+}: {
+  lines: RecipeDetail["ingredients"];
+  base: number;
+  servings: number;
+}) {
+  return (
+    <ul className="ingredient-rows is-large">
+      {lines.map((line) => {
+        const parsed = parseIngredientLine(line.rawText);
+        const quantity = formatScaledQuantity(
+          line.quantity,
+          unitSchema.safeParse(line.unit).data ?? null,
+          base,
+          servings,
+        );
+        return (
+          <li key={line.id}>
+            <span className="ingredient-quantity">
+              {quantity ?? ""}
+              {parsed.unitText && ` ${parsed.unitText}`}
+            </span>
+            <span>
+              {line.ingredient
+                ? ingredientName(line.ingredient)
+                : parsed.name || line.rawText}
+              {line.note && <span className="meta">, {line.note}</span>}
+              {line.optional && (
+                <span className="meta"> · {m["recipes.optional"]()}</span>
+              )}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function FinishRating({ recipe }: { recipe: RecipeDetail }) {
+  const queryClient = useQueryClient();
+  const rating = useMutation({
+    mutationFn: async (stars: number) =>
+      ensureOk(
+        await api.recipes[":id"].rating.$put({
+          param: { id: recipe.id },
+          json: { stars },
+        }),
+      ),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["recipes"] }),
+  });
+  const current = rating.isSuccess ? rating.variables : recipe.myRating;
+  return (
+    <>
+      <div className="recipe-rating-stars">
+        {[1, 2, 3, 4, 5].map((stars) => (
+          <Button
+            key={stars}
+            type="button"
+            variant="ghost"
+            className={
+              (current ?? 0) >= stars
+                ? "recipe-rating-star is-filled"
+                : "recipe-rating-star"
+            }
+            disabled={rating.isPending}
+            aria-label={m["recipes.rate_stars"]({ stars })}
+            aria-pressed={current === stars}
+            onClick={() => rating.mutate(stars)}
+          >
+            <Star
+              size={24}
+              aria-hidden="true"
+              fill={(current ?? 0) >= stars ? "currentColor" : "none"}
+            />
+          </Button>
+        ))}
+      </div>
+      {rating.isError && (
+        <p role="alert" className="form-error">
+          {errorMessage(rating.error)}
+        </p>
       )}
     </>
   );

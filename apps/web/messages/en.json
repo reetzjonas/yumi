@@ -503,5 +503,10 @@
   "shopping.all_done_title": "Everything is in the cart",
   "shopping.all_done_hint": "Tap “Finish shopping”.",
   "shopping.in_cart": "In the cart ({count})",
-  "shopping.finish": "Finish shopping"
+  "shopping.finish": "Finish shopping",
+  "cooking.step_label": "Step {number}",
+  "cooking.for_step": "For this step",
+  "cooking.all_ingredients": "All ingredients",
+  "cooking.enjoy": "Enjoy your meal!",
+  "cooking.how_was_it": "How was it?"
 }

@@ -503,5 +503,10 @@
   "shopping.all_done_title": "Alles im Wagen",
   "shopping.all_done_hint": "Tipp auf „Einkauf beenden“.",
   "shopping.in_cart": "Im Wagen ({count})",
-  "shopping.finish": "Einkauf beenden"
+  "shopping.finish": "Einkauf beenden",
+  "cooking.step_label": "Schritt {number}",
+  "cooking.for_step": "Für diesen Schritt",
+  "cooking.all_ingredients": "Alle Zutaten",
+  "cooking.enjoy": "Guten Appetit!",
+  "cooking.how_was_it": "Wie war’s?"
 }
