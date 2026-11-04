@@ -1,9 +1,12 @@
 # yumi design line
 
-The binding summary of how yumi looks and behaves. The visual reference is the
-design draft in [`design/yumi-draft.html`](design/yumi-draft.html) (open it in a
-browser; boards 1-6). When the draft and this file disagree, this file wins and
-the draft is fixed later. Why this line: [ADR 0012](decisions/0012-design-line.md).
+The binding summary of how yumi looks and behaves. The structural reference is
+the interactive prototype in [`design/yumi-draft.html`](design/yumi-draft.html)
+(open it in a browser; board 2, specs on board 4): every screen follows its
+layout, order and controls. Features built after the draft get a place inside
+that structure. When a detail of the draft breaks a rule or token in this file,
+this file wins. Why: [ADR 0012](decisions/0012-design-line.md) (palette, type,
+rules) and [ADR 0013](decisions/0013-design-draft-v2.md) (structure, layout sizes).
 
 ## 1. Identity
 
@@ -21,9 +24,10 @@ imagery, gradients, blur, decorative accent borders or promotional copy.
    word ("wartet", "fällig", "abgehakt von Anna"). Sync pending is never red.
 3. **No placeholders for unbuilt features.** No disabled "kommt bald" buttons,
    no empty "Nährwerte" rows. A feature appears when it works.
-4. **Lists are scannable.** A row is one or two lines. Secondary actions live in
-   an overflow menu or the edit sheet. At 390x844 the queue shows at least five
-   rows.
+4. **Lists are scannable.** Library, shopping and settings rows are one or two
+   lines; secondary actions live in an overflow menu or the edit sheet. Queue
+   entries are the exception: they carry servings and cooking actions inline as
+   in the draft.
 5. **AI always has a manual path** that is visible next to the AI entry point;
    with AI disabled the manual path becomes the primary one.
 6. **Borders separate, shadows lift.** Only floating surfaces (sheets, dialogs,
@@ -86,20 +90,18 @@ Quantities and timers use `tabular-nums`. Inputs never go below 16 px.
 
 ## 6. Layout and breakpoints
 
-| Width      | Navigation                                                                  | Content                       |
-| ---------- | --------------------------------------------------------------------------- | ----------------------------- |
-| < 768      | Top bar (wordmark + household chip)  , bottom tabs with labels              | One column                    |
-| 768 - 1199 | 88 px navigation rail, icon above label                                     | One column, max 760 px        |
-| >= 1200    | 256 px sidebar: household switcher, tabs, "Neues Rezept" (outline), account | Two panes per section (below) |
+| Width      | Navigation                                                       | Content                           |
+| ---------- | ---------------------------------------------------------------- | --------------------------------- |
+| < 768      | Top bar (page title + household chip), bottom tabs with labels   | One column, 16 px gutter          |
+| 768 - 1199 | Same top bar and bottom tabs                                     | One column, centered, max 760 px  |
+| >= 1200    | 220 px sidebar (wordmark, four sections); top bar with the title | One column, centered, max 1000 px |
 
-Two-pane layouts at >= 1200 px:
-
-- **Rezepte:** library pane (360 px, compact rows with thumbnail) + recipe
-  detail. Without a selection the detail pane shows a short empty state.
-- **Plan:** queue + 400 px pane with the active shopping list, so "Auf die
-  Liste" shows its result in place.
-- **Liste:** list + side pane with quick-add tiles and due recurring items.
-- **Mehr:** 240 px sub-navigation + content (max 640 px).
+The top bar carries the page title (serif title role) on the left and the
+household chip on the right; detail screens show a back arrow before the title.
+Columns inside the content column: recipe cards 2 / 3 / 4 per row; recipe
+detail from 768 px ingredients (340-360 px) beside the steps; shopping
+categories 2 (tablet) / 3 (desktop) columns; sheets become centered 560 px
+dialogs from 768 px.
 
 Shopping mode and cooking view are full-screen modes outside the shell at every
 size. From 768 px the cooking view uses two columns: ingredients for the step
@@ -124,7 +126,7 @@ avoid nested scrollers and fixed-width checkbox labels.
 
 Layout: Expected leftovers and reuse suggestions - follow the queue's shopping
 workflow in the main Plan pane, including when the queue is empty; scroll owner:
-`.split-main` on desktop, `.app-main` below 1200 px. Keep the shopping preview
+`.app-main`. Keep the shopping preview
 and active list in their existing places. Reading priorities are planned meals,
 shopping, expected leftovers, then recipes that use them. Leftover rows show
 localized ingredient names and amounts, with secondary edit and dismiss actions.
@@ -156,17 +158,16 @@ dock starts collapsed, supports parallel countdowns, pause/resume and cancellati
 and distinguishes completed alarms with a bell and status text. Only completion
 is announced to assistive technology.
 
-The page title stays in the content as the one h1. Each pane owns its scroll;
+The page title stays in the content as the one h1. The content column owns its scroll;
 there is no page scroll behind it and no horizontal page scroll down to 320 px.
-On phones, tag filters are one horizontally scrolling strip. Safe-area insets extend bars, rail and sidebar. On
+On phones, tag filters are one horizontally scrolling strip. Safe-area insets extend bars, tabs and sidebar. On
 > = 1200 px, `/` focuses search and `n` starts a new recipe.
 
 ## 7. Component patterns
 
 Layout: Recipe insights - choose a meal using personal ratings and household
 cooking history -> stack inside the existing library and recipe detail;
-scroll owners: `.split-pane` and `.recipe-detail` on desktop, `.app-main` on
-smaller screens. Avoid a second scroll region for ratings or history.
+scroll owner: `.app-main`. Avoid a second scroll region for ratings or history.
 Cooking stays the recipe's primary action. Ratings use five secondary star
 controls with an explicit clear action and inline errors. History is collapsed
 under the last-cooked date and names the cooking household member. The library
@@ -184,15 +185,16 @@ explicit unsaved review are required. Cookbook pages are not recipe cover images
 
 - **Button:** primary (filled rust), outline, ghost, destructive. Fixed geometry
   in every state; press scales to 0.98.
-- **Queue row:** position, drag handle, thumbnail, title, meta line
-  ("4 Portionen · Do · 40 Min"), overflow menu. The menu holds Gekocht,
-  Überspringen, Bearbeiten (servings, day), Nach oben / Nach unten, Entfernen.
-  Servings and day are edited in a sheet, not inline.
+- **Queue entry:** position number, thumbnail, title, meta line
+  ("4 Portionen · Do · 40 Min"), optional suggestion reason; then a servings
+  stepper, up / down and edit (day, removal in the edit sheet); then Kochen
+  (outline), Gekocht and Überspringen (ghost). Drag works too; the arrows are
+  the accessible path.
 - **Overflow menu / sheet:** native `<dialog>` (focus trap, Escape, focus
   return): bottom sheet on phones, centered dialog from 768 px. Header shows the
   object (title + meta) and a close button; destructive items are red.
-- **Cooking view header (phone):** row 1 close + title (two lines max); row 2
-  "Schritt 1 von 6 · 4 Portionen" and the wake-lock state as an icon.
+- **Cooking view header:** close, title with "Schritt 1 von 6 · 4 Portionen",
+  the wake-lock state as a chip (icon + word), a progress bar below.
 - **Empty state:** serif headline, one sentence, one primary next action.
 - **Skeleton:** shaped like the content it replaces; static under reduced motion.
 
@@ -213,7 +215,7 @@ rows 68 px.
 ## 10. Changing the design line
 
 - Small refinements: change this file in the same commit as the code.
-- A change to a rule in section 2, the palette, the type families or the
-  breakpoints: new ADR that supersedes 0012, then update this file.
+- A change to a rule in section 2, the palette, the type families, the
+  breakpoints or the reference structure: new ADR, then update this file.
 - The draft is a reference snapshot; update it when a screen changes in a way
   the text cannot carry.

@@ -1,6 +1,6 @@
 # 0012: Kitchen-notebook design line with three layout sizes
 
-- Status: Accepted (alpha)
+- Status: Superseded by 0013 (layout sizes and screen structure; palette, type and rules stay)
 - Date: 2026-11-03
 
 ## Context
