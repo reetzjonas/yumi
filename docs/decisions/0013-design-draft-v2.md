@@ -1,6 +1,6 @@
 # 0013: The interactive prototype defines the screen structure
 
-- Status: Accepted (alpha)
+- Status: Accepted (alpha); the full-screen shopping mode is superseded by 0014
 - Date: 2026-11-04
 
 ## Context

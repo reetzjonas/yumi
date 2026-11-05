@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ShoppingBasket, Store } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { ShoppingBasket } from "lucide-react";
 import { useRef, useState } from "react";
 import { EmptyState, PageHeader } from "@/components/page";
 import { RecipePicker } from "@/components/queue/recipe-picker";
@@ -13,6 +13,7 @@ import {
 import { QuickAdd } from "@/components/shopping/quick-add";
 import { ShoppingItems } from "@/components/shopping/shopping-items";
 import { StoreSelect } from "@/components/shopping/store-select";
+import { StoreSessionChip } from "@/components/shopping/store-session";
 import { ShoppingSyncStatus } from "@/components/shopping/sync-status";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
@@ -24,8 +25,9 @@ import {
   useShoppingList,
   useShoppingLists,
 } from "@/lib/shopping";
+import { useStoreSession, useWakeLock } from "@/lib/shopping-session";
 import { useShoppingRealtime } from "@/lib/shopping-sync";
-import { useStores } from "@/lib/stores";
+import { useStoreOrder, useStores } from "@/lib/stores";
 import { m } from "@/paraglide/messages";
 
 export const Route = createFileRoute("/list")({ component: List });
@@ -47,9 +49,13 @@ function HouseholdLists() {
   const detail = useShoppingList(listId);
   const quickSheet = useRef<HTMLDialogElement>(null);
   const recipeSheet = useRef<HTMLDialogElement>(null);
-  const store = stores.data?.find(
-    (item) => item.id === detail.data?.defaultStoreId,
-  );
+  const session = useStoreSession(listId);
+  const tripStore = stores.data?.find((item) => item.id === session.storeId);
+  const store =
+    tripStore ??
+    stores.data?.find((item) => item.id === detail.data?.defaultStoreId);
+  const learned = useStoreOrder(store?.id ?? "");
+  useWakeLock(!!tripStore);
   const open = detail.data?.items.filter((item) => !item.checked).length ?? 0;
   const total = detail.data?.items.length ?? 0;
   return (
@@ -74,7 +80,6 @@ function HouseholdLists() {
           <ListManager
             selectedId={listId}
             onSelect={setSelectedId}
-            storeName={store?.name}
             store={
               detail.data && (
                 <StoreSelect
@@ -84,7 +89,13 @@ function HouseholdLists() {
                 />
               )
             }
-          />
+          >
+            <StoreSessionChip
+              storeId={tripStore?.id ?? null}
+              stores={stores.data ?? []}
+              onChoose={session.choose}
+            />
+          </ListManager>
           <QuickAdd
             key={listId}
             listId={listId}
@@ -107,6 +118,11 @@ function HouseholdLists() {
             </div>
           )}
           {total === 0 && <ShoppingSyncStatus listId={listId} />}
+          {learned.isError && (
+            <p className="form-error" role="alert">
+              {errorMessage(learned.error)}
+            </p>
+          )}
           {categories.isError && (
             <p className="form-error" role="alert">
               {errorMessage(categories.error)}
@@ -125,6 +141,8 @@ function HouseholdLists() {
                 list={detail.data}
                 categories={categories.data ?? []}
                 categoryOrder={store?.categoryOrder}
+                learned={learned.data}
+                onActivity={session.touch}
                 onQuickAdd={() => quickSheet.current?.showModal()}
               />
             )
@@ -138,16 +156,6 @@ function HouseholdLists() {
           >
             {m["shopping.add_from_recipe"]()}
           </Button>
-          {open > 0 && (
-            <div className="sticky-action">
-              <Button asChild className="w-full">
-                <Link to="/shop/$listId" params={{ listId }}>
-                  <Store aria-hidden="true" size={20} />
-                  {m["shopping.start"]()}
-                </Link>
-              </Button>
-            </div>
-          )}
           <Sheet ref={quickSheet} title={m["shopping.quick_sheet"]()}>
             {detail.data && (
               <ItemTiles

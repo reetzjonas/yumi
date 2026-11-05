@@ -101,7 +101,7 @@ git-ignored `deploy/local/` directory). Example: `helm upgrade --install yumi de
 
 ## HTTPS is required for the PWA
 
-Service workers (installation, offline shopping mode) only run in a secure context: HTTPS or
+Service workers (installation, offline shopping list) only run in a secure context: HTTPS or
 `localhost`. Serve yumi via HTTPS even for LAN/VPN-only setups, e.g. a wildcard certificate on
 your gateway, Tailscale HTTPS (`tailscale serve`), or an internal CA trusted by all clients.
 

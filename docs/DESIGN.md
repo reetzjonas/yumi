@@ -80,12 +80,12 @@ Quantities and timers use `tabular-nums`. Inputs never go below 16 px.
 ## 5. Spacing, radii, elevation, motion
 
 - Spacing on a 4 px base: 4, 8, 12, 16, 24, 32, 48. Gutter 16 phone, 24 tablet+.
-  Row height 56 (shopping mode 68). Targets at least 44x44.
+  Row height 56 (shopping rows 60). Targets at least 44x44.
 - Radii: 6 badge, 8 base, 10 control, 12 card, 16 sheet. No full pills: chips are
   10 px rectangles.
 - Elevation: 0 flat with border, 1 sheet/menu, 2 dialog/toast.
 - Motion: 150 ms press/toggle, 200 ms ease-out for sheets and dialogs in, 150 ms
-  out. Checked items in shopping mode stay 600 ms before moving to "Im Wagen".
+  out. Checked shopping rows stay 600 ms before moving to "Erledigt".
   `prefers-reduced-motion` removes movement, keeps state changes.
 
 ## 6. Layout and breakpoints
@@ -103,14 +103,16 @@ detail from 768 px ingredients (340-360 px) beside the steps; shopping
 categories 2 (tablet) / 3 (desktop) columns; sheets become centered 560 px
 dialogs from 768 px.
 
-Shopping mode and cooking view are full-screen modes outside the shell at every
-size. From 768 px the cooking view uses two columns: ingredients for the step
+The cooking view is a full-screen mode outside the shell at every size;
+shopping stays in the list view (ADR 0014). From 768 px the cooking view uses two columns: ingredients for the step
 left, the step right.
 
 Layout: Learned shopping route - follow the store's observed item order -> stack
-inside the full-screen shopping mode; scroll owner: `.mode-body`; rows keep the
-route order and only consecutive rows of one category share a heading.
-The shopping rows remain the primary action. Reading priorities are store,
+inside the list view; scroll owner: `.app-main`; rows keep the route order and
+only consecutive rows of one category share a heading. Tapping a row checks it,
+long-press edits, swipe left removes with undo; with a fine pointer an edit
+button shows on hover/focus. The store chip in the toolbar marks the trip store;
+only then do checks train the route. Reading priorities are quick add, store,
 remaining items in route order, then checked items. The store editor offers a
 secondary reset with an inline failure message; manual category order overrides
 learning until reset.
@@ -233,8 +235,9 @@ or onboarding), permission denied (camera, notifications, wake lock -> fallback)
 
 WCAG 2.2 AA. Text contrast at least 4.5:1, control boundaries 3:1, focus ring
 2 px at 3 px offset. Every drag interaction has a non-drag alternative (menu
-items and arrow keys on the handle). Shell targets at least 44 px; shopping-mode
-rows 68 px.
+items and arrow keys on the handle). Shell targets at least 44 px; shopping rows
+60 px. Row gestures (long-press, swipe) always have a keyboard and screen-reader
+button alternative; on touch the edit button stays visually hidden by choice.
 
 ## 10. Changing the design line
 

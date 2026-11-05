@@ -1,18 +1,38 @@
-import { mergeShoppingItems, orderCategories } from "@yumi/shared";
-import { ShoppingBasket, Trash2 } from "lucide-react";
-import { useRef, useState } from "react";
+import {
+  type learnShoppingOrder,
+  type MergedItem,
+  mergeShoppingItems,
+  sortShoppingItems,
+} from "@yumi/shared";
+import { Check, Pencil, ShoppingBasket, Trash2, X } from "lucide-react";
+import {
+  type PointerEvent as ReactPointerEvent,
+  useRef,
+  useState,
+} from "react";
+import { toast } from "sonner";
 import { EmptyState } from "@/components/page";
 import { ItemForm } from "@/components/shopping/item-form";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
+import { errorMessage } from "@/lib/api-error";
 import { formatQuantity, ingredientName } from "@/lib/recipes";
 import {
+  addItemEvent,
   type Category,
   itemEvent,
   type ShoppingList,
   useShoppingEvents,
 } from "@/lib/shopping";
 import { m } from "@/paraglide/messages";
+
+const SETTLE_MS = 600;
+const LONG_PRESS_MS = 450;
+const GESTURE_SLOP_PX = 10;
+const HINT_KEY = "yumi.shopping.gesture-hint-dismissed";
+
+type LearnedOrder = ReturnType<typeof learnShoppingOrder>;
+const NO_LEARNING: LearnedOrder = { ingredients: [], categories: [] };
 
 function RecipeSources({
   sources,
@@ -38,20 +58,216 @@ function RecipeSources({
   );
 }
 
+type Gesture = {
+  pointerId: number;
+  x: number;
+  y: number;
+  dx: number;
+  mode: "pending" | "swipe" | "scroll" | "press";
+  timer: number;
+};
+
+function ShoppingRow({
+  row,
+  checked,
+  recipes,
+  disabled,
+  error,
+  onToggle,
+  onEdit,
+  onRemove,
+}: {
+  row: MergedItem;
+  checked: boolean;
+  recipes: ShoppingList["recipes"];
+  disabled: boolean;
+  error?: string;
+  onToggle: () => void;
+  onEdit: () => void;
+  onRemove: () => void;
+}) {
+  const surface = useRef<HTMLDivElement>(null);
+  const gesture = useRef<Gesture | null>(null);
+  const suppressClick = useRef(false);
+  const [offset, setOffset] = useState(0);
+  const [dragging, setDragging] = useState(false);
+
+  const finish = () => {
+    if (gesture.current) window.clearTimeout(gesture.current.timer);
+    gesture.current = null;
+    setDragging(false);
+  };
+  const onPointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (event.button !== 0 || disabled) return;
+    suppressClick.current = false;
+    const timer = window.setTimeout(() => {
+      if (gesture.current?.mode !== "pending") return;
+      gesture.current.mode = "press";
+      suppressClick.current = true;
+      navigator.vibrate?.(10);
+      onEdit();
+    }, LONG_PRESS_MS);
+    gesture.current = {
+      pointerId: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      dx: 0,
+      mode: "pending",
+      timer,
+    };
+  };
+  const onPointerMove = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const current = gesture.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+    const dx = event.clientX - current.x;
+    const dy = event.clientY - current.y;
+    if (current.mode === "pending" && Math.hypot(dx, dy) > GESTURE_SLOP_PX) {
+      window.clearTimeout(current.timer);
+      if (dx < 0 && Math.abs(dx) > Math.abs(dy)) {
+        current.mode = "swipe";
+        event.currentTarget.setPointerCapture(event.pointerId);
+        setDragging(true);
+      } else current.mode = "scroll";
+    }
+    if (current.mode === "swipe") {
+      current.dx = Math.min(0, dx);
+      setOffset(current.dx);
+    }
+  };
+  const onPointerUp = () => {
+    const current = gesture.current;
+    if (current?.mode === "swipe") {
+      suppressClick.current = true;
+      const width = surface.current?.offsetWidth ?? 320;
+      if (current.dx < -Math.max(96, width * 0.35)) {
+        setOffset(0);
+        onRemove();
+      } else setOffset(0);
+    }
+    finish();
+  };
+  const guarded = (action: () => void) => () => {
+    if (suppressClick.current) {
+      suppressClick.current = false;
+      return;
+    }
+    action();
+  };
+
+  return (
+    <li className="list-item" data-checked={checked} data-dragging={dragging}>
+      <div className="list-item-swipe" aria-hidden="true">
+        <Trash2 size={22} />
+      </div>
+      <div
+        ref={surface}
+        className="list-item-surface"
+        style={offset ? { transform: `translateX(${offset}px)` } : undefined}
+      >
+        <button
+          type="button"
+          className="list-item-toggle"
+          aria-pressed={checked}
+          disabled={disabled}
+          onClick={guarded(onToggle)}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={() => {
+            setOffset(0);
+            finish();
+          }}
+          onContextMenu={(event) => {
+            if (gesture.current) event.preventDefault();
+          }}
+        >
+          <span className="list-item-box" aria-hidden="true">
+            {checked && <Check size={18} strokeWidth={3} />}
+          </span>
+          <span className="list-item-body">
+            <span className="list-item-title">
+              <span className="shopping-name">{row.label}</span>
+              <span className="shopping-quantity">
+                {row.amounts
+                  .map((amount) => formatQuantity(amount.quantity, amount.unit))
+                  .join(" + ")}
+              </span>
+            </span>
+            <RecipeSources sources={row.sources} recipes={recipes} />
+            {row.itemIds.length > 1 && (
+              <span className="meta">
+                {m["shopping.merged"]({ count: row.itemIds.length })}
+              </span>
+            )}
+          </span>
+        </button>
+        <Button
+          type="button"
+          variant="ghost"
+          className="icon-action list-item-edit"
+          aria-haspopup="dialog"
+          aria-label={m["shopping.edit_item"]({ name: row.label })}
+          title={m["shopping.edit_item"]({ name: row.label })}
+          onClick={guarded(onEdit)}
+        >
+          <Pencil size={18} aria-hidden="true" />
+        </Button>
+      </div>
+      {error && (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      )}
+    </li>
+  );
+}
+
+function GestureHint() {
+  const [visible, setVisible] = useState(
+    () =>
+      window.matchMedia("(pointer: coarse)").matches &&
+      localStorage.getItem(HINT_KEY) !== "1",
+  );
+  if (!visible) return null;
+  return (
+    <p className="gesture-hint">
+      <span>{m["shopping.gesture_hint"]()}</span>
+      <Button
+        type="button"
+        variant="ghost"
+        className="icon-action"
+        aria-label={m["shopping.dismiss_hint"]()}
+        onClick={() => {
+          localStorage.setItem(HINT_KEY, "1");
+          setVisible(false);
+        }}
+      >
+        <X size={18} aria-hidden="true" />
+      </Button>
+    </p>
+  );
+}
+
 export function ShoppingItems({
   list,
   categories,
   categoryOrder,
+  learned,
+  onActivity,
   onQuickAdd,
 }: {
   list: ShoppingList;
   categories: Category[];
   categoryOrder?: string[] | null;
+  learned?: LearnedOrder;
+  onActivity: () => string | null;
   onQuickAdd: () => void;
 }) {
   const events = useShoppingEvents(list.id);
   const sheet = useRef<HTMLDialogElement>(null);
   const [editKey, setEditKey] = useState<string | null>(null);
+  const [actionRow, setActionRow] = useState<string | null>(null);
+  const [settling, setSettling] = useState<Record<string, MergedItem>>({});
   const rows = mergeShoppingItems(
     list.items.map((item) => ({
       ...item,
@@ -64,14 +280,43 @@ export function ShoppingItems({
         : undefined,
     })),
   );
+  const checkedById = new Map(
+    list.items.map((item) => [item.id, item.checked]),
+  );
+  const openKeys = new Set(
+    rows.filter((row) => !row.checked).map((row) => row.key),
+  );
+  const settled = Object.values(settling).filter(
+    (row) =>
+      !openKeys.has(row.key) &&
+      row.itemIds.every((id) => checkedById.get(id) === true),
+  );
+  const settlingIds = new Set(settled.flatMap((row) => row.itemIds));
+  const settlingKeys = new Set(settled.map((row) => row.key));
+  const open = sortShoppingItems(
+    [...rows.filter((row) => !row.checked), ...settled],
+    categories,
+    categoryOrder,
+    learned ?? NO_LEARNING,
+  );
+  const done = rows.filter(
+    (row) => row.checked && !row.itemIds.some((id) => settlingIds.has(id)),
+  );
+  const runs: { categoryId: string | null; rows: MergedItem[] }[] = [];
+  for (const row of open) {
+    const last = runs.at(-1);
+    if (last && last.categoryId === row.categoryId) last.rows.push(row);
+    else runs.push({ categoryId: row.categoryId, rows: [row] });
+  }
+  const categoryName = (id: string | null) => {
+    const category = categories.find((item) => item.id === id);
+    return category ? ingredientName(category) : m["shopping.uncategorized"]();
+  };
+  const editing = rows.find((row) => row.key === editKey);
   const checkedIds = list.items
     .filter((item) => item.checked)
     .map((item) => item.id);
-  const groups = [
-    ...orderCategories(categories, categoryOrder),
-    { id: null, nameDe: "", nameEn: "", icon: null },
-  ];
-  const editing = rows.find((row) => row.key === editKey);
+
   if (!rows.length)
     return (
       <EmptyState
@@ -85,82 +330,117 @@ export function ShoppingItems({
       </EmptyState>
     );
 
-  const renderRow = (row: (typeof rows)[number]) => (
-    <li key={row.key} className="list-item" data-checked={row.checked}>
-      <label className="list-item-check">
-        <input
-          type="checkbox"
-          checked={row.checked}
-          disabled={events.isPending}
-          onChange={() =>
-            events.mutate(
-              row.itemIds.map((id) =>
-                itemEvent(id, row.checked ? "item_unchecked" : "item_checked"),
-              ),
-            )
-          }
-        />
-        <span className="sr-only">
-          {m["shopping.toggle_item"]({ name: row.label })}
-        </span>
-      </label>
-      <button
-        type="button"
-        className="list-item-body"
-        aria-haspopup="dialog"
-        aria-label={m["shopping.edit_item"]({ name: row.label })}
-        onClick={() => {
-          setEditKey(row.key);
-          sheet.current?.showModal();
-        }}
-      >
-        <span className="list-item-title">
-          <span className="shopping-name">{row.label}</span>{" "}
-          <span className="shopping-quantity">
-            {row.amounts
-              .map((amount) => formatQuantity(amount.quantity, amount.unit))
-              .join(" + ")}
-          </span>
-        </span>
-        <RecipeSources sources={row.sources} recipes={list.recipes} />
-        {row.itemIds.length > 1 && (
-          <span className="meta">
-            {m["shopping.merged"]({ count: row.itemIds.length })}
-          </span>
-        )}
-      </button>
-    </li>
+  function send(
+    ids: string[],
+    type: "item_checked" | "item_unchecked",
+    label: string,
+    storeId: string | null,
+  ) {
+    const inverse = type === "item_checked" ? "item_unchecked" : "item_checked";
+    events.mutate(
+      ids.map((id) => itemEvent(id, type, storeId)),
+      {
+        onSuccess: () =>
+          toast(
+            type === "item_checked"
+              ? m["shopping.checked_toast"]({ name: label })
+              : m["shopping.unchecked_toast"]({ name: label }),
+            {
+              className: "shopping-feedback",
+              action: {
+                label: m["shopping.undo"](),
+                onClick: () =>
+                  events.mutate(
+                    ids.map((id) => itemEvent(id, inverse, storeId)),
+                  ),
+              },
+            },
+          ),
+      },
+    );
+  }
+
+  function toggle(row: MergedItem) {
+    setActionRow(row.key);
+    const storeId = onActivity();
+    if (settlingKeys.has(row.key)) {
+      setSettling(({ [row.key]: _, ...rest }) => rest);
+      send(row.itemIds, "item_unchecked", row.label, storeId);
+      return;
+    }
+    if (row.checked) {
+      send(row.itemIds, "item_unchecked", row.label, storeId);
+      return;
+    }
+    setSettling((current) => ({ ...current, [row.key]: row }));
+    window.setTimeout(
+      () => setSettling(({ [row.key]: _, ...rest }) => rest),
+      SETTLE_MS,
+    );
+    send(row.itemIds, "item_checked", row.label, storeId);
+  }
+
+  function remove(row: MergedItem) {
+    setActionRow(row.key);
+    const removed = list.items.filter((item) => row.itemIds.includes(item.id));
+    events.mutate(
+      row.itemIds.map((id) => itemEvent(id, "item_removed")),
+      {
+        onSuccess: () =>
+          toast(m["shopping.removed_toast"]({ name: row.label }), {
+            className: "shopping-feedback",
+            action: {
+              label: m["shopping.undo"](),
+              onClick: () =>
+                events.mutate(
+                  removed.flatMap((item) => {
+                    const restore = { ...addItemEvent(item), itemId: item.id };
+                    return item.checked
+                      ? [restore, itemEvent(item.id, "item_checked")]
+                      : [restore];
+                  }),
+                ),
+            },
+          }),
+      },
+    );
+  }
+
+  const renderRow = (row: MergedItem) => (
+    <ShoppingRow
+      key={row.key}
+      row={row}
+      checked={row.checked || settlingKeys.has(row.key)}
+      recipes={list.recipes}
+      disabled={events.isPending}
+      error={
+        actionRow === row.key && events.isError
+          ? errorMessage(events.error)
+          : undefined
+      }
+      onToggle={() => toggle(row)}
+      onEdit={() => {
+        setEditKey(row.key);
+        sheet.current?.showModal();
+      }}
+      onRemove={() => remove(row)}
+    />
   );
 
   return (
     <div className="shopping-items">
-      {groups.map((category) => {
-        const group = rows.filter(
-          (row) =>
-            !row.checked &&
-            (category.id === null
-              ? !categories.some((known) => known.id === row.categoryId)
-              : row.categoryId === category.id),
-        );
-        if (!group.length) return null;
-        return (
-          <section key={category.id ?? "none"} className="shopping-category">
-            <h2 className="section-label">
-              {category.id
-                ? ingredientName(category)
-                : m["shopping.uncategorized"]()}
-            </h2>
-            <ul className="list-items">{group.map(renderRow)}</ul>
-          </section>
-        );
-      })}
-      {!!checkedIds.length && (
+      <GestureHint />
+      {runs.map((run) => (
+        <section key={run.rows[0]?.key} className="shopping-category">
+          <h2 className="section-label">{categoryName(run.categoryId)}</h2>
+          <ul className="list-items">{run.rows.map(renderRow)}</ul>
+        </section>
+      ))}
+      {!!done.length && (
         <section className="shopping-category shopping-done">
           <div className="shopping-done-heading">
             <h2 className="section-label">
-              {m["shopping.done_count"]({
-                count: rows.filter((row) => row.checked).length,
-              })}
+              {m["shopping.done_count"]({ count: done.length })}
             </h2>
             <Button
               variant="ghost"
@@ -174,9 +454,7 @@ export function ShoppingItems({
               {m["shopping.clear_checked"]()}
             </Button>
           </div>
-          <ul className="list-items">
-            {rows.filter((row) => row.checked).map(renderRow)}
-          </ul>
+          <ul className="list-items">{done.map(renderRow)}</ul>
         </section>
       )}
       <Sheet

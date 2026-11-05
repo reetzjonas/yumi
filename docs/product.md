@@ -31,7 +31,7 @@ yumi helps a household decide what to cook next, buy what is needed, and cook it
 - Bring-style quick add: tiles with icons, recents, autocomplete.
 - Optional quantity with unit (g, ml, pcs, ...); duplicates are merged with unit conversion; items show source recipes.
 - Grouped by ingredient category; per-store category order.
-- Shopping mode: big tap targets, check off, works offline, realtime sync between household members.
+- One view to add and check off (tap a row; long-press edits, swipe removes), works offline, realtime sync between household members.
 - Learned sort order per store from check-off history.
 - Pantry staples ("always at home"), recurring items.
 - AI-assisted creation of unknown ingredients (category, units, translation).

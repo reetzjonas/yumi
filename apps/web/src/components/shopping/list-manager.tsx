@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ChevronDown, Pencil, Plus, Store, Trash2 } from "lucide-react";
+import { ChevronDown, Pencil, Plus, Trash2 } from "lucide-react";
 import { type ReactNode, useId, useRef, useState } from "react";
 import { Field, FormError } from "@/components/auth-layout";
 import { Button } from "@/components/ui/button";
@@ -119,12 +119,12 @@ export function ListManager({
   selectedId,
   onSelect,
   store,
-  storeName,
+  children,
 }: {
   selectedId: string;
   onSelect: (id: string) => void;
   store?: ReactNode;
-  storeName?: string;
+  children?: ReactNode;
 }) {
   const lists = useShoppingLists();
   const selected = lists.data?.find((list) => list.id === selectedId);
@@ -151,12 +151,7 @@ export function ListManager({
         <span>{name}</span>
         <ChevronDown size={18} aria-hidden="true" />
       </Button>
-      {storeName && (
-        <span className="list-store meta">
-          <Store size={16} aria-hidden="true" />
-          {storeName}
-        </span>
-      )}
+      {children}
       <Sheet
         ref={sheet}
         title={m["shopping.lists_title"]()}

@@ -22,7 +22,6 @@ const BARE_PATHS = [
   ...SHARED_PATHS,
   ...HOUSEHOLDLESS_PATHS,
   "/cook/",
-  "/shop/",
 ];
 
 const matches = (pathname: string, prefixes: string[]) =>
