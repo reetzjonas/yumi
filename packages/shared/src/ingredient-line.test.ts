@@ -69,6 +69,32 @@ const cases: Array<[line: string, expected: Expected]> = [
     { name: "Pfeffer", note: "nach Belieben", optional: true },
   ],
   ["- 4 Eier", { quantity: 4, name: "Eier" }],
+  [
+    "300 g Mehl (Okonomiyaki-)",
+    { quantity: 300, unit: "g", name: "Okonomiyaki-Mehl", note: null },
+  ],
+  [
+    "Flocken ((Bonitoflocken bzw. Katsuoboshi), Fischflocken)",
+    {
+      name: "Bonitoflocken",
+      note: "(Bonitoflocken bzw. Katsuoboshi), Fischflocken",
+    },
+  ],
+  [
+    "Algen (Seetang (Aonori), getrocknet)",
+    { name: "Algen", note: "Seetang (Aonori), getrocknet" },
+  ],
+  [
+    "4 Scheibe/n Speck (hauchdünn, ungeräuchert)",
+    {
+      quantity: 4,
+      unitText: "Scheibe",
+      name: "Speck",
+      note: "hauchdünn, ungeräuchert",
+    },
+  ],
+  ["n. B. Wasser", { name: "Wasser", note: "n. B.", optional: true }],
+  ["1 Zwiebel/n", { quantity: 1, name: "Zwiebel" }],
   ["1 Becher Schmand", { quantity: 1, unitText: "Becher", name: "Schmand" }],
   [
     "2 cups all-purpose flour, sifted",

@@ -60,7 +60,7 @@ const NUMBER_WORDS: Record<string, number> = {
 
 const APPROX_RE = /^(?:ca\.?|circa|etwa|about|approx\.?|approximately)\s+/i;
 const VAGUE_RE =
-  /^(?:etwas|einige|ein paar|ein wenig|wenig|some|a few|a little|a bit of)\s+/i;
+  /^(?:etwas|einige|ein paar|ein wenig|wenig|n\.\s?b\.|some|a few|a little|a bit of)\s+/i;
 const BULLET_RE = /^[-–•*·]\s*/;
 
 /** Units outside the unit codes that convert to one: cl -> 10 ml, oz -> 28.35 g. */
@@ -165,10 +165,38 @@ const MODIFIER_WORDS = new Set([
 const NOTE_MARKER_RE =
   /\s+(?=(?:zum|zur|für|for|nach belieben|nach geschmack|to taste|optional)\b)/i;
 const OPTIONAL_RE =
-  /(?:^|[\s(,])(?:optional|evtl\.?|eventuell|nach belieben|if desired|if you like)(?=$|[\s),.])/i;
+  /(?:^|[\s(,])(?:optional|evtl\.?|eventuell|nach belieben|n\.\s?b\.|if desired|if you like)(?=$|[\s),.])/i;
 
-/** German recipe sites write optional plural endings as "Möhre(n)" or "Ei(er)". */
-const PLURAL_SUFFIX_RE = /(\p{L})\((?:n|en|e|s|er|es|nen)\)(?=$|[\s,;.)])/gu;
+/** German recipe sites write optional plural endings as "Möhre(n)", "Ei(er)" or "Scheibe/n". */
+const PLURAL_SUFFIX_RE =
+  /(\p{L})(?:\((?:n|en|e|s|er|es|nen)\)|\/(?:n|en|e|s|er|es|nen))(?=$|[\s,;.)])/gu;
+
+/** Chefkoch writes compounds as "Mehl (Okonomiyaki-)" for "Okonomiyaki-Mehl". */
+const COMPOUND_PREFIX_RE = /^\p{L}+-$/u;
+
+/** Removes top-level parenthesised groups, keeping nested ones inside their group. */
+function takeParenGroups(text: string) {
+  const groups: string[] = [];
+  let rest = "";
+  let depth = 0;
+  let start = 0;
+  for (let index = 0; index < text.length; index++) {
+    const ch = text[index];
+    if (ch === "(") {
+      if (depth++ === 0) start = index;
+    } else if (ch === ")" && depth > 0) {
+      if (--depth === 0) {
+        const inner = text.slice(start + 1, index).trim();
+        if (inner) groups.push(inner);
+        rest += " ";
+      }
+    } else if (depth === 0) {
+      rest += ch;
+    }
+  }
+  if (depth > 0) rest += text.slice(start);
+  return { rest, groups };
+}
 
 function normalize(line: string) {
   let text = line.normalize("NFC").replace(/⁄/g, "/");
@@ -212,11 +240,18 @@ export function parseIngredientLine(line: string): ParsedIngredientLine {
 
   const optional = OPTIONAL_RE.test(rest);
   rest = rest.replace(PLURAL_SUFFIX_RE, "$1");
-  rest = rest.replace(/\(([^)]*)\)/g, (_, inner: string) => {
-    if (inner.trim()) notes.push(inner.trim());
-    return " ";
-  });
-  rest = rest.replace(/\s+/g, " ").trim().replace(APPROX_RE, "");
+  const parens = takeParenGroups(rest);
+  let prefix = "";
+  let specific: string | null = null;
+  for (const group of parens.groups) {
+    if (COMPOUND_PREFIX_RE.test(group)) {
+      prefix = group;
+    } else {
+      notes.push(group);
+      specific ??= group.match(/\p{L}+/u)?.[0] ?? null;
+    }
+  }
+  rest = parens.rest.replace(/\s+/g, " ").trim().replace(APPROX_RE, "");
   const vague = rest.match(VAGUE_RE);
   if (vague) {
     notes.push(vague[0].trim());
@@ -280,7 +315,19 @@ export function parseIngredientLine(line: string): ParsedIngredientLine {
     notes.push(rest.slice(markerAt).trim());
     rest = rest.slice(0, markerAt);
   }
-  const name = rest.replace(/\s+/g, " ").trim();
+  let name = rest.replace(/\s+/g, " ").trim();
+  if (name && prefix) {
+    name = `${prefix}${name}`;
+  } else if (
+    // "Flocken (Bonitoflocken ...)": the group names the specific compound.
+    specific &&
+    name &&
+    !name.includes(" ") &&
+    specific.length > name.length &&
+    specific.toLowerCase().endsWith(name.toLowerCase())
+  ) {
+    name = specific;
+  }
 
   const note = notes.filter(Boolean).join(", ") || null;
   return {

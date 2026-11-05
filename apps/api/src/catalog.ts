@@ -5,6 +5,9 @@ import { db } from "./db";
 
 const MIN_SCORE = 0.3;
 const MIN_MATCH_SCORE = 0.5;
+// Without a prefix or substring hit, trigram overlap alone links unrelated
+// names ("Okonomiyaki-Sauce" -> "Teriyakisauce" scores 0.56).
+const MIN_FUZZY_MATCH_SCORE = 0.7;
 
 export const ingredientColumns = {
   id: ingredient.id,
@@ -80,13 +83,23 @@ export async function searchIngredients(
 async function bestMatch(householdId: string, name: string, strict: boolean) {
   const [top] = await rankIngredients(householdId, name, 1);
   if (!top) return null;
-  const good = strict ? top.exact : top.exact || top.score >= MIN_MATCH_SCORE;
+  const minScore =
+    top.startsWith || top.contains ? MIN_MATCH_SCORE : MIN_FUZZY_MATCH_SCORE;
+  const good = strict ? top.exact : top.exact || top.score >= minScore;
   if (!good) return null;
-  const { score: _s, exact: _e, startsWith: _p, contains: _c, ...row } = top;
-  return row;
+  const { score: _s, exact, startsWith: _p, contains: _c, ...row } = top;
+  const lower = name.toLowerCase();
+  // "onions" -> "Onion" is a plural ending, not a guess.
+  const inflected = [row.nameDe, row.nameEn, ...row.synonyms].some((known) => {
+    const base = known?.toLowerCase();
+    return base && lower.startsWith(base) && lower.length - base.length <= 3;
+  });
+  return { row, confident: exact || inflected };
 }
 
-export type IngredientRow = NonNullable<Awaited<ReturnType<typeof bestMatch>>>;
+export type IngredientRow = NonNullable<
+  Awaited<ReturnType<typeof bestMatch>>
+>["row"];
 
 /**
  * Links a parsed line to a catalog ingredient. A measure word joins the name
@@ -95,8 +108,15 @@ export type IngredientRow = NonNullable<Awaited<ReturnType<typeof bestMatch>>>;
 export async function matchParsedLine(
   householdId: string,
   parsed: ParsedIngredientLine,
-): Promise<ParsedIngredientLine & { ingredient: IngredientRow | null }> {
-  if (!parsed.name) return { ...parsed, ingredient: null };
+): Promise<
+  ParsedIngredientLine & {
+    ingredient: IngredientRow | null;
+    /** false for fuzzy links, which deserve a second look */
+    confidentMatch: boolean;
+  }
+> {
+  if (!parsed.name)
+    return { ...parsed, ingredient: null, confidentMatch: false };
   if (parsed.unitText) {
     const measure = parsed.unitText.toLowerCase().replace(/\.$/, "");
     for (const candidate of [
@@ -105,12 +125,32 @@ export async function matchParsedLine(
     ]) {
       const match = await bestMatch(householdId, candidate, true);
       if (match) {
-        return { ...parsed, unit: "pcs", unitText: null, ingredient: match };
+        return {
+          ...parsed,
+          unit: "pcs",
+          unitText: null,
+          ingredient: match.row,
+          confidentMatch: true,
+        };
       }
     }
   }
+  const match = await bestMatch(householdId, parsed.name, false);
+  if (match)
+    return {
+      ...parsed,
+      ingredient: match.row,
+      confidentMatch: match.confident,
+    };
+  // "Salz und Pfeffer" falls back to its first item, as an unconfident link.
+  const first = parsed.name.split(/\s+(?:und|and|oder|or|&)\s+|\s*\/\s*/i)[0];
+  const fallback =
+    first && first !== parsed.name
+      ? await bestMatch(householdId, first, false)
+      : null;
   return {
     ...parsed,
-    ingredient: await bestMatch(householdId, parsed.name, false),
+    ingredient: fallback?.row ?? null,
+    confidentMatch: false,
   };
 }

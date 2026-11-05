@@ -10,9 +10,12 @@ Pipeline, cheapest step first:
 3. **Microdata / heuristics** as a cheap second try.
 4. **LLM fallback**: strip the HTML to readable text, extract with a Zod schema via the AI module.
 5. **Ingredient lines** ("200 g Mehl, gesiebt") go through the rule-based parser in `packages/shared`
-   (quantity incl. fractions and ranges, unit aliases de/en, name, note). `POST /api/ingredients/parse`
-   parses and links lines to the catalog in one call. Lines with confidence below ~0.7 or no catalog
-   match go to the LLM in one batched call. Lines that still have no catalog match create a household
+   (quantity incl. fractions and ranges, unit aliases de/en, name, note). Chefkoch-style parentheses
+   feed the name: `Mehl (Okonomiyaki-)` becomes Okonomiyaki-Mehl, `Flocken (Bonitoflocken ...)` becomes
+   Bonitoflocken. `POST /api/ingredients/parse` parses and links lines to the catalog in one call. A link
+   is confident only for an exact name or synonym or a plural ending of one; pure trigram links need a
+   score of 0.7. Lines with confidence below ~0.7 or without a confident link go to the LLM in one
+   batched call. Lines that still have no catalog match create a household
    ingredient during import. The AI ingredient-create feature proposes name, category, unit, pack sizes,
    density or piece weight and a nutrition estimate; without AI the parsed name is used.
 6. The user always gets a **review screen** before saving.

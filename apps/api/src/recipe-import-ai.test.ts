@@ -173,6 +173,42 @@ test("one AI batch repairs uncertain ingredient lines and preserves their origin
   expect(server.requests()).toBe(1);
 });
 
+test("confident lines with only a fuzzy catalog link go to the AI batch", async () => {
+  const server = aiServer("ollama", ({ model }) =>
+    completion(
+      "ollama",
+      model,
+      JSON.stringify({
+        lines: [
+          {
+            index: 0,
+            name: "Bonitoflocken",
+            quantity: null,
+            unit: null,
+            note: "Fischflocken",
+            optional: false,
+          },
+        ],
+      }),
+    ),
+  );
+  const id = await householdId();
+  const [fuzzy] = await parseIngredientLines(
+    id,
+    ["Flocken"],
+    createAi(readAiConfig({})),
+  );
+  expect(fuzzy).toMatchObject({
+    ingredient: { key: "rolled-oats" },
+    confidentMatch: false,
+  });
+
+  const [result] = await parseIngredientLines(id, ["Flocken"], server.client);
+
+  expect(server.requests()).toBe(1);
+  expect(result).toMatchObject({ name: "Bonitoflocken", ingredient: null });
+});
+
 test.each([{ indices: [] }, { indices: [0, 0] }, { indices: [0, 99] }])(
   "incomplete or foreign batch indices %j keep rule-based parsing",
   async ({ indices }) => {

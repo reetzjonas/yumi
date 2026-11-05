@@ -184,4 +184,32 @@ describe("ingredient catalog", () => {
     expect(rows[6]?.ingredient?.key).toBe("mixed-mince");
     expect(rows[9]?.ingredient?.key).toBe("vegetable-stock");
   });
+
+  test("parse keeps Chefkoch parenthesised names off unrelated catalog entries", async () => {
+    const c = await householdMember("parse-chefkoch");
+    const res = await c.request("/api/ingredients/parse", {
+      method: "POST",
+      body: JSON.stringify({
+        lines: [
+          "Flocken ((Bonitoflocken bzw. Katsuoboshi), Fischflocken)",
+          "Sauce (Okonomiyaki-)",
+          "300 g Mehl (Okonomiyaki-)",
+          "4 Scheibe/n Speck (hauchdünn, ungeräuchert)",
+        ],
+      }),
+    });
+    expect(res.status).toBe(200);
+    const rows = (await res.json()) as Array<{
+      name: string;
+      ingredient: { key: string | null } | null;
+    }>;
+    expect(
+      rows.map((r) => [r.name, r.ingredient?.key ?? null] as const),
+    ).toEqual([
+      ["Bonitoflocken", null],
+      ["Okonomiyaki-Sauce", null],
+      ["Okonomiyaki-Mehl", null],
+      ["Speck", "bacon"],
+    ]);
+  });
 });
