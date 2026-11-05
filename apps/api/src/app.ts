@@ -6,6 +6,7 @@ import { ZodError } from "zod";
 import { auth } from "./auth";
 import { type AppEnv, loadSession } from "./context";
 import { env } from "./env";
+import { householdTransfer } from "./routes/household-transfer";
 import { ingredients } from "./routes/ingredients";
 import { householdInvites, invites } from "./routes/invites";
 import { leftovers } from "./routes/leftovers";
@@ -27,6 +28,7 @@ const api = new Hono<AppEnv>()
   )
   .use(loadSession)
   .route("/me", me)
+  .route("/household-transfer", householdTransfer)
   .route("/household/invites", householdInvites)
   .route("/invites", invites)
   .route("/ingredients", ingredients)

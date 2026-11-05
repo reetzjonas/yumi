@@ -180,6 +180,15 @@ is Create link. Show an optional expiry field, the public-access explanation,
 each link's URL, creation and expiry dates, copy and revoke actions, and errors
 beside the affected action. Use no additional filled row actions.
 
+Layout: Household data transfer - move a complete household archive -> a single
+column at `/more/data`, reached from More; scroll owner: `.app-main`. Export is
+a secondary download action. Import is the primary action and requires selecting
+a JSON file and reviewing its counts first. Show the active household, format and
+size limits, additive-copy behavior, selected filename, recipe/catalog/list/queue
+counts, inline errors and a success receipt. Existing records remain in place;
+repeated imports create additional copies. Keep authentication and access tokens
+out of the archive. Avoid nested scrolling and decoration around the count list.
+
 Layout: Recipe insights - choose a meal using personal ratings and household
 cooking history -> stack inside the existing library and recipe detail;
 scroll owner: `.app-main`. Avoid a second scroll region for ratings or history.

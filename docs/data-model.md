@@ -2,6 +2,12 @@
 
 Alpha sketch, the Drizzle schema is the source of truth once it exists. Every household-owned table has `household_id`.
 
+Household data can be exported as a versioned JSON archive and imported
+additively into another active household. All local identifiers are remapped;
+global ingredients and categories resolve by stable keys. Recipe image bytes
+travel with the archive. Authentication, personal ratings and sharing
+capabilities are excluded. See [household transfer](data-transfer.md).
+
 ## Identity
 
 - `user`, `session`, `account`: Better Auth tables.

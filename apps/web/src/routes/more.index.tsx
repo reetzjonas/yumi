@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Archive,
   ChevronRight,
+  Database,
   type LucideIcon,
   Repeat,
   Settings,
@@ -28,6 +29,7 @@ function MoreRow({
     | "/more/stores"
     | "/more/pantry"
     | "/more/recurring"
+    | "/more/data"
     | "/more/settings";
   icon: LucideIcon;
   title: string;
@@ -79,6 +81,12 @@ function More() {
           icon={Repeat}
           title={m["recurring.title"]()}
           detail={m["more.recurring_detail"]()}
+        />
+        <MoreRow
+          to="/more/data"
+          icon={Database}
+          title={m["transfer.title"]()}
+          detail={m["transfer.detail"]()}
         />
         <MoreRow
           to="/more/settings"

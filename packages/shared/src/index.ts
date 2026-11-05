@@ -1,6 +1,7 @@
 export * from "./catalog";
 export * from "./cooking-timers";
 export * from "./health";
+export * from "./household-transfer";
 export * from "./ingredient-line";
 export * from "./leftovers";
 export * from "./nutrition";

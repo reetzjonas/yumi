@@ -20,6 +20,7 @@ import { Route as CookIdRouteImport } from './routes/cook.$id'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as MoreIndexRouteImport } from './routes/more.index'
 import { Route as MoreAboutRouteImport } from './routes/more.about'
+import { Route as MoreDataRouteImport } from './routes/more.data'
 import { Route as MoreHouseholdRouteImport } from './routes/more.household'
 import { Route as MorePantryRouteImport } from './routes/more.pantry'
 import { Route as MoreRecurringRouteImport } from './routes/more.recurring'
@@ -86,6 +87,11 @@ const MoreIndexRoute = MoreIndexRouteImport.update({
 const MoreAboutRoute = MoreAboutRouteImport.update({
   id: '/more/about',
   path: '/more/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MoreDataRoute = MoreDataRouteImport.update({
+  id: '/more/data',
+  path: '/more/data',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MoreHouseholdRoute = MoreHouseholdRouteImport.update({
@@ -160,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/cook/$id': typeof CookIdRoute
   '/invite/$token': typeof InviteTokenRoute
   '/more/about': typeof MoreAboutRoute
+  '/more/data': typeof MoreDataRoute
   '/more/household': typeof MoreHouseholdRoute
   '/more/pantry': typeof MorePantryRoute
   '/more/recurring': typeof MoreRecurringRoute
@@ -185,6 +192,7 @@ export interface FileRoutesByTo {
   '/cook/$id': typeof CookIdRoute
   '/invite/$token': typeof InviteTokenRoute
   '/more/about': typeof MoreAboutRoute
+  '/more/data': typeof MoreDataRoute
   '/more/household': typeof MoreHouseholdRoute
   '/more/pantry': typeof MorePantryRoute
   '/more/recurring': typeof MoreRecurringRoute
@@ -211,6 +219,7 @@ export interface FileRoutesById {
   '/cook/$id': typeof CookIdRoute
   '/invite/$token': typeof InviteTokenRoute
   '/more/about': typeof MoreAboutRoute
+  '/more/data': typeof MoreDataRoute
   '/more/household': typeof MoreHouseholdRoute
   '/more/pantry': typeof MorePantryRoute
   '/more/recurring': typeof MoreRecurringRoute
@@ -238,6 +247,7 @@ export interface FileRouteTypes {
     | '/cook/$id'
     | '/invite/$token'
     | '/more/about'
+    | '/more/data'
     | '/more/household'
     | '/more/pantry'
     | '/more/recurring'
@@ -263,6 +273,7 @@ export interface FileRouteTypes {
     | '/cook/$id'
     | '/invite/$token'
     | '/more/about'
+    | '/more/data'
     | '/more/household'
     | '/more/pantry'
     | '/more/recurring'
@@ -288,6 +299,7 @@ export interface FileRouteTypes {
     | '/cook/$id'
     | '/invite/$token'
     | '/more/about'
+    | '/more/data'
     | '/more/household'
     | '/more/pantry'
     | '/more/recurring'
@@ -314,6 +326,7 @@ export interface RootRouteChildren {
   CookIdRoute: typeof CookIdRoute
   InviteTokenRoute: typeof InviteTokenRoute
   MoreAboutRoute: typeof MoreAboutRoute
+  MoreDataRoute: typeof MoreDataRoute
   MoreHouseholdRoute: typeof MoreHouseholdRoute
   MorePantryRoute: typeof MorePantryRoute
   MoreRecurringRoute: typeof MoreRecurringRoute
@@ -406,6 +419,13 @@ declare module '@tanstack/react-router' {
       path: '/more/about'
       fullPath: '/more/about'
       preLoaderRoute: typeof MoreAboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/more/data': {
+      id: '/more/data'
+      path: '/more/data'
+      fullPath: '/more/data'
+      preLoaderRoute: typeof MoreDataRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/more/household': {
@@ -506,6 +526,7 @@ const rootRouteChildren: RootRouteChildren = {
   CookIdRoute: CookIdRoute,
   InviteTokenRoute: InviteTokenRoute,
   MoreAboutRoute: MoreAboutRoute,
+  MoreDataRoute: MoreDataRoute,
   MoreHouseholdRoute: MoreHouseholdRoute,
   MorePantryRoute: MorePantryRoute,
   MoreRecurringRoute: MoreRecurringRoute,
