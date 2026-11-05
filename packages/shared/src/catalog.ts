@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { nutritionValuesSchema } from "./nutrition";
+import { pictogramKeySchema } from "./pictograms";
 import { unitSchema } from "./units";
 
 const name = z.string().trim().min(1).max(100);
@@ -23,7 +24,7 @@ export const ingredientInputSchema = z
       )
       .max(20)
       .default([]),
-    icon: z.string().max(16).nullable().default(null),
+    icon: pictogramKeySchema.nullable().optional(),
   })
   .refine((v) => v.nameDe || v.nameEn, { message: "name_required" })
   .transform(({ nameDe, nameEn, ...rest }) => ({

@@ -6,6 +6,7 @@ export * from "./ingredient-line";
 export * from "./leftovers";
 export * from "./nutrition";
 export * from "./photo-import";
+export * from "./pictograms";
 export * from "./planning";
 export * from "./recipes";
 export * from "./recurring";

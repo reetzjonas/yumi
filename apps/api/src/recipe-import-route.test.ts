@@ -3,6 +3,8 @@ import { Readable } from "node:stream";
 import { ingredient } from "@yumi/db/schema";
 import { eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
+import { createAi } from "./ai";
+import { aiServer, completion } from "./ai/test-server";
 import { db } from "./db";
 import type { RecipeHttpTransport } from "./recipe-import/transport";
 import { importRecipeDraft } from "./routes/recipe-import";
@@ -115,14 +117,11 @@ test("an import uses AI suggestions for newly created ingredients", async () => 
     fiberG: 3,
     saltG: 0.02,
   };
-  const suggestionClient = {
-    capability: (feature: string) =>
-      feature === "ingredient-create"
-        ? { available: true, model: "test-model" }
-        : { available: false, reason: "disabled" },
-    generateStructured: async () => ({
-      status: "success",
-      value: {
+  const server = aiServer("ollama", ({ model }) =>
+    completion(
+      "ollama",
+      model,
+      JSON.stringify({
         nameDe: "Sternenstaub",
         nameEn: "Stardust",
         synonyms: [],
@@ -132,11 +131,23 @@ test("an import uses AI suggestions for newly created ingredients", async () => 
         pieceWeightG: 2,
         nutritionPer100g: nutrition,
         packSizes: [],
-        icon: null,
+        icon: "🍋",
+      }),
+    ),
+  );
+  const suggestionClient = createAi(
+    {
+      ...server.config,
+      features: {
+        ...server.config.features,
+        "ingredient-parse": {
+          ...server.config.features["ingredient-parse"],
+          enabled: false,
+        },
       },
-      usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
-    }),
-  } as unknown as Parameters<typeof importRecipeDraft>[3];
+    },
+    (event) => server.events.push(event),
+  );
 
   const result = await importRecipeDraft(
     await householdId(),
@@ -154,6 +165,7 @@ test("an import uses AI suggestions for newly created ingredients", async () => 
       pieceWeightG: ingredient.pieceWeightG,
       nutritionPer100g: ingredient.nutritionPer100g,
       nutritionSource: ingredient.nutritionSource,
+      icon: ingredient.icon,
     })
     .from(ingredient)
     .where(eq(ingredient.id, createdId));
@@ -163,6 +175,7 @@ test("an import uses AI suggestions for newly created ingredients", async () => 
     pieceWeightG: 2,
     nutritionPer100g: nutrition,
     nutritionSource: "AI estimate",
+    icon: "🍋",
   });
 });
 

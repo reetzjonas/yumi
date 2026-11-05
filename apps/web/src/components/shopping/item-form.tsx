@@ -2,6 +2,7 @@ import { type ShoppingEvent, UNITS, type Unit, unitSchema } from "@yumi/shared";
 import { useId, useState } from "react";
 import { toast } from "sonner";
 import { Field } from "@/components/auth-layout";
+import { EditPictogram } from "@/components/ingredients/edit-pictogram";
 import { CatalogPicker } from "@/components/shopping/catalog-picker";
 import { Button } from "@/components/ui/button";
 import {
@@ -101,7 +102,15 @@ export function ItemForm({
           }}
         />
         {ingredientId && (
-          <p className="row-detail">{m["shopping.catalog_linked"]()}</p>
+          <div className="pictogram-linked">
+            <span className="row-detail">{m["shopping.catalog_linked"]()}</span>
+            <EditPictogram
+              ingredientId={ingredientId}
+              fallback={
+                categories.find((category) => category.id === categoryId)?.icon
+              }
+            />
+          </div>
         )}
         <div className="shopping-amount-fields">
           <Field

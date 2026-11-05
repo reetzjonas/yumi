@@ -11,6 +11,7 @@
       "**",
       "!**/routeTree.gen.ts",
       "!**/migrations",
+      "!apps/web/public/pictograms",
       "!deploy/helm/**/templates",
       "!docs/design"
     ]

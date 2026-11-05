@@ -1,5 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { nutritionValuesSchema, unitSchema } from "@yumi/shared";
+import {
+  nutritionValuesSchema,
+  pictogramKeySchema,
+  unitSchema,
+} from "@yumi/shared";
 import type { InferRequestType, InferResponseType } from "hono/client";
 import { useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -138,7 +142,9 @@ export function CreateIngredient({
                     ),
                     unit: unitSchema.parse(unit),
                   })),
-                  icon: text("icon") || null,
+                  icon: text("icon")
+                    ? pictogramKeySchema.parse(text("icon"))
+                    : null,
                 });
               }}
             >

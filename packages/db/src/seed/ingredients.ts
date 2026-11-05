@@ -14,6 +14,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "red-onion",
+    icon: "🧅",
     de: "Rote Zwiebel",
     en: "Red onion",
     category: "produce",
@@ -23,6 +24,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "shallot",
+    icon: "🧅",
     de: "Schalotte",
     en: "Shallot",
     category: "produce",
@@ -56,6 +58,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "garlic-clove",
+    icon: "🧄",
     de: "Knoblauchzehe",
     en: "Garlic clove",
     category: "produce",
@@ -175,6 +178,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "cherry-tomato",
+    icon: "🍅",
     de: "Cherrytomaten",
     en: "Cherry tomatoes",
     category: "produce",
@@ -224,6 +228,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "yellow-bell-pepper",
+    icon: "🫑",
     de: "Paprika gelb",
     en: "Yellow bell pepper",
     category: "produce",
@@ -233,6 +238,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "green-bell-pepper",
+    icon: "🫑",
     de: "Paprika grün",
     en: "Green bell pepper",
     category: "produce",
@@ -242,6 +248,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "pointed-pepper",
+    icon: "🫑",
     de: "Spitzpaprika",
     en: "Pointed pepper",
     category: "produce",
@@ -261,6 +268,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "jalapeno",
+    icon: "🌶️",
     de: "Jalapeño",
     en: "Jalapeño",
     category: "produce",
@@ -289,6 +297,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "brussels-sprouts",
+    icon: "🥬",
     de: "Rosenkohl",
     en: "Brussels sprouts",
     category: "produce",
@@ -297,6 +306,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "white-cabbage",
+    icon: "🥬",
     de: "Weißkohl",
     en: "White cabbage",
     category: "produce",
@@ -306,6 +316,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "red-cabbage",
+    icon: "🥬",
     de: "Rotkohl",
     en: "Red cabbage",
     category: "produce",
@@ -315,6 +326,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "savoy-cabbage",
+    icon: "🥬",
     de: "Wirsing",
     en: "Savoy cabbage",
     category: "produce",
@@ -324,6 +336,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "chinese-cabbage",
+    icon: "🥬",
     de: "Chinakohl",
     en: "Chinese cabbage",
     category: "produce",
@@ -333,6 +346,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "pak-choi",
+    icon: "🥬",
     de: "Pak Choi",
     en: "Pak choi",
     category: "produce",
@@ -342,6 +356,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "kale",
+    icon: "🥬",
     de: "Grünkohl",
     en: "Kale",
     category: "produce",
@@ -350,6 +365,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "iceberg-lettuce",
+    icon: "🥬",
     de: "Eisbergsalat",
     en: "Iceberg lettuce",
     category: "produce",
@@ -369,6 +385,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "romaine-lettuce",
+    icon: "🥬",
     de: "Romanasalat",
     en: "Romaine lettuce",
     category: "produce",
@@ -378,6 +395,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "rocket",
+    icon: "🥬",
     de: "Rucola",
     en: "Rocket",
     category: "produce",
@@ -387,6 +405,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "lambs-lettuce",
+    icon: "🥬",
     de: "Feldsalat",
     en: "Lamb's lettuce",
     category: "produce",
@@ -396,6 +415,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "mixed-salad",
+    icon: "🥬",
     de: "Salatmischung",
     en: "Mixed salad leaves",
     category: "produce",
@@ -405,6 +425,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "chicory",
+    icon: "🥬",
     de: "Chicorée",
     en: "Chicory",
     category: "produce",
@@ -414,6 +435,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "radicchio",
+    icon: "🥬",
     de: "Radicchio",
     en: "Radicchio",
     category: "produce",
@@ -422,6 +444,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "spinach",
+    icon: "🥬",
     de: "Spinat",
     en: "Spinach",
     category: "produce",
@@ -455,6 +478,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "green-beans",
+    icon: "🫘",
     de: "Grüne Bohnen",
     en: "Green beans",
     category: "produce",
@@ -519,6 +543,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "shiitake",
+    icon: "🍄",
     de: "Shiitake",
     en: "Shiitake",
     category: "produce",
@@ -528,6 +553,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "chanterelle",
+    icon: "🍄",
     de: "Pfifferlinge",
     en: "Chanterelles",
     category: "produce",
@@ -545,6 +571,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "pumpkin",
+    icon: "🎃",
     de: "Kürbis",
     en: "Pumpkin",
     category: "produce",
@@ -553,6 +580,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "hokkaido-pumpkin",
+    icon: "🎃",
     de: "Hokkaido-Kürbis",
     en: "Hokkaido squash",
     category: "produce",
@@ -562,6 +590,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "butternut-squash",
+    icon: "🎃",
     de: "Butternut-Kürbis",
     en: "Butternut squash",
     category: "produce",
@@ -588,6 +617,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "wild-garlic",
+    icon: "🌿",
     de: "Bärlauch",
     en: "Wild garlic",
     category: "produce",
@@ -665,6 +695,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "grapefruit",
+    icon: "🍊",
     de: "Grapefruit",
     en: "Grapefruit",
     category: "produce",
@@ -674,6 +705,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "mandarin",
+    icon: "🍊",
     de: "Mandarine",
     en: "Mandarin",
     category: "produce",
@@ -683,6 +715,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "clementine",
+    icon: "🍊",
     de: "Clementine",
     en: "Clementine",
     category: "produce",
@@ -730,6 +763,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "sour-cherry",
+    icon: "🍒",
     de: "Sauerkirschen",
     en: "Sour cherries",
     category: "produce",
@@ -756,6 +790,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "apricot",
+    icon: "🍑",
     de: "Aprikose",
     en: "Apricot",
     category: "produce",
@@ -775,6 +810,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "nectarine",
+    icon: "🍑",
     de: "Nektarine",
     en: "Nectarine",
     category: "produce",
@@ -923,6 +959,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   // produce: fresh herbs
   {
     key: "parsley",
+    icon: "🌿",
     de: "Petersilie",
     en: "Parsley",
     category: "produce",
@@ -931,14 +968,23 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "chives",
+    icon: "🌿",
     de: "Schnittlauch",
     en: "Chives",
     category: "produce",
     unit: "bunch",
   },
-  { key: "dill", de: "Dill", en: "Dill", category: "produce", unit: "bunch" },
+  {
+    key: "dill",
+    icon: "🌿",
+    de: "Dill",
+    en: "Dill",
+    category: "produce",
+    unit: "bunch",
+  },
   {
     key: "basil",
+    icon: "🌿",
     de: "Basilikum",
     en: "Basil",
     category: "produce",
@@ -947,6 +993,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "mint",
+    icon: "🌿",
     de: "Minze",
     en: "Mint",
     category: "produce",
@@ -955,6 +1002,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "cilantro",
+    icon: "🌿",
     de: "Koriandergrün",
     en: "Cilantro",
     category: "produce",
@@ -968,6 +1016,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "rosemary",
+    icon: "🌿",
     de: "Rosmarin",
     en: "Rosemary",
     category: "produce",
@@ -976,15 +1025,24 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "thyme",
+    icon: "🌿",
     de: "Thymian",
     en: "Thyme",
     category: "produce",
     unit: "bunch",
     synonyms: ["frischer Thymian"],
   },
-  { key: "sage", de: "Salbei", en: "Sage", category: "produce", unit: "bunch" },
+  {
+    key: "sage",
+    icon: "🌿",
+    de: "Salbei",
+    en: "Sage",
+    category: "produce",
+    unit: "bunch",
+  },
   {
     key: "tarragon",
+    icon: "🌿",
     de: "Estragon",
     en: "Tarragon",
     category: "produce",
@@ -992,6 +1050,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "garden-cress",
+    icon: "🌿",
     de: "Gartenkresse",
     en: "Garden cress",
     category: "produce",
@@ -1013,6 +1072,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "low-fat-milk",
+    icon: "🥛",
     de: "Fettarme Milch",
     en: "Low-fat milk",
     category: "dairy",
@@ -1023,6 +1083,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "lactose-free-milk",
+    icon: "🥛",
     de: "Laktosefreie Milch",
     en: "Lactose-free milk",
     category: "dairy",
@@ -1032,6 +1093,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "oat-milk",
+    icon: "🥛",
     de: "Haferdrink",
     en: "Oat milk",
     category: "dairy",
@@ -1042,6 +1104,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "soy-milk",
+    icon: "🥛",
     de: "Sojadrink",
     en: "Soy milk",
     category: "dairy",
@@ -1052,6 +1115,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "almond-milk",
+    icon: "🥛",
     de: "Mandeldrink",
     en: "Almond milk",
     category: "dairy",
@@ -1062,6 +1126,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "buttermilk",
+    icon: "🥛",
     de: "Buttermilch",
     en: "Buttermilk",
     category: "dairy",
@@ -1071,6 +1136,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "kefir",
+    icon: "🥛",
     de: "Kefir",
     en: "Kefir",
     category: "dairy",
@@ -1080,6 +1146,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "cream",
+    icon: "🥛",
     de: "Sahne",
     en: "Cream",
     category: "dairy",
@@ -1100,6 +1167,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "cooking-cream",
+    icon: "🥛",
     de: "Kochsahne",
     en: "Cooking cream",
     category: "dairy",
@@ -1110,6 +1178,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "sour-cream",
+    icon: "🥛",
     de: "Saure Sahne",
     en: "Sour cream",
     category: "dairy",
@@ -1120,6 +1189,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "schmand",
+    icon: "🥛",
     de: "Schmand",
     en: "Schmand",
     category: "dairy",
@@ -1130,6 +1200,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "creme-fraiche",
+    icon: "🥛",
     de: "Crème fraîche",
     en: "Crème fraîche",
     category: "dairy",
@@ -1143,6 +1214,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "cream-cheese",
+    icon: "🧀",
     de: "Frischkäse",
     en: "Cream cheese",
     category: "dairy",
@@ -1156,6 +1228,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "quark",
+    icon: "🥛",
     de: "Quark",
     en: "Quark",
     category: "dairy",
@@ -1169,6 +1242,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "low-fat-quark",
+    icon: "🥛",
     de: "Magerquark",
     en: "Low-fat quark",
     category: "dairy",
@@ -1181,6 +1255,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "skyr",
+    icon: "🥛",
     de: "Skyr",
     en: "Skyr",
     category: "dairy",
@@ -1190,6 +1265,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "cottage-cheese",
+    icon: "🧀",
     de: "Hüttenkäse",
     en: "Cottage cheese",
     category: "dairy",
@@ -1198,6 +1274,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "plain-yogurt",
+    icon: "🥛",
     de: "Naturjoghurt",
     en: "Plain yogurt",
     category: "dairy",
@@ -1211,6 +1288,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "greek-yogurt",
+    icon: "🥛",
     de: "Griechischer Joghurt",
     en: "Greek yogurt",
     category: "dairy",
@@ -1221,6 +1299,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "fruit-yogurt",
+    icon: "🥛",
     de: "Fruchtjoghurt",
     en: "Fruit yogurt",
     category: "dairy",
@@ -1240,6 +1319,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "margarine",
+    icon: "🧈",
     de: "Margarine",
     en: "Margarine",
     category: "dairy",
@@ -1249,6 +1329,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "ghee",
+    icon: "🧈",
     de: "Butterschmalz",
     en: "Ghee",
     category: "dairy",
@@ -1275,6 +1356,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   // dairy: cheese and chilled alternatives
   {
     key: "gouda",
+    icon: "🧀",
     de: "Gouda",
     en: "Gouda",
     category: "dairy",
@@ -1284,6 +1366,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "edam",
+    icon: "🧀",
     de: "Edamer",
     en: "Edam",
     category: "dairy",
@@ -1293,6 +1376,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "emmental",
+    icon: "🧀",
     de: "Emmentaler",
     en: "Emmental",
     category: "dairy",
@@ -1302,6 +1386,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "mountain-cheese",
+    icon: "🧀",
     de: "Bergkäse",
     en: "Mountain cheese",
     category: "dairy",
@@ -1310,6 +1395,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "cheddar",
+    icon: "🧀",
     de: "Cheddar",
     en: "Cheddar",
     category: "dairy",
@@ -1319,6 +1405,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "parmesan",
+    icon: "🧀",
     de: "Parmesan",
     en: "Parmesan",
     category: "dairy",
@@ -1331,6 +1418,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "grana-padano",
+    icon: "🧀",
     de: "Grana Padano",
     en: "Grana Padano",
     category: "dairy",
@@ -1339,6 +1427,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "pecorino",
+    icon: "🧀",
     de: "Pecorino",
     en: "Pecorino",
     category: "dairy",
@@ -1348,6 +1437,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "mozzarella",
+    icon: "🧀",
     de: "Mozzarella",
     en: "Mozzarella",
     category: "dairy",
@@ -1357,6 +1447,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "burrata",
+    icon: "🧀",
     de: "Burrata",
     en: "Burrata",
     category: "dairy",
@@ -1365,6 +1456,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "feta",
+    icon: "🧀",
     de: "Feta",
     en: "Feta",
     category: "dairy",
@@ -1374,6 +1466,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "halloumi",
+    icon: "🧀",
     de: "Halloumi",
     en: "Halloumi",
     category: "dairy",
@@ -1383,6 +1476,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "camembert",
+    icon: "🧀",
     de: "Camembert",
     en: "Camembert",
     category: "dairy",
@@ -1391,6 +1485,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "brie",
+    icon: "🧀",
     de: "Brie",
     en: "Brie",
     category: "dairy",
@@ -1399,6 +1494,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "gorgonzola",
+    icon: "🧀",
     de: "Gorgonzola",
     en: "Gorgonzola",
     category: "dairy",
@@ -1408,6 +1504,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "goat-cheese",
+    icon: "🧀",
     de: "Ziegenkäse",
     en: "Goat cheese",
     category: "dairy",
@@ -1416,6 +1513,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "ricotta",
+    icon: "🧀",
     de: "Ricotta",
     en: "Ricotta",
     category: "dairy",
@@ -1424,6 +1522,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "mascarpone",
+    icon: "🧀",
     de: "Mascarpone",
     en: "Mascarpone",
     category: "dairy",
@@ -1432,6 +1531,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "raclette-cheese",
+    icon: "🧀",
     de: "Raclettekäse",
     en: "Raclette cheese",
     category: "dairy",
@@ -1440,6 +1540,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "grated-cheese",
+    icon: "🧀",
     de: "Reibekäse",
     en: "Grated cheese",
     category: "dairy",
@@ -1449,6 +1550,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "sliced-cheese",
+    icon: "🧀",
     de: "Käsescheiben",
     en: "Sliced cheese",
     category: "dairy",
@@ -1457,6 +1559,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "processed-cheese",
+    icon: "🧀",
     de: "Schmelzkäse",
     en: "Processed cheese",
     category: "dairy",
@@ -1496,6 +1599,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   // meat
   {
     key: "mixed-mince",
+    icon: "🥩",
     de: "Gemischtes Hackfleisch",
     en: "Mixed minced meat",
     category: "meat",
@@ -1513,6 +1617,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "minced-beef",
+    icon: "🥩",
     de: "Rinderhack",
     en: "Minced beef",
     category: "meat",
@@ -1522,6 +1627,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "minced-pork",
+    icon: "🥩",
     de: "Schweinehack",
     en: "Minced pork",
     category: "meat",
@@ -1547,6 +1653,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "chicken-thigh",
+    icon: "🍗",
     de: "Hähnchenoberschenkel",
     en: "Chicken thighs",
     category: "meat",
@@ -1556,6 +1663,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "chicken-drumstick",
+    icon: "🍗",
     de: "Hähnchenunterschenkel",
     en: "Chicken drumsticks",
     category: "meat",
@@ -1565,6 +1673,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "chicken-wings",
+    icon: "🍗",
     de: "Hähnchenflügel",
     en: "Chicken wings",
     category: "meat",
@@ -1574,6 +1683,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "whole-chicken",
+    icon: "🍗",
     de: "Brathuhn",
     en: "Whole chicken",
     category: "meat",
@@ -1583,6 +1693,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "turkey-breast",
+    icon: "🍗",
     de: "Putenbrust",
     en: "Turkey breast",
     category: "meat",
@@ -1591,6 +1702,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "pork-cutlet",
+    icon: "🥩",
     de: "Schweineschnitzel",
     en: "Pork cutlet",
     category: "meat",
@@ -1600,6 +1712,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "pork-tenderloin",
+    icon: "🥩",
     de: "Schweinefilet",
     en: "Pork tenderloin",
     category: "meat",
@@ -1608,6 +1721,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "pork-neck",
+    icon: "🥩",
     de: "Schweinenacken",
     en: "Pork neck",
     category: "meat",
@@ -1616,6 +1730,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "pork-belly",
+    icon: "🥩",
     de: "Schweinebauch",
     en: "Pork belly",
     category: "meat",
@@ -1624,6 +1739,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "beef-steak",
+    icon: "🥩",
     de: "Rindersteak",
     en: "Beef steak",
     category: "meat",
@@ -1633,6 +1749,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "beef-tenderloin",
+    icon: "🥩",
     de: "Rinderfilet",
     en: "Beef tenderloin",
     category: "meat",
@@ -1641,6 +1758,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "stewing-beef",
+    icon: "🥩",
     de: "Rindergulasch",
     en: "Stewing beef",
     category: "meat",
@@ -1649,6 +1767,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "roast-beef-joint",
+    icon: "🥩",
     de: "Rinderbraten",
     en: "Beef roast",
     category: "meat",
@@ -1657,6 +1776,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "beef-rolls",
+    icon: "🥩",
     de: "Rinderrouladen",
     en: "Beef rolls",
     category: "meat",
@@ -1666,6 +1786,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "lamb",
+    icon: "🥩",
     de: "Lammfleisch",
     en: "Lamb",
     category: "meat",
@@ -1674,6 +1795,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "veal-cutlet",
+    icon: "🥩",
     de: "Kalbsschnitzel",
     en: "Veal cutlet",
     category: "meat",
@@ -1692,6 +1814,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "frankfurters",
+    icon: "🌭",
     de: "Wiener Würstchen",
     en: "Frankfurters",
     category: "meat",
@@ -1705,9 +1828,17 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
     ],
     pieceWeightG: 50,
   },
-  { key: "chorizo", de: "Chorizo", en: "Chorizo", category: "meat", unit: "g" },
+  {
+    key: "chorizo",
+    icon: "🌭",
+    de: "Chorizo",
+    en: "Chorizo",
+    category: "meat",
+    unit: "g",
+  },
   {
     key: "salami",
+    icon: "🌭",
     de: "Salami",
     en: "Salami",
     category: "meat",
@@ -1716,6 +1847,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "cooked-ham",
+    icon: "🥓",
     de: "Kochschinken",
     en: "Cooked ham",
     category: "meat",
@@ -1728,6 +1860,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "diced-ham",
+    icon: "🥓",
     de: "Schinkenwürfel",
     en: "Diced ham",
     category: "meat",
@@ -1737,6 +1870,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "prosciutto",
+    icon: "🥓",
     de: "Parmaschinken",
     en: "Prosciutto",
     category: "meat",
@@ -1767,6 +1901,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "bacon-cubes",
+    icon: "🥓",
     de: "Speckwürfel",
     en: "Bacon cubes",
     category: "meat",
@@ -1776,6 +1911,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "liver-sausage",
+    icon: "🌭",
     de: "Leberwurst",
     en: "Liver sausage",
     category: "meat",
@@ -1784,6 +1920,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "mettwurst",
+    icon: "🌭",
     de: "Mettwurst",
     en: "Mettwurst",
     category: "meat",
@@ -1792,6 +1929,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "bologna-sausage",
+    icon: "🌭",
     de: "Fleischwurst",
     en: "Bologna sausage",
     category: "meat",
@@ -1800,6 +1938,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "leberkaese",
+    icon: "🌭",
     de: "Leberkäse",
     en: "Leberkäse",
     category: "meat",
@@ -1808,6 +1947,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "cold-cuts",
+    icon: "🥓",
     de: "Aufschnitt",
     en: "Cold cuts",
     category: "meat",
@@ -1816,6 +1956,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "gyros-meat",
+    icon: "🥩",
     de: "Gyrosfleisch",
     en: "Gyros meat",
     category: "meat",
@@ -1826,6 +1967,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   // fish and seafood
   {
     key: "salmon-fillet",
+    icon: "🐟",
     de: "Lachsfilet",
     en: "Salmon fillet",
     category: "fish",
@@ -1836,6 +1978,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "smoked-salmon",
+    icon: "🐟",
     de: "Räucherlachs",
     en: "Smoked salmon",
     category: "fish",
@@ -1848,6 +1991,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "trout",
+    icon: "🐟",
     de: "Forelle",
     en: "Trout",
     category: "fish",
@@ -1857,6 +2001,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "cod",
+    icon: "🐟",
     de: "Kabeljau",
     en: "Cod",
     category: "fish",
@@ -1865,6 +2010,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "pollock",
+    icon: "🐟",
     de: "Seelachs",
     en: "Pollock",
     category: "fish",
@@ -1873,6 +2019,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "white-fish-fillet",
+    icon: "🐟",
     de: "Fischfilet",
     en: "White fish fillet",
     category: "fish",
@@ -1881,6 +2028,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "tuna-steak",
+    icon: "🐟",
     de: "Thunfischsteak",
     en: "Tuna steak",
     category: "fish",
@@ -1889,6 +2037,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "sea-bream",
+    icon: "🐟",
     de: "Dorade",
     en: "Sea bream",
     category: "fish",
@@ -1898,6 +2047,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "sea-bass",
+    icon: "🐟",
     de: "Wolfsbarsch",
     en: "Sea bass",
     category: "fish",
@@ -1907,6 +2057,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "herring",
+    icon: "🐟",
     de: "Hering",
     en: "Herring",
     category: "fish",
@@ -1915,6 +2066,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "matjes",
+    icon: "🐟",
     de: "Matjes",
     en: "Matjes herring",
     category: "fish",
@@ -1924,6 +2076,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "smoked-mackerel",
+    icon: "🐟",
     de: "Makrele",
     en: "Mackerel",
     category: "fish",
@@ -1946,6 +2099,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "brown-shrimp",
+    icon: "🦐",
     de: "Nordseekrabben",
     en: "Brown shrimp",
     category: "fish",
@@ -1962,6 +2116,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "squid",
+    icon: "🦑",
     de: "Tintenfisch",
     en: "Squid",
     category: "fish",
@@ -1982,6 +2137,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "seeded-roll",
+    icon: "🍞",
     de: "Körnerbrötchen",
     en: "Seeded roll",
     category: "bakery",
@@ -2011,6 +2167,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "sandwich-bread",
+    icon: "🍞",
     de: "Toastbrot",
     en: "Sandwich bread",
     category: "bakery",
@@ -2020,6 +2177,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "wholemeal-bread",
+    icon: "🍞",
     de: "Vollkornbrot",
     en: "Wholemeal bread",
     category: "bakery",
@@ -2039,6 +2197,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "rye-bread",
+    icon: "🍞",
     de: "Roggenbrot",
     en: "Rye bread",
     category: "bakery",
@@ -2048,6 +2207,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "baguette",
+    icon: "🥖",
     de: "Baguette",
     en: "Baguette",
     category: "bakery",
@@ -2056,6 +2216,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "ciabatta",
+    icon: "🥖",
     de: "Ciabatta",
     en: "Ciabatta",
     category: "bakery",
@@ -2064,6 +2225,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "flatbread",
+    icon: "🫓",
     de: "Fladenbrot",
     en: "Flatbread",
     category: "bakery",
@@ -2073,6 +2235,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "pita",
+    icon: "🫓",
     de: "Pita",
     en: "Pita bread",
     category: "bakery",
@@ -2081,6 +2244,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "naan",
+    icon: "🫓",
     de: "Naan",
     en: "Naan",
     category: "bakery",
@@ -2089,6 +2253,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "tortilla-wraps",
+    icon: "🫓",
     de: "Tortilla-Wraps",
     en: "Tortilla wraps",
     category: "bakery",
@@ -2098,6 +2263,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "burger-buns",
+    icon: "🍞",
     de: "Burgerbrötchen",
     en: "Burger buns",
     category: "bakery",
@@ -2107,6 +2273,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "crispbread",
+    icon: "🍞",
     de: "Knäckebrot",
     en: "Crispbread",
     category: "bakery",
@@ -2115,6 +2282,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "croutons",
+    icon: "🍞",
     de: "Croûtons",
     en: "Croutons",
     category: "bakery",
@@ -2149,6 +2317,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   // frozen
   {
     key: "frozen-spinach",
+    icon: "🥬",
     de: "TK-Spinat",
     en: "Frozen spinach",
     category: "frozen",
@@ -2173,6 +2342,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "frozen-corn",
+    icon: "🌽",
     de: "TK-Mais",
     en: "Frozen sweetcorn",
     category: "frozen",
@@ -2193,6 +2363,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "frozen-broccoli",
+    icon: "🥦",
     de: "TK-Brokkoli",
     en: "Frozen broccoli",
     category: "frozen",
@@ -2210,6 +2381,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "edamame",
+    icon: "🫘",
     de: "Edamame",
     en: "Edamame",
     category: "frozen",
@@ -2231,6 +2403,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "frozen-herbs",
+    icon: "🌿",
     de: "TK-Kräuter",
     en: "Frozen herbs",
     category: "frozen",
@@ -2252,6 +2425,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "potato-wedges",
+    icon: "🍟",
     de: "Kartoffelecken",
     en: "Potato wedges",
     category: "frozen",
@@ -2279,6 +2453,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "fish-fingers",
+    icon: "🐟",
     de: "Fischstäbchen",
     en: "Fish fingers",
     category: "frozen",
@@ -2292,6 +2467,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "chicken-nuggets",
+    icon: "🍗",
     de: "Hähnchennuggets",
     en: "Chicken nuggets",
     category: "frozen",
@@ -2311,6 +2487,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "gyoza",
+    icon: "🥟",
     de: "Gyoza",
     en: "Gyoza",
     category: "frozen",
@@ -2334,6 +2511,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   // pantry: canned goods, oils, vinegars, stock, nuts, seeds, spreads
   {
     key: "canned-tomatoes",
+    icon: "🍅",
     de: "Dosentomaten",
     en: "Canned tomatoes",
     category: "pantry",
@@ -2350,6 +2528,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "passata",
+    icon: "🍅",
     de: "Passierte Tomaten",
     en: "Passata",
     category: "pantry",
@@ -2360,6 +2539,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "tomato-paste",
+    icon: "🍅",
     de: "Tomatenmark",
     en: "Tomato paste",
     category: "pantry",
@@ -2370,6 +2550,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "sweet-corn-canned",
+    icon: "🌽",
     de: "Mais",
     en: "Sweet corn",
     category: "pantry",
@@ -2379,6 +2560,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "kidney-beans",
+    icon: "🫘",
     de: "Kidneybohnen",
     en: "Kidney beans",
     category: "pantry",
@@ -2388,6 +2570,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "white-beans",
+    icon: "🫘",
     de: "Weiße Bohnen",
     en: "White beans",
     category: "pantry",
@@ -2402,6 +2585,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "black-beans",
+    icon: "🫘",
     de: "Schwarze Bohnen",
     en: "Black beans",
     category: "pantry",
@@ -2410,6 +2594,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "chickpeas",
+    icon: "🫘",
     de: "Kichererbsen",
     en: "Chickpeas",
     category: "pantry",
@@ -2427,6 +2612,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "canned-tuna",
+    icon: "🐟",
     de: "Thunfisch",
     en: "Tuna",
     category: "pantry",
@@ -2436,6 +2622,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "sardines",
+    icon: "🐟",
     de: "Sardinen",
     en: "Sardines",
     category: "pantry",
@@ -2444,6 +2631,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "anchovies",
+    icon: "🐟",
     de: "Sardellen",
     en: "Anchovies",
     category: "pantry",
@@ -2460,6 +2648,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "coconut-milk",
+    icon: "🥥",
     de: "Kokosmilch",
     en: "Coconut milk",
     category: "pantry",
@@ -2470,6 +2659,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "coconut-cream",
+    icon: "🥥",
     de: "Kokoscreme",
     en: "Coconut cream",
     category: "pantry",
@@ -2480,6 +2670,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "evaporated-milk",
+    icon: "🥛",
     de: "Kondensmilch",
     en: "Evaporated milk",
     category: "pantry",
@@ -2490,6 +2681,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "vegetable-stock",
+    icon: "🥣",
     de: "Gemüsebrühe",
     en: "Vegetable stock",
     category: "pantry",
@@ -2499,6 +2691,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "chicken-stock",
+    icon: "🥣",
     de: "Hühnerbrühe",
     en: "Chicken stock",
     category: "pantry",
@@ -2508,6 +2701,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "beef-stock",
+    icon: "🥣",
     de: "Rinderbrühe",
     en: "Beef stock",
     category: "pantry",
@@ -2517,6 +2711,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "stock-cube",
+    icon: "🥣",
     de: "Brühwürfel",
     en: "Stock cube",
     category: "pantry",
@@ -2578,6 +2773,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "coconut-oil",
+    icon: "🥥",
     de: "Kokosöl",
     en: "Coconut oil",
     category: "pantry",
@@ -2638,6 +2834,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "lemon-juice",
+    icon: "🍋",
     de: "Zitronensaft",
     en: "Lemon juice",
     category: "pantry",
@@ -2683,6 +2880,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "peanuts",
+    icon: "🥜",
     de: "Erdnüsse",
     en: "Peanuts",
     category: "pantry",
@@ -2747,6 +2945,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "peanut-butter",
+    icon: "🥜",
     de: "Erdnussbutter",
     en: "Peanut butter",
     category: "pantry",
@@ -2775,6 +2974,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "chocolate-hazelnut-spread",
+    icon: "🍫",
     de: "Nuss-Nougat-Creme",
     en: "Chocolate hazelnut spread",
     category: "pantry",
@@ -2839,6 +3039,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "sauerkraut",
+    icon: "🥬",
     de: "Sauerkraut",
     en: "Sauerkraut",
     category: "pantry",
@@ -2862,6 +3063,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "green-olives",
+    icon: "🫒",
     de: "Grüne Oliven",
     en: "Green olives",
     category: "pantry",
@@ -2871,6 +3073,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "black-olives",
+    icon: "🫒",
     de: "Schwarze Oliven",
     en: "Black olives",
     category: "pantry",
@@ -2887,6 +3090,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "sun-dried-tomatoes",
+    icon: "🍅",
     de: "Getrocknete Tomaten",
     en: "Sun-dried tomatoes",
     category: "pantry",
@@ -2904,6 +3108,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "pickled-peppers",
+    icon: "🫑",
     de: "Peperoni",
     en: "Pickled peppers",
     category: "pantry",
@@ -2912,6 +3117,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "chestnuts",
+    icon: "🌰",
     de: "Maronen",
     en: "Chestnuts",
     category: "pantry",
@@ -2921,6 +3127,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "raisins",
+    icon: "🍇",
     de: "Rosinen",
     en: "Raisins",
     category: "pantry",
@@ -3016,6 +3223,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "penne",
+    icon: "🍝",
     de: "Penne",
     en: "Penne",
     category: "pasta-grains",
@@ -3024,6 +3232,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "fusilli",
+    icon: "🍝",
     de: "Fusilli",
     en: "Fusilli",
     category: "pasta-grains",
@@ -3033,6 +3242,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "farfalle",
+    icon: "🍝",
     de: "Farfalle",
     en: "Farfalle",
     category: "pasta-grains",
@@ -3042,6 +3252,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "rigatoni",
+    icon: "🍝",
     de: "Rigatoni",
     en: "Rigatoni",
     category: "pasta-grains",
@@ -3050,6 +3261,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "tagliatelle",
+    icon: "🍝",
     de: "Tagliatelle",
     en: "Tagliatelle",
     category: "pasta-grains",
@@ -3059,6 +3271,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "macaroni",
+    icon: "🍝",
     de: "Makkaroni",
     en: "Macaroni",
     category: "pasta-grains",
@@ -3068,6 +3281,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "lasagne-sheets",
+    icon: "🍝",
     de: "Lasagneplatten",
     en: "Lasagne sheets",
     category: "pasta-grains",
@@ -3080,6 +3294,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "soup-noodles",
+    icon: "🍜",
     de: "Suppennudeln",
     en: "Soup noodles",
     category: "pasta-grains",
@@ -3089,6 +3304,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "egg-noodles",
+    icon: "🍝",
     de: "Eiernudeln",
     en: "Egg noodles",
     category: "pasta-grains",
@@ -3101,6 +3317,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "spaetzle",
+    icon: "🍝",
     de: "Spätzle",
     en: "Spaetzle",
     category: "pasta-grains",
@@ -3110,6 +3327,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "gnocchi",
+    icon: "🍝",
     de: "Gnocchi",
     en: "Gnocchi",
     category: "pasta-grains",
@@ -3119,6 +3337,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "tortellini",
+    icon: "🍝",
     de: "Tortellini",
     en: "Tortellini",
     category: "pasta-grains",
@@ -3128,6 +3347,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "rice-noodles",
+    icon: "🍜",
     de: "Reisnudeln",
     en: "Rice noodles",
     category: "pasta-grains",
@@ -3137,6 +3357,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "glass-noodles",
+    icon: "🍜",
     de: "Glasnudeln",
     en: "Glass noodles",
     category: "pasta-grains",
@@ -3146,6 +3367,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "udon-noodles",
+    icon: "🍜",
     de: "Udon-Nudeln",
     en: "Udon noodles",
     category: "pasta-grains",
@@ -3155,6 +3377,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "ramen-noodles",
+    icon: "🍜",
     de: "Ramen-Nudeln",
     en: "Ramen noodles",
     category: "pasta-grains",
@@ -3183,6 +3406,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "jasmine-rice",
+    icon: "🍚",
     de: "Jasminreis",
     en: "Jasmine rice",
     category: "pasta-grains",
@@ -3195,6 +3419,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "long-grain-rice",
+    icon: "🍚",
     de: "Langkornreis",
     en: "Long-grain rice",
     category: "pasta-grains",
@@ -3208,6 +3433,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "brown-rice",
+    icon: "🍚",
     de: "Vollkornreis",
     en: "Brown rice",
     category: "pasta-grains",
@@ -3218,6 +3444,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "risotto-rice",
+    icon: "🍚",
     de: "Risottoreis",
     en: "Risotto rice",
     category: "pasta-grains",
@@ -3228,6 +3455,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "pudding-rice",
+    icon: "🍚",
     de: "Milchreis",
     en: "Pudding rice",
     category: "pasta-grains",
@@ -3238,6 +3466,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "sushi-rice",
+    icon: "🍚",
     de: "Sushireis",
     en: "Sushi rice",
     category: "pasta-grains",
@@ -3247,6 +3476,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "couscous",
+    icon: "🌾",
     de: "Couscous",
     en: "Couscous",
     category: "pasta-grains",
@@ -3257,6 +3487,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "bulgur",
+    icon: "🌾",
     de: "Bulgur",
     en: "Bulgur",
     category: "pasta-grains",
@@ -3266,6 +3497,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "quinoa",
+    icon: "🌾",
     de: "Quinoa",
     en: "Quinoa",
     category: "pasta-grains",
@@ -3275,6 +3507,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "polenta",
+    icon: "🌾",
     de: "Polenta",
     en: "Polenta",
     category: "pasta-grains",
@@ -3285,6 +3518,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "semolina",
+    icon: "🌾",
     de: "Grieß",
     en: "Semolina",
     category: "pasta-grains",
@@ -3295,6 +3529,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "pearl-barley",
+    icon: "🌾",
     de: "Gerstengraupen",
     en: "Pearl barley",
     category: "pasta-grains",
@@ -3304,6 +3539,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "rolled-oats",
+    icon: "🥣",
     de: "Haferflocken",
     en: "Rolled oats",
     category: "pasta-grains",
@@ -3314,6 +3550,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "muesli",
+    icon: "🥣",
     de: "Müsli",
     en: "Muesli",
     category: "pasta-grains",
@@ -3323,6 +3560,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "cornflakes",
+    icon: "🥣",
     de: "Cornflakes",
     en: "Cornflakes",
     category: "pasta-grains",
@@ -3332,6 +3570,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "red-lentils",
+    icon: "🫘",
     de: "Rote Linsen",
     en: "Red lentils",
     category: "pasta-grains",
@@ -3341,6 +3580,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "brown-lentils",
+    icon: "🫘",
     de: "Braune Linsen",
     en: "Brown lentils",
     category: "pasta-grains",
@@ -3357,6 +3597,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "dried-chickpeas",
+    icon: "🫘",
     de: "Getrocknete Kichererbsen",
     en: "Dried chickpeas",
     category: "pasta-grains",
@@ -3366,6 +3607,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "split-peas",
+    icon: "🫘",
     de: "Spalterbsen",
     en: "Split peas",
     category: "pasta-grains",
@@ -3385,6 +3627,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   // baking
   {
     key: "wheat-flour",
+    icon: "🌾",
     de: "Weizenmehl",
     en: "Wheat flour",
     category: "baking",
@@ -3401,6 +3644,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "bread-flour",
+    icon: "🌾",
     de: "Weizenmehl Type 550",
     en: "Bread flour",
     category: "baking",
@@ -3411,6 +3655,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "wholemeal-flour",
+    icon: "🌾",
     de: "Vollkornmehl",
     en: "Wholemeal flour",
     category: "baking",
@@ -3421,6 +3666,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "spelt-flour",
+    icon: "🌾",
     de: "Dinkelmehl",
     en: "Spelt flour",
     category: "baking",
@@ -3430,6 +3676,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "rye-flour",
+    icon: "🌾",
     de: "Roggenmehl",
     en: "Rye flour",
     category: "baking",
@@ -3583,6 +3830,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "custard-powder",
+    icon: "🍮",
     de: "Vanillepuddingpulver",
     en: "Vanilla pudding powder",
     category: "baking",
@@ -3598,6 +3846,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "dark-chocolate",
+    icon: "🍫",
     de: "Zartbitterschokolade",
     en: "Dark chocolate",
     category: "baking",
@@ -3616,6 +3865,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "chocolate-chips",
+    icon: "🍫",
     de: "Schokotropfen",
     en: "Chocolate chips",
     category: "baking",
@@ -3625,6 +3875,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "cocoa-powder",
+    icon: "☕",
     de: "Kakaopulver",
     en: "Cocoa powder",
     category: "baking",
@@ -3654,6 +3905,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "desiccated-coconut",
+    icon: "🥥",
     de: "Kokosraspeln",
     en: "Desiccated coconut",
     category: "baking",
@@ -3690,6 +3942,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "breadcrumbs",
+    icon: "🍞",
     de: "Paniermehl",
     en: "Breadcrumbs",
     category: "baking",
@@ -3703,6 +3956,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "panko",
+    icon: "🍞",
     de: "Pankomehl",
     en: "Panko",
     category: "baking",
@@ -3712,6 +3966,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "condensed-milk",
+    icon: "🥛",
     de: "Gezuckerte Kondensmilch",
     en: "Sweetened condensed milk",
     category: "baking",
@@ -3773,6 +4028,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "chili-powder",
+    icon: "🌶️",
     de: "Chilipulver",
     en: "Chili powder",
     category: "spices",
@@ -3782,6 +4038,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "chili-flakes",
+    icon: "🌶️",
     de: "Chiliflocken",
     en: "Chili flakes",
     category: "spices",
@@ -3790,6 +4047,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "cayenne",
+    icon: "🌶️",
     de: "Cayennepfeffer",
     en: "Cayenne pepper",
     category: "spices",
@@ -3926,6 +4184,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "dried-oregano",
+    icon: "🌿",
     de: "Oregano",
     en: "Oregano",
     category: "spices",
@@ -3935,6 +4194,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "dried-thyme",
+    icon: "🌿",
     de: "Thymian getrocknet",
     en: "Dried thyme",
     category: "spices",
@@ -3943,6 +4203,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "dried-rosemary",
+    icon: "🌿",
     de: "Rosmarin getrocknet",
     en: "Dried rosemary",
     category: "spices",
@@ -3951,6 +4212,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "marjoram",
+    icon: "🌿",
     de: "Majoran",
     en: "Marjoram",
     category: "spices",
@@ -3960,6 +4222,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "dried-basil",
+    icon: "🌿",
     de: "Basilikum getrocknet",
     en: "Dried basil",
     category: "spices",
@@ -3968,6 +4231,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "italian-herbs",
+    icon: "🌿",
     de: "Italienische Kräuter",
     en: "Italian herbs",
     category: "spices",
@@ -3982,6 +4246,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "dried-parsley",
+    icon: "🌿",
     de: "Petersilie getrocknet",
     en: "Dried parsley",
     category: "spices",
@@ -3990,6 +4255,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "savory",
+    icon: "🌿",
     de: "Bohnenkraut",
     en: "Savory",
     category: "spices",
@@ -4167,6 +4433,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "sambal-oelek",
+    icon: "🌶️",
     de: "Sambal Oelek",
     en: "Sambal oelek",
     category: "spices",
@@ -4176,6 +4443,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "sriracha",
+    icon: "🌶️",
     de: "Sriracha",
     en: "Sriracha",
     category: "spices",
@@ -4202,6 +4470,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "harissa",
+    icon: "🌶️",
     de: "Harissa",
     en: "Harissa",
     category: "spices",
@@ -4210,6 +4479,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "gochujang",
+    icon: "🌶️",
     de: "Gochujang",
     en: "Gochujang",
     category: "spices",
@@ -4358,6 +4628,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "white-chocolate",
+    icon: "🍫",
     de: "Weiße Schokolade",
     en: "White chocolate",
     category: "snacks",
@@ -4374,6 +4645,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "cookies",
+    icon: "🍪",
     de: "Kekse",
     en: "Cookies",
     category: "snacks",
@@ -4398,6 +4670,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "pretzel-sticks",
+    icon: "🥨",
     de: "Salzstangen",
     en: "Pretzel sticks",
     category: "snacks",
@@ -4438,6 +4711,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "popcorn",
+    icon: "🍿",
     de: "Popcorn",
     en: "Popcorn",
     category: "snacks",
@@ -4454,6 +4728,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "pudding",
+    icon: "🍮",
     de: "Pudding",
     en: "Pudding",
     category: "snacks",
@@ -4474,6 +4749,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "sparkling-water",
+    icon: "💧",
     de: "Sprudelwasser",
     en: "Sparkling water",
     category: "drinks",
@@ -4483,6 +4759,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "apple-juice",
+    icon: "🧃",
     de: "Apfelsaft",
     en: "Apple juice",
     category: "drinks",
@@ -4493,6 +4770,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "orange-juice",
+    icon: "🧃",
     de: "Orangensaft",
     en: "Orange juice",
     category: "drinks",
@@ -4503,6 +4781,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "tomato-juice",
+    icon: "🍅",
     de: "Tomatensaft",
     en: "Tomato juice",
     category: "drinks",
@@ -4511,6 +4790,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "apple-spritzer",
+    icon: "🧃",
     de: "Apfelschorle",
     en: "Apple spritzer",
     category: "drinks",
@@ -4520,6 +4800,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "cola",
+    icon: "🥤",
     de: "Cola",
     en: "Cola",
     category: "drinks",
@@ -4530,6 +4811,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "lemonade",
+    icon: "🥤",
     de: "Limonade",
     en: "Lemonade",
     category: "drinks",
@@ -4539,6 +4821,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "iced-tea",
+    icon: "🫖",
     de: "Eistee",
     en: "Iced tea",
     category: "drinks",
@@ -4560,6 +4843,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "ground-coffee",
+    icon: "☕",
     de: "Filterkaffee",
     en: "Ground coffee",
     category: "drinks",
@@ -4569,6 +4853,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "instant-coffee",
+    icon: "☕",
     de: "Instantkaffee",
     en: "Instant coffee",
     category: "drinks",
@@ -4577,6 +4862,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "black-tea",
+    icon: "🫖",
     de: "Schwarztee",
     en: "Black tea",
     category: "drinks",
@@ -4585,6 +4871,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "green-tea",
+    icon: "🫖",
     de: "Grüner Tee",
     en: "Green tea",
     category: "drinks",
@@ -4593,6 +4880,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "herbal-tea",
+    icon: "🫖",
     de: "Kräutertee",
     en: "Herbal tea",
     category: "drinks",
@@ -4607,6 +4895,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "hot-chocolate",
+    icon: "☕",
     de: "Trinkschokolade",
     en: "Hot chocolate powder",
     category: "drinks",
@@ -4646,6 +4935,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "sparkling-wine",
+    icon: "🥂",
     de: "Sekt",
     en: "Sparkling wine",
     category: "drinks",
@@ -4655,6 +4945,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "rum",
+    icon: "🥃",
     de: "Rum",
     en: "Rum",
     category: "drinks",
@@ -4664,6 +4955,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "tonic-water",
+    icon: "🥤",
     de: "Tonic Water",
     en: "Tonic water",
     category: "drinks",
@@ -4683,6 +4975,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "paper-towels",
+    icon: "🧻",
     de: "Küchenrolle",
     en: "Paper towels",
     category: "household",
@@ -4691,6 +4984,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "tissues",
+    icon: "🧻",
     de: "Taschentücher",
     en: "Tissues",
     category: "household",
@@ -4699,6 +4993,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "paper-napkins",
+    icon: "🧻",
     de: "Papierservietten",
     en: "Paper napkins",
     category: "household",
@@ -4707,6 +5002,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "dish-soap",
+    icon: "🧼",
     de: "Spülmittel",
     en: "Dish soap",
     category: "household",
@@ -4723,6 +5019,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "dishwasher-salt",
+    icon: "🧂",
     de: "Spülmaschinensalz",
     en: "Dishwasher salt",
     category: "household",
@@ -4785,6 +5082,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "laundry-detergent",
+    icon: "🧴",
     de: "Waschmittel",
     en: "Laundry detergent",
     category: "household",
@@ -4793,6 +5091,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "fabric-softener",
+    icon: "🧴",
     de: "Weichspüler",
     en: "Fabric softener",
     category: "household",
@@ -4800,6 +5099,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "all-purpose-cleaner",
+    icon: "🧴",
     de: "Allzweckreiniger",
     en: "All-purpose cleaner",
     category: "household",
@@ -4808,6 +5108,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "toilet-cleaner",
+    icon: "🧴",
     de: "WC-Reiniger",
     en: "Toilet cleaner",
     category: "household",
@@ -4816,6 +5117,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "descaler",
+    icon: "🧴",
     de: "Entkalker",
     en: "Descaler",
     category: "household",
@@ -4823,6 +5125,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "sponges",
+    icon: "🧽",
     de: "Spülschwämme",
     en: "Sponges",
     category: "household",
@@ -4831,6 +5134,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "cleaning-cloths",
+    icon: "🧽",
     de: "Putztücher",
     en: "Cleaning cloths",
     category: "household",
@@ -4839,6 +5143,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "hand-soap",
+    icon: "🧼",
     de: "Handseife",
     en: "Hand soap",
     category: "household",
@@ -4847,6 +5152,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "shower-gel",
+    icon: "🧴",
     de: "Duschgel",
     en: "Shower gel",
     category: "household",
@@ -4854,6 +5160,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "shampoo",
+    icon: "🧴",
     de: "Shampoo",
     en: "Shampoo",
     category: "household",
@@ -4862,6 +5169,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "toothpaste",
+    icon: "🪥",
     de: "Zahnpasta",
     en: "Toothpaste",
     category: "household",
@@ -4870,6 +5178,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "toothbrush",
+    icon: "🪥",
     de: "Zahnbürste",
     en: "Toothbrush",
     category: "household",
@@ -4877,6 +5186,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "deodorant",
+    icon: "🧴",
     de: "Deo",
     en: "Deodorant",
     category: "household",
@@ -4909,6 +5219,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "wet-wipes",
+    icon: "🧻",
     de: "Feuchttücher",
     en: "Wet wipes",
     category: "household",
@@ -4917,6 +5228,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "batteries",
+    icon: "🔋",
     de: "Batterien",
     en: "Batteries",
     category: "household",
@@ -4925,6 +5237,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "candles",
+    icon: "🕯️",
     de: "Kerzen",
     en: "Candles",
     category: "household",
@@ -4941,6 +5254,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "plasters",
+    icon: "🩹",
     de: "Pflaster",
     en: "Plasters",
     category: "household",
@@ -4967,6 +5281,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "falafel",
+    icon: "🧆",
     de: "Falafel",
     en: "Falafel",
     category: "other",
@@ -4975,6 +5290,7 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   },
   {
     key: "vegetarian-sausages",
+    icon: "🌭",
     de: "Vegetarische Würstchen",
     en: "Vegetarian sausages",
     category: "other",

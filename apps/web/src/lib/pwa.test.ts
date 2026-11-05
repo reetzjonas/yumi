@@ -1,7 +1,24 @@
 import { describe, expect, test } from "bun:test";
+import { PICTOGRAMS, pictogramFile } from "@yumi/shared";
 import { pwaOptions } from "../../pwa.config";
 
 describe("PWA configuration", () => {
+  test("every supported pictogram is shipped and matched by the precache globs", async () => {
+    for (const { emoji } of PICTOGRAMS) {
+      const path = `pictograms/${pictogramFile(emoji)}`;
+      expect(
+        pwaOptions.workbox.globPatterns.some((pattern) =>
+          new Bun.Glob(pattern).match(path),
+        ),
+      ).toBe(true);
+      expect(
+        await Bun.file(
+          new URL(`../../public/${path}`, import.meta.url),
+        ).exists(),
+      ).toBe(true);
+    }
+  });
+
   test("manifest supports standalone installation with distinct maskable icons", () => {
     expect(pwaOptions.manifest.name).toBe("yumi");
     expect(pwaOptions.manifest.display).toBe("standalone");

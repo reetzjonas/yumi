@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { EmptyState } from "@/components/page";
 import { ItemForm } from "@/components/shopping/item-form";
 import { Button } from "@/components/ui/button";
+import { Pictogram } from "@/components/ui/pictogram";
 import { Sheet } from "@/components/ui/sheet";
 import { errorMessage } from "@/lib/api-error";
 import { formatQuantity, ingredientName } from "@/lib/recipes";
@@ -73,6 +74,8 @@ function ShoppingRow({
   recipes,
   disabled,
   error,
+  icon,
+  fallback,
   onToggle,
   onEdit,
   onRemove,
@@ -82,6 +85,8 @@ function ShoppingRow({
   recipes: ShoppingList["recipes"];
   disabled: boolean;
   error?: string;
+  icon?: string | null;
+  fallback?: string | null;
   onToggle: () => void;
   onEdit: () => void;
   onRemove: () => void;
@@ -184,6 +189,7 @@ function ShoppingRow({
           <span className="list-item-box" aria-hidden="true">
             {checked && <Check size={18} strokeWidth={3} />}
           </span>
+          <Pictogram icon={icon} fallback={fallback} size={32} />
           <span className="list-item-body">
             <span className="list-item-title">
               <span className="shopping-name">{row.label}</span>
@@ -413,6 +419,12 @@ export function ShoppingItems({
       checked={row.checked || settlingKeys.has(row.key)}
       recipes={list.recipes}
       disabled={events.isPending}
+      icon={
+        list.items.find((item) => item.id === row.itemIds[0])?.ingredient?.icon
+      }
+      fallback={
+        categories.find((category) => category.id === row.categoryId)?.icon
+      }
       error={
         actionRow === row.key && events.isError
           ? errorMessage(events.error)

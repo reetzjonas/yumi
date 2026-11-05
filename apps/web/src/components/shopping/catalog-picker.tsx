@@ -2,11 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useId, useState } from "react";
 import { Field } from "@/components/auth-layout";
 import { Button } from "@/components/ui/button";
+import { Pictogram } from "@/components/ui/pictogram";
 import { api } from "@/lib/api";
 import { ensureOk, errorMessage } from "@/lib/api-error";
 import { ingredientName } from "@/lib/recipes";
 import { useMe } from "@/lib/session";
-import type { CatalogIngredient } from "@/lib/shopping";
+import { type CatalogIngredient, useShoppingCategories } from "@/lib/shopping";
 import { m } from "@/paraglide/messages";
 
 export function CatalogPicker({
@@ -16,6 +17,7 @@ export function CatalogPicker({
 }) {
   const id = useId();
   const householdId = useMe()?.activeHouseholdId;
+  const categories = useShoppingCategories();
   const [search, setSearch] = useState("");
   const q = search.trim();
   const results = useQuery({
@@ -58,7 +60,14 @@ export function CatalogPicker({
                   setSearch("");
                 }}
               >
-                {ingredient.icon && `${ingredient.icon} `}
+                <Pictogram
+                  icon={ingredient.icon}
+                  fallback={
+                    categories.data?.find(
+                      (category) => category.id === ingredient.categoryId,
+                    )?.icon
+                  }
+                />
                 {ingredientName(ingredient)}
               </Button>
             </li>

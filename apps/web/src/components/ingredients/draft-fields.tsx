@@ -5,6 +5,7 @@ import { Field } from "@/components/auth-layout";
 import type { IngredientDraft } from "@/components/ingredients/create-ingredient";
 import { NUTRIENTS } from "@/components/recipes/recipe-nutrition";
 import { Button } from "@/components/ui/button";
+import { PictogramPicker } from "@/components/ui/pictogram-picker";
 import type { api } from "@/lib/api";
 import { ingredientName, unitLabel } from "@/lib/recipes";
 import { m } from "@/paraglide/messages";
@@ -21,6 +22,7 @@ export function IngredientDraftFields({
   const [packs, setPacks] = useState(
     draft.packSizes.map((pack) => ({ ...pack, key: crypto.randomUUID() })),
   );
+  const [categoryId, setCategoryId] = useState(draft.categoryId ?? "");
   return (
     <>
       <div className="ingredient-name-fields">
@@ -56,7 +58,8 @@ export function IngredientDraftFields({
         <select
           id={`${id}-category`}
           name="categoryId"
-          defaultValue={draft.categoryId ?? ""}
+          value={categoryId}
+          onChange={(event) => setCategoryId(event.target.value)}
         >
           <option value="">{m["ingredients.no_category"]()}</option>
           {categories.map((category) => (
@@ -81,12 +84,11 @@ export function IngredientDraftFields({
           ))}
         </select>
       </div>
-      <Field
-        id={`${id}-icon`}
-        name="icon"
-        label={m["ingredients.icon"]()}
+      <PictogramPicker
         defaultValue={draft.icon ?? ""}
-        maxLength={16}
+        fallback={
+          categories.find((category) => category.id === categoryId)?.icon
+        }
       />
       <div className="ingredient-pack-sizes">
         <h3>{m["ingredients.pack_sizes"]()}</h3>

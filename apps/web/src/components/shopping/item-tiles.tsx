@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Pictogram } from "@/components/ui/pictogram";
 import { api } from "@/lib/api";
 import { ensureOk, errorMessage } from "@/lib/api-error";
 import { ingredientName } from "@/lib/recipes";
@@ -17,6 +18,7 @@ type TileItem = {
   key: string;
   label: string;
   icon: string | null;
+  fallback: string | null;
   ingredientId: string | null;
   categoryId: string | null;
 };
@@ -57,9 +59,7 @@ function Tiles({
                 ])
               }
             >
-              <span className="item-tile-icon" aria-hidden="true">
-                {item.icon ?? "🛒"}
-              </span>
+              <Pictogram icon={item.icon} fallback={item.fallback} size={36} />
               <span className="item-tile-label">{item.label}</span>
               {onList && (
                 <span className="sr-only">{m["shopping.on_list"]()}</span>
@@ -119,13 +119,12 @@ export function ItemTiles({
               label: item.ingredient
                 ? ingredientName(item.ingredient)
                 : item.label,
-              icon:
-                item.ingredient?.icon ??
+              icon: item.ingredient?.icon ?? null,
+              fallback:
                 categories.find(
                   (c) =>
                     c.id === (item.ingredient?.categoryId ?? item.categoryId),
-                )?.icon ??
-                null,
+                )?.icon ?? null,
               ingredientId: item.ingredient?.id ?? null,
               categoryId: item.ingredient?.categoryId ?? item.categoryId,
             }))}
@@ -147,7 +146,8 @@ export function ItemTiles({
                   .map((ingredient) => ({
                     key: ingredient.id,
                     label: ingredientName(ingredient),
-                    icon: ingredient.icon ?? category.icon,
+                    icon: ingredient.icon,
+                    fallback: category.icon,
                     ingredientId: ingredient.id,
                     categoryId: ingredient.categoryId,
                   }))
@@ -164,9 +164,7 @@ export function ItemTiles({
                   className="item-tile"
                   onClick={() => setCategoryId(c.id)}
                 >
-                  <span className="item-tile-icon" aria-hidden="true">
-                    {c.icon ?? "🛒"}
-                  </span>
+                  <Pictogram icon={c.icon} size={36} />
                   <span className="item-tile-label">{ingredientName(c)}</span>
                 </button>
               </li>

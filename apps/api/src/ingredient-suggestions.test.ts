@@ -28,7 +28,7 @@ const suggestion = {
   pieceWeightG: null,
   nutritionPer100g: nutrition,
   packSizes: [{ quantity: 100, unit: "ml" }],
-  icon: null,
+  icon: "🍋",
 };
 
 test("AI ingredient proposals map categories and never save before confirmation", async () => {
@@ -87,7 +87,7 @@ test.each(["disabled", "invalid-output", "provider-error"])(
         : completion(
             "ollama",
             model,
-            JSON.stringify({ ...suggestion, defaultUnit: "bogus" }),
+            JSON.stringify({ ...suggestion, icon: "unsupported" }),
           ),
     );
     const ai = mode === "disabled" ? createAi(readAiConfig({})) : server.client;
@@ -96,7 +96,11 @@ test.each(["disabled", "invalid-output", "provider-error"])(
 
     expect(result).toEqual({
       method: "manual",
-      draft: ingredientInputSchema.parse({ nameDe: "Yuzu", nameEn: "Yuzu" }),
+      draft: ingredientInputSchema.parse({
+        nameDe: "Yuzu",
+        nameEn: "Yuzu",
+        icon: null,
+      }),
     });
     if (mode === "disabled") expect(server.requests()).toBe(0);
   },

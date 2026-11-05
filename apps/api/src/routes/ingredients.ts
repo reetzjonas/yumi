@@ -100,36 +100,44 @@ export const ingredients = new Hono<HouseholdEnv>()
     async (c) => {
       const input = c.req.valid("json");
       await assertCategoryExists(input.categoryId);
+      const icon =
+        input.icon === undefined
+          ? ((await suggestIngredient(input.nameDe)).draft.icon ?? null)
+          : input.icon;
       const [row] = await db
         .insert(ingredient)
-        .values({ ...input, householdId: c.get("householdId") })
+        .values({ ...input, icon, householdId: c.get("householdId") })
         .returning(ingredientColumns);
       return c.json(row, 201);
     },
   )
-  .put("/:id{[0-9a-f-]{36}}", async (c) => {
-    const input = ingredientInputSchema.parse(await c.req.json());
-    await assertCategoryExists(input.categoryId);
-    const [row] = await db
-      .update(ingredient)
-      .set({
-        ...input,
-        nutritionSource: sql`case
+  .put(
+    "/:id{[0-9a-f-]{36}}",
+    validator("json", (value) => ingredientInputSchema.parse(value)),
+    async (c) => {
+      const input = c.req.valid("json");
+      await assertCategoryExists(input.categoryId);
+      const [row] = await db
+        .update(ingredient)
+        .set({
+          ...input,
+          nutritionSource: sql`case
           when ${ingredient.nutritionPer100g} is distinct from
             ${input.nutritionPer100g === null ? null : JSON.stringify(input.nutritionPer100g)}::jsonb
           then null else ${ingredient.nutritionSource}
         end`,
-      })
-      .where(
-        and(
-          eq(ingredient.id, c.req.param("id")),
-          eq(ingredient.householdId, c.get("householdId")),
-        ),
-      )
-      .returning(ingredientColumns);
-    if (!row) throw new HTTPException(404, { message: "not_found" });
-    return c.json(row);
-  })
+        })
+        .where(
+          and(
+            eq(ingredient.id, c.req.param("id")),
+            eq(ingredient.householdId, c.get("householdId")),
+          ),
+        )
+        .returning(ingredientColumns);
+      if (!row) throw new HTTPException(404, { message: "not_found" });
+      return c.json(row);
+    },
+  )
   .delete("/:id{[0-9a-f-]{36}}", async (c) => {
     const deleted = await db
       .delete(ingredient)

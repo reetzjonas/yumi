@@ -8,11 +8,16 @@ import {
   CreateIngredient,
 } from "@/components/ingredients/create-ingredient";
 import { Button } from "@/components/ui/button";
+import { Pictogram } from "@/components/ui/pictogram";
 import { api } from "@/lib/api";
 import { ensureOk, errorMessage } from "@/lib/api-error";
 import { ingredientName } from "@/lib/recipes";
 import { useMe } from "@/lib/session";
-import { addItemEvent, useShoppingEvents } from "@/lib/shopping";
+import {
+  addItemEvent,
+  useShoppingCategories,
+  useShoppingEvents,
+} from "@/lib/shopping";
 import { m } from "@/paraglide/messages";
 
 export function QuickAdd({
@@ -25,6 +30,7 @@ export function QuickAdd({
   const id = useId();
   const householdId = useMe()?.activeHouseholdId;
   const events = useShoppingEvents(listId);
+  const categories = useShoppingCategories();
   const [text, setText] = useState("");
   const [created, setCreated] = useState<CreatedIngredient | null>(null);
   const parsed = parseIngredientLine(text);
@@ -114,7 +120,7 @@ export function QuickAdd({
           }}
         />
         <Button
-          variant="outline"
+          variant={text.trim() ? "default" : "outline"}
           className="icon-action"
           aria-label={m["shopping.add"]()}
           disabled={busy || !text.trim()}
@@ -177,7 +183,14 @@ export function QuickAdd({
                   )
                 }
               >
-                {ingredient.icon && `${ingredient.icon} `}
+                <Pictogram
+                  icon={ingredient.icon}
+                  fallback={
+                    categories.data?.find(
+                      (category) => category.id === ingredient.categoryId,
+                    )?.icon
+                  }
+                />
                 {ingredientName(ingredient)}
               </Button>
             </li>

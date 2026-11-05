@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
-import { nutritionValuesSchema } from "@yumi/shared";
+import { nutritionValuesSchema, pictogramFile } from "@yumi/shared";
+import { SEED_CATEGORIES } from "./categories";
 import { SEED_INGREDIENTS } from "./ingredients";
 import { SEED_NUTRITION } from "./nutrition";
 
@@ -42,5 +43,13 @@ test("conversion factors are positive", () => {
       (i.densityGPerMl !== undefined && i.densityGPerMl <= 0) ||
       (i.pieceWeightG !== undefined && i.pieceWeightG <= 0),
   ).map((i) => i.key);
+  expect(invalid).toEqual([]);
+});
+
+test("all seed ingredient and category icons have bundled pictograms", () => {
+  const invalid = [
+    ...SEED_INGREDIENTS,
+    ...Object.values(SEED_CATEGORIES),
+  ].filter((entry) => entry.icon && !pictogramFile(entry.icon));
   expect(invalid).toEqual([]);
 });
