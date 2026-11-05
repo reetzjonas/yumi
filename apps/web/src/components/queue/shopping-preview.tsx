@@ -43,7 +43,7 @@ function PreviewItems({
                     (source.kind === "recipe" && source.id === entry.recipeId),
                 ),
               )
-              .map((entry) => entry.recipe.title)
+              .map((entry) => entry.title)
               .filter((title, index, titles) => titles.indexOf(title) === index)
               .join(" · ")}
           </span>

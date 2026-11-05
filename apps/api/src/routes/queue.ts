@@ -4,7 +4,7 @@ import {
   queueEntryUpdateSchema,
   queueOrderSchema,
 } from "@yumi/shared";
-import { and, asc, eq, max } from "drizzle-orm";
+import { and, asc, eq, max, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { validator } from "hono/validator";
@@ -38,6 +38,8 @@ export const queue = new Hono<HouseholdEnv>()
         .select({
           id: mealQueueEntry.id,
           recipeId: mealQueueEntry.recipeId,
+          title: sql<string>`coalesce(${mealQueueEntry.title}, ${recipe.title})`,
+          note: mealQueueEntry.note,
           servings: mealQueueEntry.servings,
           position: mealQueueEntry.position,
           plannedFor: mealQueueEntry.plannedFor,
@@ -52,7 +54,7 @@ export const queue = new Hono<HouseholdEnv>()
           },
         })
         .from(mealQueueEntry)
-        .innerJoin(
+        .leftJoin(
           recipe,
           and(
             eq(recipe.id, mealQueueEntry.recipeId),
@@ -71,16 +73,19 @@ export const queue = new Hono<HouseholdEnv>()
       const input = c.req.valid("json");
       const row = await db.transaction(async (tx) => {
         await lockQueue(tx, householdId);
-        const [owned] = await tx
-          .select({ id: recipe.id })
-          .from(recipe)
-          .where(
-            and(
-              eq(recipe.id, input.recipeId),
-              eq(recipe.householdId, householdId),
-            ),
-          );
-        if (!owned) throw new HTTPException(404, { message: "not_found" });
+        const [owned] = input.recipeId
+          ? await tx
+              .select({ id: recipe.id })
+              .from(recipe)
+              .where(
+                and(
+                  eq(recipe.id, input.recipeId),
+                  eq(recipe.householdId, householdId),
+                ),
+              )
+          : [];
+        if (input.recipeId && !owned)
+          throw new HTTPException(404, { message: "not_found" });
         const [last] = await tx
           .select({ position: max(mealQueueEntry.position) })
           .from(mealQueueEntry)
@@ -89,6 +94,8 @@ export const queue = new Hono<HouseholdEnv>()
           .insert(mealQueueEntry)
           .values({
             ...input,
+            recipeId: input.recipeId ?? null,
+            title: input.title ?? null,
             householdId,
             position: (last?.position ?? -1) + 1,
           })
@@ -132,14 +139,26 @@ export const queue = new Hono<HouseholdEnv>()
       const input = c.req.valid("json");
       const row = await db.transaction(async (tx) => {
         await lockQueue(tx, householdId);
+        if (input.title !== undefined) {
+          const [entry] = await tx
+            .select({ recipeId: mealQueueEntry.recipeId })
+            .from(mealQueueEntry)
+            .where(and(queued(householdId), eq(mealQueueEntry.id, id)));
+          if (!entry) throw new HTTPException(404, { message: "not_found" });
+          if (entry.recipeId)
+            throw new HTTPException(400, { message: "invalid_input" });
+        }
         const [updated] = await tx
           .update(mealQueueEntry)
           .set(input)
           .where(and(queued(householdId), eq(mealQueueEntry.id, id)))
           .returning();
         if (!updated) throw new HTTPException(404, { message: "not_found" });
-        if (input.status === "cooked") {
-          await consumeLeftovers(tx, householdId, updated);
+        if (input.status === "cooked" && updated.recipeId) {
+          await consumeLeftovers(tx, householdId, {
+            ...updated,
+            recipeId: updated.recipeId,
+          });
           await tx.insert(cookLog).values({
             householdId,
             recipeId: updated.recipeId,

@@ -140,7 +140,8 @@ export async function importHousehold(
         ...dates(record),
         id: mapped("queue", record.id),
         householdId,
-        recipeId: mapped("recipes", record.recipeId),
+        recipeId:
+          record.recipeId === null ? null : mapped("recipes", record.recipeId),
         position: position++,
       });
     for (const record of archive.recurring) {

@@ -40,14 +40,19 @@ export function MealQueueEntry({
   const id = useId();
   const sheet = useRef<HTMLDialogElement>(null);
   const [plannedFor, setPlannedFor] = useState(entry.plannedFor ?? "");
+  const [title, setTitle] = useState(entry.title);
+  const [note, setNote] = useState(entry.note ?? "");
   const [confirmRemove, setConfirmRemove] = useState(false);
   const [removeItems, setRemoveItems] = useState(false);
-  const minutes = totalMinutes(entry.recipe);
-  const name = entry.recipe.title;
+  const recipe = entry.recipe;
+  const minutes = recipe ? totalMinutes(recipe) : 0;
+  const name = entry.title;
   const meta = [
-    entry.servings === 1
-      ? m["queue.servings_one"]()
-      : m["queue.servings_count"]({ count: entry.servings }),
+    !recipe
+      ? m["queue.without_recipe"]()
+      : entry.servings === 1
+        ? m["queue.servings_one"]()
+        : m["queue.servings_count"]({ count: entry.servings }),
     entry.plannedFor
       ? formatDate(new Date(`${entry.plannedFor}T00:00:00`), {
           weekday: "short",
@@ -87,10 +92,10 @@ export function MealQueueEntry({
       >
         {index + 1}
       </button>
-      {entry.recipe.imageKey ? (
+      {recipe?.imageKey ? (
         <img
           className="queue-thumb"
-          src={recipeImageUrl(entry.recipeId, entry.recipe.imageKey, "thumb")}
+          src={recipeImageUrl(recipe.id, recipe.imageKey, "thumb")}
           alt=""
           width={56}
           height={56}
@@ -100,22 +105,29 @@ export function MealQueueEntry({
         <span className="queue-thumb is-empty" />
       )}
       <div className="queue-body">
-        <Link
-          className="queue-title"
-          to="/recipes/$id"
-          params={{ id: entry.recipeId }}
-        >
-          {name}
-        </Link>
+        {recipe ? (
+          <Link
+            className="queue-title"
+            to="/recipes/$id"
+            params={{ id: recipe.id }}
+          >
+            {name}
+          </Link>
+        ) : (
+          <span className="queue-title">{name}</span>
+        )}
         <p className="meta">{meta}</p>
+        {entry.note && <p className="meta queue-note">{entry.note}</p>}
         <div className="queue-controls">
-          <ServingsStepper
-            value={entry.servings}
-            compact
-            disabled={disabled}
-            label={m["queue.servings_for"]({ name })}
-            onChange={(servings) => onUpdate({ servings })}
-          />
+          {recipe && (
+            <ServingsStepper
+              value={entry.servings}
+              compact
+              disabled={disabled}
+              label={m["queue.servings_for"]({ name })}
+              onChange={(servings) => onUpdate({ servings })}
+            />
+          )}
           <Button
             type="button"
             variant="ghost"
@@ -149,23 +161,29 @@ export function MealQueueEntry({
           </Button>
         </div>
         <div className="queue-actions">
-          <Button asChild variant="outline">
-            <Link
-              to="/cook/$id"
-              params={{ id: entry.recipeId }}
-              search={{ servings: entry.servings }}
-            >
-              {m["recipes.cook_action"]()}
-            </Link>
-          </Button>
+          {recipe && (
+            <Button asChild variant="outline">
+              <Link
+                to="/cook/$id"
+                params={{ id: recipe.id }}
+                search={{ servings: entry.servings }}
+              >
+                {m["recipes.cook_action"]()}
+              </Link>
+            </Button>
+          )}
           <Button
             type="button"
             variant="ghost"
             disabled={disabled}
-            aria-label={m["queue.mark_cooked"]({ name })}
+            aria-label={
+              recipe
+                ? m["queue.mark_cooked"]({ name })
+                : m["queue.mark_done"]({ name })
+            }
             onClick={() => onUpdate({ status: "cooked" })}
           >
-            {m["queue.cooked"]()}
+            {recipe ? m["queue.cooked"]() : m["queue.done"]()}
           </Button>
           <Button
             type="button"
@@ -191,24 +209,54 @@ export function MealQueueEntry({
           setConfirmRemove(false);
           setRemoveItems(false);
           setPlannedFor(entry.plannedFor ?? "");
+          setTitle(entry.title);
+          setNote(entry.note ?? "");
         }}
       >
-        <div className="sheet-row">
-          <span className="field-label">{m["recipes.servings"]()}</span>
-          <ServingsStepper
-            value={entry.servings}
-            compact
-            disabled={disabled}
-            onChange={(servings) => onUpdate({ servings })}
-          />
-        </div>
+        {recipe && (
+          <div className="sheet-row">
+            <span className="field-label">{m["recipes.servings"]()}</span>
+            <ServingsStepper
+              value={entry.servings}
+              compact
+              disabled={disabled}
+              onChange={(servings) => onUpdate({ servings })}
+            />
+          </div>
+        )}
         <form
-          className="queue-entry-form"
+          className="queue-entry-form recipe-form"
           onSubmit={(event) => {
             event.preventDefault();
-            onUpdate({ plannedFor: plannedFor || null });
+            onUpdate({
+              plannedFor: plannedFor || null,
+              note: note.trim() || null,
+              ...(!recipe && { title: title.trim() }),
+            });
           }}
         >
+          {!recipe && (
+            <Field
+              id={`${id}-title`}
+              label={m["queue.meal_title"]()}
+              required
+              maxLength={200}
+              value={title}
+              disabled={disabled}
+              onChange={(event) => setTitle(event.target.value)}
+            />
+          )}
+          <div className="field">
+            <label htmlFor={`${id}-note`}>{m["queue.meal_note"]()}</label>
+            <textarea
+              id={`${id}-note`}
+              rows={3}
+              maxLength={2000}
+              value={note}
+              disabled={disabled}
+              onChange={(event) => setNote(event.target.value)}
+            />
+          </div>
           <Field
             id={`${id}-date`}
             label={m["queue.planned_for"]()}
@@ -220,7 +268,12 @@ export function MealQueueEntry({
           <Button
             type="submit"
             variant="outline"
-            disabled={disabled || (plannedFor || null) === entry.plannedFor}
+            disabled={
+              disabled ||
+              ((plannedFor || null) === entry.plannedFor &&
+                title === entry.title &&
+                (note || null) === entry.note)
+            }
           >
             {m["queue.save"]()}
           </Button>
@@ -233,16 +286,20 @@ export function MealQueueEntry({
             <h3 id={`${id}-remove-title`}>
               {m["queue.remove_confirm"]({ name })}
             </h3>
-            <p>{m["queue.remove_hint"]()}</p>
-            <label className="queue-checkbox">
-              <input
-                type="checkbox"
-                checked={removeItems}
-                disabled={disabled}
-                onChange={(event) => setRemoveItems(event.target.checked)}
-              />
-              <span>{m["queue.remove_items"]()}</span>
-            </label>
+            {recipe && (
+              <>
+                <p>{m["queue.remove_hint"]()}</p>
+                <label className="queue-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={removeItems}
+                    disabled={disabled}
+                    onChange={(event) => setRemoveItems(event.target.checked)}
+                  />
+                  <span>{m["queue.remove_items"]()}</span>
+                </label>
+              </>
+            )}
             <div className="recipe-actions">
               <Button
                 type="button"

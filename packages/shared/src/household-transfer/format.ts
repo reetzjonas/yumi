@@ -126,13 +126,17 @@ export const householdTransferDataSchema = z.strictObject({
     }),
   ),
   queue: rows(
-    row.extend({
-      recipeId: id,
-      servings: positiveInteger,
-      position: integer,
-      plannedFor: z.iso.date().nullable(),
-      status: z.enum(["queued", "cooked", "skipped"]),
-    }),
+    row
+      .extend({
+        recipeId: id.nullable(),
+        title: z.string().trim().min(1).max(200).nullable().optional(),
+        note: z.string().trim().max(2000).nullable().optional(),
+        servings: positiveInteger,
+        position: integer,
+        plannedFor: z.iso.date().nullable(),
+        status: z.enum(["queued", "cooked", "skipped"]),
+      })
+      .refine((value) => Boolean(value.recipeId) !== Boolean(value.title)),
   ),
   pantry: rows(row.extend({ ingredientId: id })),
   recurring: rows(

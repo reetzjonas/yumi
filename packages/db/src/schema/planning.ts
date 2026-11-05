@@ -1,4 +1,6 @@
+import { sql } from "drizzle-orm";
 import {
+  check,
   date,
   index,
   integer,
@@ -23,9 +25,9 @@ export const mealQueueEntry = pgTable(
   {
     id: id(),
     householdId: householdId(),
-    recipeId: uuid()
-      .notNull()
-      .references(() => recipe.id, { onDelete: "cascade" }),
+    recipeId: uuid().references(() => recipe.id, { onDelete: "cascade" }),
+    title: text(),
+    note: text(),
     servings: integer().notNull(),
     position: integer().notNull(),
     plannedFor: date(),
@@ -35,6 +37,11 @@ export const mealQueueEntry = pgTable(
   (t) => [
     index("meal_queue_household_idx").on(t.householdId, t.status),
     index("meal_queue_recipe_idx").on(t.recipeId),
+    check(
+      "meal_queue_meal_identity",
+      sql`(${t.recipeId} IS NOT NULL AND ${t.title} IS NULL) OR
+        (${t.recipeId} IS NULL AND ${t.title} IS NOT NULL AND length(btrim(${t.title})) BETWEEN 1 AND 200)`,
+    ),
   ],
 );
 

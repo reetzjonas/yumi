@@ -92,6 +92,13 @@
       "when": 1793866259924,
       "tag": "0012_meal_queue_recipe_index",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1793908945509,
+      "tag": "0013_recipe-less-meals",
+      "breakpoints": true
     }
   ]
 }

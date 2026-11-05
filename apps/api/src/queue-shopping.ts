@@ -28,7 +28,7 @@ export async function queueShoppingPreview(
   const entriesQuery = reader
     .select({
       id: mealQueueEntry.id,
-      recipeId: mealQueueEntry.recipeId,
+      recipeId: recipe.id,
       servings: mealQueueEntry.servings,
       recipeServings: recipe.servings,
     })

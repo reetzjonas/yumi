@@ -62,11 +62,12 @@ capabilities are excluded. See [household transfer](data-transfer.md).
 
 ## Planning
 
-- `meal_queue_entry`: recipe_id, servings, position, planned_for (date, nullable), status (queued | cooked | skipped).
+- `meal_queue_entry`: recipe_id (nullable), title (nullable), note (nullable), servings, position, planned_for (date, nullable), status (queued | cooked | skipped). A check constraint requires exactly one of recipe_id or a nonblank title (at most 200 characters).
 - The queue shows queued entries in position order; the same recipe can appear more than once with different servings or dates. Reordering replaces the complete active order within the household.
-- Marking an entry cooked atomically changes its status and writes one `cook_log` with the acting user. Cooked and skipped entries remain stored but leave the active queue.
+- Marking a recipe entry cooked atomically changes its status and writes one `cook_log` with the acting user. Free-text meals change status without recipe logs or leftover consumption. Cooked and skipped entries remain stored but leave the active queue.
 - Selected queue entries can be previewed as scaled, merged shopping ingredients, with pantry staples separated. Confirmation checks the preview version and records idempotent shopping events; storage keeps each queue contribution separate with both queue and recipe source references.
 - Removing a queued entry can keep its shopping contributions or remove just its linked items across household lists. Other queue entries and manual contributions remain intact even when the shopping UI merges them into one ingredient row.
+- Free-text meals share ordering and optional dates with recipe entries. They have no cooking mode, nutrition or shopping contributions; the shopping picker includes recipe entries only. Archives preserve their title and note, while legacy recipe-only archives remain importable.
 
 ## Shopping
 

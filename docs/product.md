@@ -22,7 +22,7 @@ yumi helps a household decide what to cook next, buy what is needed, and cook it
 
 ### Meal queue (planning)
 
-- Ordered "up next" list of recipes with servings; optional day assignment.
+- Ordered "up next" list of recipes with servings or free-text meals (title and optional note); optional day assignment.
 - Push queue entries to the shopping list (scaled, pantry staples skipped).
 - Suggestions: recipes that reuse leftovers or similar ingredients, recipes not cooked in a while.
 

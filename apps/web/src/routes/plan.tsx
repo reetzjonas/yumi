@@ -4,6 +4,7 @@ import { ListChecks, Plus, Sparkles } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { EmptyState, PageHeader } from "@/components/page";
+import { AddFreeMeal } from "@/components/queue/add-free-meal";
 import { MealQueueEntry } from "@/components/queue/queue-entry";
 import { RecipePicker } from "@/components/queue/recipe-picker";
 import { QueueShoppingPreview } from "@/components/queue/shopping-preview";
@@ -44,6 +45,7 @@ function MealQueue({
   const [announcement, setAnnouncement] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const pickerSheet = useRef<HTMLDialogElement>(null);
+  const [addKind, setAddKind] = useState<"recipe" | "free">("recipe");
   const shoppingSheet = useRef<HTMLDialogElement>(null);
   const [shoppingPending, setShoppingPending] = useState(false);
   const [shoppingAdded, setShoppingAdded] = useState<number | null>(null);
@@ -55,12 +57,14 @@ function MealQueue({
   const update = useMutation({
     mutationFn: ({ id, input }: { id: string; input: QueueEntryUpdate }) =>
       updateQueueEntry(id, input),
-    onSuccess: async (_, { input }) => {
+    onSuccess: async (_, { id, input }) => {
       if (input.status === "cooked") {
-        await queryClient.invalidateQueries({
-          queryKey: ["recipes", householdId],
-        });
-        toast.success(m["queue.cooked_saved"]());
+        const linked = query.data?.find((entry) => entry.id === id)?.recipe;
+        if (linked)
+          await queryClient.invalidateQueries({
+            queryKey: ["recipes", householdId],
+          });
+        toast.success(linked ? m["queue.cooked_saved"]() : m["queue.saved"]());
       } else if (input.status === "skipped")
         toast.success(m["queue.skipped_saved"]());
       else toast.success(m["queue.saved"]());
@@ -84,7 +88,8 @@ function MealQueue({
     },
   });
   const entries = query.data ?? [];
-  const selectedEntries = entries.filter((entry) =>
+  const recipeEntries = entries.filter((entry) => entry.recipe !== null);
+  const selectedEntries = recipeEntries.filter((entry) =>
     selectedIds.includes(entry.id),
   );
   const busy =
@@ -125,8 +130,34 @@ function MealQueue({
           {m["queue.plan_recipe"]()}
         </Button>
       </div>
-      <Sheet ref={pickerSheet} title={m["queue.add"]()}>
-        <RecipePicker />
+      <Sheet
+        ref={pickerSheet}
+        title={m["queue.add"]()}
+        onClose={() => setAddKind("recipe")}
+      >
+        <div className="recipe-actions">
+          <Button
+            type="button"
+            variant={addKind === "recipe" ? "secondary" : "ghost"}
+            aria-pressed={addKind === "recipe"}
+            onClick={() => setAddKind("recipe")}
+          >
+            {m["queue.from_recipe"]()}
+          </Button>
+          <Button
+            type="button"
+            variant={addKind === "free" ? "secondary" : "ghost"}
+            aria-pressed={addKind === "free"}
+            onClick={() => setAddKind("free")}
+          >
+            {m["queue.without_recipe"]()}
+          </Button>
+        </div>
+        {addKind === "recipe" ? (
+          <RecipePicker />
+        ) : (
+          <AddFreeMeal onAdded={() => pickerSheet.current?.close()} />
+        )}
       </Sheet>
       {query.isPending ? (
         <div className="queue-loading" role="status">
@@ -158,7 +189,7 @@ function MealQueue({
             aria-haspopup="dialog"
             onClick={() => pickerSheet.current?.showModal()}
           >
-            {m.plan_recipes_link()}
+            {m["queue.plan_recipe"]()}
           </Button>
         </EmptyState>
       ) : (
@@ -171,7 +202,7 @@ function MealQueue({
           <ol className="queue-list" aria-busy={busy}>
             {entries.map((entry, index) => (
               <MealQueueEntry
-                key={`${entry.id}-${entry.servings}-${entry.plannedFor}`}
+                key={`${entry.id}-${entry.servings}-${entry.plannedFor}-${entry.title}-${entry.note}`}
                 entry={entry}
                 index={index}
                 count={entries.length}
@@ -253,29 +284,31 @@ function MealQueue({
           <p id="queue-order-hint" className="queue-hint">
             {m["queue.order_hint"]()}
           </p>
-          <div className="sticky-action">
-            <Button
-              type="button"
-              className="w-full"
-              aria-haspopup="dialog"
-              onClick={() => {
-                setSelectedIds(entries.map((entry) => entry.id));
-                setShoppingAdded(null);
-                shoppingSheet.current?.showModal();
-              }}
-            >
-              <ListChecks aria-hidden="true" size={20} />
-              {entries.length === 1
-                ? m["queue.to_list_one"]()
-                : m["queue.to_list"]({ count: entries.length })}
-            </Button>
-          </div>
+          {recipeEntries.length > 0 && (
+            <div className="sticky-action">
+              <Button
+                type="button"
+                className="w-full"
+                aria-haspopup="dialog"
+                onClick={() => {
+                  setSelectedIds(recipeEntries.map((entry) => entry.id));
+                  setShoppingAdded(null);
+                  shoppingSheet.current?.showModal();
+                }}
+              >
+                <ListChecks aria-hidden="true" size={20} />
+                {recipeEntries.length === 1
+                  ? m["queue.to_list_one"]()
+                  : m["queue.to_list"]({ count: recipeEntries.length })}
+              </Button>
+            </div>
+          )}
           <Sheet ref={shoppingSheet} title={m["queue.shopping_title"]()}>
             <fieldset className="picker-list" disabled={busy}>
               <legend className="field-label">
                 {m["queue.shopping_meals"]()}
               </legend>
-              {entries.map((entry) => (
+              {recipeEntries.map((entry) => (
                 <label key={entry.id} className="picker-row">
                   <input
                     className="picker-input"
@@ -291,9 +324,7 @@ function MealQueue({
                     }}
                   />
                   <span className="picker-row-main">
-                    <span className="picker-row-title">
-                      {entry.recipe.title}
-                    </span>
+                    <span className="picker-row-title">{entry.title}</span>
                     <span className="meta">
                       {m["queue.servings_count"]({ count: entry.servings })}
                     </span>

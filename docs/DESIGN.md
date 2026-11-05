@@ -137,6 +137,12 @@ actions and the recipe's original servings. A checkbox expands suggestions to
 recipes sharing ingredients with queued meals. Avoid extra primary buttons,
 recipe-card grids, and adding controls inside the dense queue rows.
 
+Layout: Free-text meals - share the ordered planning list with recipe entries;
+scroll owner: `.app-main`. The existing add sheet offers a recipe picker or a
+compact title/note/date form. Free-text rows show the title, "Without recipe",
+optional date and note; editing uses the existing sheet. Keep recipe-only cook,
+servings and shopping actions off free-text entries.
+
 Cooking view brief: the primary action is Next, becoming Mark cooked on the last
 step. Reading priorities are the current instruction, its ingredients, then
 progress. Required controls are close, previous, next, step overview, wake-lock

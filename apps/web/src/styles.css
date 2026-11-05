@@ -1894,11 +1894,12 @@ select:focus-visible {
   min-width: 0;
 }
 .queue-title {
+  overflow-wrap: anywhere;
   font-weight: 600;
   line-height: 1.3;
   text-decoration: none;
 }
-.queue-title:hover {
+a.queue-title:hover {
   text-decoration: underline;
 }
 .queue-controls,
@@ -2099,9 +2100,18 @@ select:focus-visible {
   width: 100%;
 }
 .queue-entry-form .field,
-.queue-entry-form .field input {
+.queue-entry-form .field input,
+.queue-entry-form .field textarea {
   min-width: 0;
   max-width: 100%;
+}
+.queue-note {
+  display: -webkit-box;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 .queue-entry .button,
 .queue-add .button {
@@ -2195,11 +2205,6 @@ select:focus-visible {
 @container queue-shopping (min-width: 540px) {
   .queue-shopping-confirm {
     grid-template-columns: minmax(0, 1fr) auto;
-  }
-}
-@container (min-width: 540px) {
-  .queue-entry-form {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) auto;
   }
 }
 
