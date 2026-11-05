@@ -588,5 +588,12 @@
   "settings.ai_on_text": "Provided by your instance. yumi only uses it when you trigger it: importing pages without recipe data and photo import.",
   "settings.ai_off_text": "This instance has no AI configured. Add recipes by hand or from a link.",
   "settings.theme_system_short": "System",
-  "shopping.clear_done": "Remove done"
+  "shopping.clear_done": "Remove done",
+  "pictogram.choose": "Pictogram",
+  "pictogram.search": "Search pictograms",
+  "pictogram.category": "Use category",
+  "pictogram.no_results": "No matching pictograms.",
+  "pictogram.edit": "Change pictogram",
+  "pictogram.edit_title": "Pictogram for {name}",
+  "pictogram.save": "Save pictogram"
 }
