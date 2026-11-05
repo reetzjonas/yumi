@@ -1,0 +1,1 @@
+CREATE INDEX "meal_queue_recipe_idx" ON "meal_queue_entry" USING btree ("recipe_id");

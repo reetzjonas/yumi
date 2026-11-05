@@ -32,7 +32,10 @@ export const mealQueueEntry = pgTable(
     status: queueStatus().notNull().default("queued"),
     ...timestamps,
   },
-  (t) => [index("meal_queue_household_idx").on(t.householdId, t.status)],
+  (t) => [
+    index("meal_queue_household_idx").on(t.householdId, t.status),
+    index("meal_queue_recipe_idx").on(t.recipeId),
+  ],
 );
 
 export const leftover = pgTable(
