@@ -54,6 +54,8 @@ export const pwaOptions = {
           sameOrigin &&
           url.pathname.startsWith("/api/") &&
           url.pathname !== "/api/shopping/stream" &&
+          !/^\/api\/recipe-shares(?:\/|$)/.test(url.pathname) &&
+          !/^\/api\/recipes\/[^/]+\/shares(?:\/|$)/.test(url.pathname) &&
           !/^\/api\/auth(?:\/|$)/.test(url.pathname),
         method: "GET",
         handler: "NetworkFirst",

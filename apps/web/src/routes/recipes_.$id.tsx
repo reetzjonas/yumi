@@ -8,6 +8,7 @@ import { BackLink, PageHeader } from "@/components/page";
 import { AddRecipeToQueue } from "@/components/queue/add-recipe";
 import { RecipeInsights } from "@/components/recipes/recipe-insights";
 import { RecipeNutrition } from "@/components/recipes/recipe-nutrition";
+import { RecipeSharing } from "@/components/recipes/recipe-sharing";
 import { ServingsStepper } from "@/components/recipes/servings-selector";
 import { AddRecipeToList } from "@/components/shopping/add-recipe";
 import { Button } from "@/components/ui/button";
@@ -137,6 +138,7 @@ function Recipe() {
               </Button>
             </div>
             <div className="recipe-secondary-actions">
+              <RecipeSharing recipeId={id} title={recipe.title} />
               <Button asChild variant="ghost">
                 <Link to="/recipes/$id/edit" params={{ id }}>
                   <Pencil size={18} aria-hidden="true" />

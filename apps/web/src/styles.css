@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./sharing.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -1296,7 +1297,7 @@ select:focus-visible {
   gap: 4px;
   margin-bottom: 8px;
 }
-.recipe-secondary-actions .button {
+.recipe-secondary-actions > .button {
   padding-inline: 12px;
   color: var(--primary);
   font-size: 0.875rem;
@@ -1887,6 +1888,11 @@ select:focus-visible {
 }
 .sheet[open] {
   animation: sheet-in 200ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet[open] {
+    animation: none;
+  }
 }
 @keyframes sheet-in {
   from {

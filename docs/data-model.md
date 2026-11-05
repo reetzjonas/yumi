@@ -48,7 +48,11 @@ Alpha sketch, the Drizzle schema is the source of truth once it exists. Every ho
   search and tag filters: personal ratings of at least four stars, known total
   times up to thirty minutes, or never-cooked/oldest-cooked first.
 - `POST /api/recipes/:id/cooked` accepts `{ requestId: UUID }` and records the acting user in the active household. Repeating the same request for the same household and recipe returns `{ ok: true }` without another log; reusing the ID for another recipe or household returns `409 request_id_conflict`. A foreign or missing recipe returns `404 not_found`.
-- `share_link`: recipe_id, token, expires_at.
+- `share_link`: id, recipe_id (cascade delete), unique 256-bit token, expires_at?,
+  created_at. Members manage independent links; public reads check expiry and
+  return recipe content only. Copying a shared recipe creates destination-owned
+  rows, remaps custom catalog entries and ingredient references, and copies images.
+  See [recipe sharing](concepts/recipe-sharing.md).
 
 ## Planning
 

@@ -165,6 +165,21 @@ On phones, tag filters are one horizontally scrolling strip. Safe-area insets ex
 
 ## 7. Component patterns
 
+Layout: Public recipe sharing - read a recipe before saving a personal copy ->
+full-screen detail outside the app shell; scroll owner: `.shared-content`.
+Keep the compact brand header fixed and use the existing ingredient/step columns
+from 768 px. The primary action is Save to my household. Reading priorities are
+recipe title and image, ingredients and steps, then the source. Required content
+includes quantities, servings, sections, notes, optional markers, preparation and
+cooking times, tags, source link, save feedback and unavailable-link state.
+Household identity, ratings and cooking history are omitted.
+
+Layout: Recipe sharing controls - create and manage independent links -> the
+existing recipe detail sheet; scroll owner: the sheet body. The primary action
+is Create link. Show an optional expiry field, the public-access explanation,
+each link's URL, creation and expiry dates, copy and revoke actions, and errors
+beside the affected action. Use no additional filled row actions.
+
 Layout: Recipe insights - choose a meal using personal ratings and household
 cooking history -> stack inside the existing library and recipe detail;
 scroll owner: `.app-main`. Avoid a second scroll region for ratings or history.

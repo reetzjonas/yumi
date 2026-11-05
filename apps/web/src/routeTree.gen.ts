@@ -29,6 +29,7 @@ import { Route as PlanSuggestionsRouteImport } from './routes/plan_.suggestions'
 import { Route as RecipesIdRouteImport } from './routes/recipes_.$id'
 import { Route as RecipesImportRouteImport } from './routes/recipes_.import'
 import { Route as RecipesNewRouteImport } from './routes/recipes_.new'
+import { Route as ShareTokenRouteImport } from './routes/share.$token'
 import { Route as ShopListIdRouteImport } from './routes/shop.$listId'
 import { Route as RecipesIdEditRouteImport } from './routes/recipes_.$id_.edit'
 
@@ -132,6 +133,11 @@ const RecipesNewRoute = RecipesNewRouteImport.update({
   path: '/recipes/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShareTokenRoute = ShareTokenRouteImport.update({
+  id: '/share/$token',
+  path: '/share/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShopListIdRoute = ShopListIdRouteImport.update({
   id: '/shop/$listId',
   path: '/shop/$listId',
@@ -163,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/recipes/$id': typeof RecipesIdRoute
   '/recipes/import': typeof RecipesImportRoute
   '/recipes/new': typeof RecipesNewRoute
+  '/share/$token': typeof ShareTokenRoute
   '/shop/$listId': typeof ShopListIdRoute
   '/more/': typeof MoreIndexRoute
   '/recipes/$id/edit': typeof RecipesIdEditRoute
@@ -187,6 +194,7 @@ export interface FileRoutesByTo {
   '/recipes/$id': typeof RecipesIdRoute
   '/recipes/import': typeof RecipesImportRoute
   '/recipes/new': typeof RecipesNewRoute
+  '/share/$token': typeof ShareTokenRoute
   '/shop/$listId': typeof ShopListIdRoute
   '/more': typeof MoreIndexRoute
   '/recipes/$id/edit': typeof RecipesIdEditRoute
@@ -212,6 +220,7 @@ export interface FileRoutesById {
   '/recipes_/$id': typeof RecipesIdRoute
   '/recipes_/import': typeof RecipesImportRoute
   '/recipes_/new': typeof RecipesNewRoute
+  '/share/$token': typeof ShareTokenRoute
   '/shop/$listId': typeof ShopListIdRoute
   '/more/': typeof MoreIndexRoute
   '/recipes_/$id_/edit': typeof RecipesIdEditRoute
@@ -238,6 +247,7 @@ export interface FileRouteTypes {
     | '/recipes/$id'
     | '/recipes/import'
     | '/recipes/new'
+    | '/share/$token'
     | '/shop/$listId'
     | '/more/'
     | '/recipes/$id/edit'
@@ -262,6 +272,7 @@ export interface FileRouteTypes {
     | '/recipes/$id'
     | '/recipes/import'
     | '/recipes/new'
+    | '/share/$token'
     | '/shop/$listId'
     | '/more'
     | '/recipes/$id/edit'
@@ -286,6 +297,7 @@ export interface FileRouteTypes {
     | '/recipes_/$id'
     | '/recipes_/import'
     | '/recipes_/new'
+    | '/share/$token'
     | '/shop/$listId'
     | '/more/'
     | '/recipes_/$id_/edit'
@@ -311,6 +323,7 @@ export interface RootRouteChildren {
   RecipesIdRoute: typeof RecipesIdRoute
   RecipesImportRoute: typeof RecipesImportRoute
   RecipesNewRoute: typeof RecipesNewRoute
+  ShareTokenRoute: typeof ShareTokenRoute
   ShopListIdRoute: typeof ShopListIdRoute
   MoreIndexRoute: typeof MoreIndexRoute
   RecipesIdEditRoute: typeof RecipesIdEditRoute
@@ -458,6 +471,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RecipesNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/share/$token': {
+      id: '/share/$token'
+      path: '/share/$token'
+      fullPath: '/share/$token'
+      preLoaderRoute: typeof ShareTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shop/$listId': {
       id: '/shop/$listId'
       path: '/shop/$listId'
@@ -495,6 +515,7 @@ const rootRouteChildren: RootRouteChildren = {
   RecipesIdRoute: RecipesIdRoute,
   RecipesImportRoute: RecipesImportRoute,
   RecipesNewRoute: RecipesNewRoute,
+  ShareTokenRoute: ShareTokenRoute,
   ShopListIdRoute: ShopListIdRoute,
   MoreIndexRoute: MoreIndexRoute,
   RecipesIdEditRoute: RecipesIdEditRoute,
