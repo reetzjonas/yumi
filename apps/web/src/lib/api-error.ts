@@ -2,18 +2,21 @@ import { translateApiError } from "@/lib/i18n";
 import { m } from "@/paraglide/messages";
 
 export class ApiError extends Error {
-  constructor(readonly code: string) {
+  constructor(
+    readonly code: string,
+    readonly status?: number,
+  ) {
     super(code);
   }
 }
 
 /** Throws ApiError with the API's error code for non-2xx responses. */
 export async function ensureOk<
-  T extends { ok: boolean; json(): Promise<unknown> },
+  T extends { ok: boolean; status: number; json(): Promise<unknown> },
 >(res: T): Promise<T> {
   if (res.ok) return res;
   const body = (await res.json().catch(() => ({}))) as { error?: string };
-  throw new ApiError(body.error ?? "generic");
+  throw new ApiError(body.error ?? "generic", res.status);
 }
 
 export function errorMessage(error: unknown): string {

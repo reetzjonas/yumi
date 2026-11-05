@@ -50,7 +50,13 @@ function Recipe() {
     mutationFn: async () =>
       ensureOk(await api.recipes[":id"].$delete({ param: { id } })),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["recipes"] });
+      queryClient.removeQueries({
+        queryKey: ["recipes", householdId, "detail", id],
+        exact: true,
+      });
+      void queryClient.invalidateQueries({
+        queryKey: ["recipes", householdId, "list"],
+      });
       toast.success(m["recipes.deleted"]());
       await navigate({ to: "/recipes" });
     },

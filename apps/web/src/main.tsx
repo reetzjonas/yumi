@@ -1,8 +1,9 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { registerPwa } from "@/lib/pwa";
+import { queryClient } from "@/lib/query-client";
 import { m } from "@/paraglide/messages";
 import { getLocale, getTextDirection } from "@/paraglide/runtime";
 import { routeTree } from "./routeTree.gen";
@@ -24,7 +25,6 @@ if (
   void import("react-scan");
 }
 
-const queryClient = new QueryClient();
 const router = createRouter({ routeTree, context: { queryClient } });
 
 declare module "@tanstack/react-router" {
