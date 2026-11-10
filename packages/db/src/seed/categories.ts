@@ -6,6 +6,7 @@ export const CATEGORY_KEYS = [
   "fish",
   "frozen",
   "pantry",
+  "world-foods",
   "pasta-grains",
   "baking",
   "spices",
@@ -28,6 +29,11 @@ export const SEED_CATEGORIES: Record<
   fish: { de: "Fisch", en: "Fish", icon: "🐟" },
   frozen: { de: "Tiefkühl", en: "Frozen", icon: "🧊" },
   pantry: { de: "Vorrat & Konserven", en: "Pantry", icon: "🥫" },
+  "world-foods": {
+    de: "Asia & Internationales",
+    en: "World foods",
+    icon: "🍜",
+  },
   "pasta-grains": {
     de: "Nudeln, Reis & Getreide",
     en: "Pasta, rice & grains",

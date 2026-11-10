@@ -206,7 +206,7 @@ describe("ingredient catalog", () => {
     expect(
       rows.map((r) => [r.name, r.ingredient?.key ?? null] as const),
     ).toEqual([
-      ["Bonitoflocken", null],
+      ["Bonitoflocken", "bonito-flakes"],
       ["Okonomiyaki-Sauce", null],
       ["Okonomiyaki-Mehl", null],
       ["Speck", "bacon"],

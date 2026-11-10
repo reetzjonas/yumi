@@ -16,6 +16,8 @@ capabilities are excluded. See [household transfer](data-transfer.md).
 ## Catalog
 
 - `ingredient_category`: key, name_de, name_en, icon, default_position.
+  Categories are supermarket aisles, not food groups (`world-foods` holds shelf-stable international
+  specialities); the AI ingredient proposal receives a hint per aisle.
 - `ingredient`: name_en, name_de, synonyms[], category_id, default_unit, density_g_per_ml?, piece_weight_g?,
   pack_sizes (jsonb), icon, `household_id` nullable (null = global seed, set = household-specific),
   `key` (unique slug of global seed entries; the seed in `packages/db/src/seed` upserts by it),
