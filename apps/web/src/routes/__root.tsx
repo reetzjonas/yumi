@@ -65,7 +65,10 @@ function Root() {
           ) : (
             <AppShell
               householdName={
-                me.households.find((h) => h.id === me.activeHouseholdId)?.name
+                me.households.length > 1
+                  ? me.households.find((h) => h.id === me.activeHouseholdId)
+                      ?.name
+                  : undefined
               }
             >
               <Outlet />

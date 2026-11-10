@@ -110,26 +110,111 @@ function MealQueue({
     reorder.mutate(ids);
   }
 
+  const renderEntry = (entry: (typeof entries)[number], index: number) => (
+    <MealQueueEntry
+      key={`${entry.id}-${entry.plannedFor}-${entry.title}-${entry.note}`}
+      hero={index === 0}
+      entry={entry}
+      index={index}
+      count={entries.length}
+      disabled={busy}
+      removeError={
+        remove.isError && remove.variables.id === entry.id
+          ? errorMessage(remove.error)
+          : null
+      }
+      onRemove={(removeItems) => remove.mutate({ id: entry.id, removeItems })}
+      error={
+        update.isError && update.variables.id === entry.id
+          ? errorMessage(update.error)
+          : null
+      }
+      dragging={drag?.id === entry.id}
+      dropPosition={
+        drag && drag.targetId === entry.id && drag.id !== entry.id
+          ? entries.findIndex((item) => item.id === drag.id) < index
+            ? "after"
+            : "before"
+          : undefined
+      }
+      onMove={(offset) => {
+        const target = entries[index + offset];
+        if (target) move(entry.id, target.id);
+      }}
+      onUpdate={(input) => update.mutate({ id: entry.id, input })}
+      dragProps={{
+        onPointerDown: (event) => {
+          if (busy || !event.isPrimary || event.button !== 0) return;
+          event.currentTarget.setPointerCapture(event.pointerId);
+          dragRef.current = { id: entry.id, targetId: entry.id };
+          setDrag(dragRef.current);
+        },
+        onPointerMove: (event) => {
+          if (!dragRef.current) return;
+          const scroller =
+            event.currentTarget.closest<HTMLElement>(".app-main");
+          if (scroller) {
+            const bounds = scroller.getBoundingClientRect();
+            if (event.clientY < bounds.top + 72) scroller.scrollBy(0, -16);
+            else if (event.clientY > bounds.bottom - 96)
+              scroller.scrollBy(0, 16);
+          }
+          const targetId = document
+            .elementFromPoint(event.clientX, event.clientY)
+            ?.closest<HTMLElement>("[data-queue-id]")?.dataset.queueId;
+          if (targetId && targetId !== dragRef.current.targetId) {
+            dragRef.current = { id: entry.id, targetId };
+            setDrag(dragRef.current);
+          }
+        },
+        onPointerUp: (event) => {
+          const current = dragRef.current;
+          dragRef.current = null;
+          setDrag(null);
+          event.currentTarget.releasePointerCapture(event.pointerId);
+          if (current) move(current.id, current.targetId);
+        },
+        onLostPointerCapture: () => {
+          dragRef.current = null;
+          setDrag(null);
+        },
+        onKeyDown: (event) => {
+          if (event.key === "Escape") {
+            dragRef.current = null;
+            setDrag(null);
+          }
+        },
+      }}
+    />
+  );
+
   return (
     <>
-      <PageHeader title={m["queue.title"]()} />
-      <div className="recipe-library-actions queue-header-actions">
-        <Button asChild variant="outline">
-          <Link to="/plan/suggestions">
-            <Sparkles aria-hidden="true" size={20} />
-            {m["queue.suggestions"]()}
-          </Link>
-        </Button>
-        <Button
-          type="button"
-          variant={entries.length ? "outline" : "default"}
-          aria-haspopup="dialog"
-          onClick={() => pickerSheet.current?.showModal()}
-        >
-          <Plus aria-hidden="true" size={20} />
-          {m["queue.plan_recipe"]()}
-        </Button>
-      </div>
+      <PageHeader
+        title={m["queue.title"]()}
+        actions={
+          <>
+            <Button asChild variant="ghost" className="icon-action">
+              <Link
+                to="/plan/suggestions"
+                aria-label={m["queue.suggestions"]()}
+              >
+                <Sparkles aria-hidden="true" size={22} />
+              </Link>
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="icon-action"
+              aria-label={m["queue.plan_recipe"]()}
+              aria-haspopup="dialog"
+              onClick={() => pickerSheet.current?.showModal()}
+            >
+              <Plus aria-hidden="true" size={22} />
+            </Button>
+          </>
+        }
+      />
       <Sheet
         ref={pickerSheet}
         title={m["queue.add"]()}
@@ -199,109 +284,37 @@ function MealQueue({
               {errorMessage(reorder.error)}
             </p>
           )}
-          <ol className="queue-list" aria-busy={busy}>
-            {entries.map((entry, index) => (
-              <MealQueueEntry
-                key={`${entry.id}-${entry.servings}-${entry.plannedFor}-${entry.title}-${entry.note}`}
-                entry={entry}
-                index={index}
-                count={entries.length}
-                disabled={busy}
-                removeError={
-                  remove.isError && remove.variables.id === entry.id
-                    ? errorMessage(remove.error)
-                    : null
-                }
-                onRemove={(removeItems) =>
-                  remove.mutate({ id: entry.id, removeItems })
-                }
-                error={
-                  update.isError && update.variables.id === entry.id
-                    ? errorMessage(update.error)
-                    : null
-                }
-                dragging={drag?.id === entry.id}
-                dropPosition={
-                  drag && drag.targetId === entry.id && drag.id !== entry.id
-                    ? entries.findIndex((item) => item.id === drag.id) < index
-                      ? "after"
-                      : "before"
-                    : undefined
-                }
-                onMove={(offset) => {
-                  const target = entries[index + offset];
-                  if (target) move(entry.id, target.id);
-                }}
-                onUpdate={(input) => update.mutate({ id: entry.id, input })}
-                dragProps={{
-                  onPointerDown: (event) => {
-                    if (busy || !event.isPrimary || event.button !== 0) return;
-                    event.currentTarget.setPointerCapture(event.pointerId);
-                    dragRef.current = { id: entry.id, targetId: entry.id };
-                    setDrag(dragRef.current);
-                  },
-                  onPointerMove: (event) => {
-                    if (!dragRef.current) return;
-                    const scroller =
-                      event.currentTarget.closest<HTMLElement>(".app-main");
-                    if (scroller) {
-                      const bounds = scroller.getBoundingClientRect();
-                      if (event.clientY < bounds.top + 72)
-                        scroller.scrollBy(0, -16);
-                      else if (event.clientY > bounds.bottom - 96)
-                        scroller.scrollBy(0, 16);
-                    }
-                    const targetId = document
-                      .elementFromPoint(event.clientX, event.clientY)
-                      ?.closest<HTMLElement>("[data-queue-id]")
-                      ?.dataset.queueId;
-                    if (targetId && targetId !== dragRef.current.targetId) {
-                      dragRef.current = { id: entry.id, targetId };
-                      setDrag(dragRef.current);
-                    }
-                  },
-                  onPointerUp: (event) => {
-                    const current = dragRef.current;
-                    dragRef.current = null;
-                    setDrag(null);
-                    event.currentTarget.releasePointerCapture(event.pointerId);
-                    if (current) move(current.id, current.targetId);
-                  },
-                  onLostPointerCapture: () => {
-                    dragRef.current = null;
-                    setDrag(null);
-                  },
-                  onKeyDown: (event) => {
-                    if (event.key === "Escape") {
-                      dragRef.current = null;
-                      setDrag(null);
-                    }
-                  },
-                }}
-              />
-            ))}
-          </ol>
-          <p id="queue-order-hint" className="queue-hint">
+          <div aria-busy={busy}>
+            {entries[0] && renderEntry(entries[0], 0)}
+            {entries.length > 1 && (
+              <>
+                <h2 className="section-label">{m["queue.up_next"]()}</h2>
+                <ol className="queue-list">
+                  {entries
+                    .slice(1)
+                    .map((entry, i) => renderEntry(entry, i + 1))}
+                </ol>
+              </>
+            )}
+          </div>
+          <p id="queue-order-hint" className="sr-only">
             {m["queue.order_hint"]()}
           </p>
           {recipeEntries.length > 0 && (
-            <div className="sticky-action">
-              <Button
-                type="button"
-                className="w-full"
-                aria-haspopup="dialog"
-                onClick={() => {
-                  setSelectedIds(recipeEntries.map((entry) => entry.id));
-                  setShoppingAdded(null);
-                  shoppingSheet.current?.showModal();
-                }}
-              >
-                <ListChecks aria-hidden="true" size={20} />
-                {recipeEntries.length === 1
-                  ? m["queue.to_list_one"]()
-                  : m["queue.to_list"]({ count: recipeEntries.length })}
-              </Button>
-            </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="queue-to-list"
+              aria-haspopup="dialog"
+              onClick={() => {
+                setSelectedIds(recipeEntries.map((entry) => entry.id));
+                setShoppingAdded(null);
+                shoppingSheet.current?.showModal();
+              }}
+            >
+              <ListChecks aria-hidden="true" size={20} />
+              {m["queue.to_list_action"]()}
+            </Button>
           )}
           <Sheet ref={shoppingSheet} title={m["queue.shopping_title"]()}>
             <fieldset className="picker-list" disabled={busy}>

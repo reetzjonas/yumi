@@ -85,12 +85,14 @@ Quantities and timers use `tabular-nums`. Inputs never go below 16 px.
 
 | Width      | Navigation                                                       | Content                           |
 | ---------- | ---------------------------------------------------------------- | --------------------------------- |
-| < 768      | Top bar (page title + household chip), bottom tabs with labels   | One column, 16 px gutter          |
+| < 768      | Top bar (page title + page actions), bottom tabs with labels     | One column, 16 px gutter          |
 | 768 - 1199 | Same top bar and bottom tabs                                     | One column, centered, max 760 px  |
 | >= 1200    | 220 px sidebar (wordmark, four sections); top bar with the title | One column, centered, max 1000 px |
 
-The top bar carries the page title (title role) on the left and the
-household chip on the right; detail screens show a back arrow before the title.
+The top bar carries the page title (title role) on the left and the page's own
+actions as icon buttons on the right (add, import, suggestions); detail screens show
+a back arrow before the title. The household chip appears only when the user belongs
+to several households. Tabs: Heute, Rezepte, Liste, Mehr.
 Columns inside the content column: recipe cards 2 / 3 / 4 per row; recipe
 detail from 768 px ingredients (340-360 px) beside the steps; shopping
 categories 2 (tablet) / 3 (desktop) columns; sheets become centered 560 px
@@ -210,11 +212,12 @@ explicit unsaved review are required. Cookbook pages are not recipe cover images
 
 - **Button:** primary (filled red), secondary (soft fill), ghost, destructive. Fixed geometry
   in every state; press scales to 0.98.
-- **Queue entry:** position number, thumbnail, title, meta line
-  ("4 Portionen · Do · 40 Min"), optional suggestion reason; then a servings
-  stepper, up / down and edit (day, removal in the edit sheet); then Kochen
-  (outline), Gekocht and Überspringen (ghost). Drag works too; the arrows are
-  the accessible path.
+- **Today (`/plan`, the start screen):** the next meal as a card (photo when there
+  is one, title, meta, Kochen as the primary action, Gekocht, a more button), then
+  "Danach" with one-line queue rows (thumbnail, title, meta, drag handle). Tapping a
+  row opens the entry sheet: servings, view recipe, cooked, cook, skip, move up/down
+  (the non-drag path), note, date, remove. Below the queue a secondary button pushes
+  ingredients to the shopping list.
 - **Overflow menu / sheet:** native `<dialog>` (focus trap, Escape, focus
   return): bottom sheet on phones, centered dialog from 768 px. Header shows the
   object (title + meta) and a close button; destructive items are red.

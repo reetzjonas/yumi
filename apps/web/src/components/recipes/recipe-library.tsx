@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { BookOpen, Download, Plus, Search, Star } from "lucide-react";
-import { type ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { EmptyState } from "@/components/page";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -36,7 +36,7 @@ const modeHint = (mode: RecipeSuggestion) =>
       ? m["recipes.suggestions_favorites_hint"]()
       : m["recipes.suggestions_quick_hint"]();
 
-export function RecipeLibrary({ actions }: { actions?: ReactNode }) {
+export function RecipeLibrary() {
   const householdId = useMe()?.activeHouseholdId;
   const [search, setSearch] = useState("");
   const [q, setQ] = useState("");
@@ -101,7 +101,6 @@ export function RecipeLibrary({ actions }: { actions?: ReactNode }) {
           onChange={(e) => setSearch(e.target.value)}
         />
       </label>
-      {actions && <div className="recipe-library-actions">{actions}</div>}
       <fieldset className="recipe-tags" aria-label={m["recipes.filter_tags"]()}>
         <button
           type="button"

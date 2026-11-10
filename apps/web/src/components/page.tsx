@@ -32,16 +32,20 @@ export const BackLink = createLink(BackAnchor);
 /**
  * Page title. Inside the app shell it renders into the top bar; `back` is a
  * `BackLink` shown before the title. `heading={false}` keeps the
- * top bar label out of the outline when the content has its own h1.
+ * top bar label out of the outline when the content has its own h1. `actions`
+ * are the page's own controls at the end of the bar.
  */
 export function PageHeader({
   title,
   back,
   heading = true,
+  actions,
 }: {
   title: string;
   back?: ReactNode;
   heading?: boolean;
+  /** Page actions shown at the end of the top bar. */
+  actions?: ReactNode;
 }) {
   const slot = useContext(TitleSlotContext);
   const Title = heading ? "h1" : "p";
@@ -49,6 +53,7 @@ export function PageHeader({
     <>
       {back}
       <Title className="top-title">{title}</Title>
+      {actions && <div className="top-actions">{actions}</div>}
     </>
   );
   return slot ? (

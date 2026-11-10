@@ -138,7 +138,7 @@
   "queue.saved": "Meal saved.",
   "queue.loading": "Loading your meal plan…",
   "queue.retry": "Try again",
-  "queue.order_hint": "Use the arrows to reorder; dragging the number works too.",
+  "queue.order_hint": "Drag the handle to reorder; tapping a meal offers arrows too.",
   "queue.drag": "Move {name}",
   "queue.move_up": "Move {name} up",
   "queue.move_down": "Move {name} down",
@@ -541,7 +541,7 @@
   "recipes.import_gallery": "From gallery",
   "recipes.import_photo_capture": "Take photo",
   "recipes.import_pages_count": "{count} cookbook pages",
-  "queue.title": "Up next",
+  "queue.title": "Today",
   "queue.suggestions": "Suggestions",
   "queue.plan_recipe": "Plan",
   "queue.from_recipe": "From recipe",
@@ -599,5 +599,11 @@
   "pictogram.no_results": "No matching pictograms.",
   "pictogram.edit": "Change pictogram",
   "pictogram.edit_title": "Pictogram for {name}",
-  "pictogram.save": "Save pictogram"
+  "pictogram.save": "Save pictogram",
+  "nav_today": "Today",
+  "queue.up_next": "Up next",
+  "queue.view_recipe": "View recipe",
+  "queue.move_up_short": "Move up",
+  "queue.move_down_short": "Move down",
+  "queue.to_list_action": "Ingredients to the shopping list"
 }

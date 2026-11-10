@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { BookOpen, ListChecks, ListOrdered, Menu, Users } from "lucide-react";
+import { BookOpen, ListChecks, Menu, Sun, Users } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
 import { TitleSlotContext } from "@/components/page";
 import { ConnectionStatus } from "@/components/pwa-provider";
@@ -7,8 +7,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { m } from "@/paraglide/messages";
 
 const destinations = [
+  { to: "/plan", label: m.nav_today, icon: Sun },
   { to: "/recipes", label: m.nav_recipes, icon: BookOpen },
-  { to: "/plan", label: m.nav_plan, icon: ListOrdered },
   { to: "/list", label: m.nav_list, icon: ListChecks },
   { to: "/more", label: m.nav_more, icon: Menu },
 ] as const;
@@ -18,6 +18,7 @@ export function AppShell({
   householdName,
 }: {
   children: ReactNode;
+  /** Set only when the user can switch between several households. */
   householdName?: string;
 }) {
   useDesktopShortcuts();
@@ -38,7 +39,7 @@ export function AppShell({
           )}
         </header>
         <nav className="app-navigation" aria-label={m.nav_main()}>
-          <Link to="/recipes" className="brand">
+          <Link to="/plan" className="brand">
             yumi
           </Link>
           {destinations.map(({ to, label, icon: Icon }) => (

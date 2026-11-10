@@ -138,7 +138,7 @@
   "queue.saved": "Gericht gespeichert.",
   "queue.loading": "Dein Essensplan wird geladen …",
   "queue.retry": "Erneut versuchen",
-  "queue.order_hint": "Pfeile sortieren um; auf der Nummer ziehen geht auch.",
+  "queue.order_hint": "Am Griff ziehen sortiert um; Pfeile gibt es beim Antippen eines Gerichts.",
   "queue.drag": "{name} verschieben",
   "queue.move_up": "{name} nach oben",
   "queue.move_down": "{name} nach unten",
@@ -541,7 +541,7 @@
   "recipes.import_gallery": "Aus Galerie",
   "recipes.import_photo_capture": "Foto aufnehmen",
   "recipes.import_pages_count": "{count} Kochbuchseiten",
-  "queue.title": "Als Nächstes",
+  "queue.title": "Heute",
   "queue.suggestions": "Vorschläge",
   "queue.plan_recipe": "Einplanen",
   "queue.from_recipe": "Aus Rezept",
@@ -599,5 +599,11 @@
   "pictogram.no_results": "Keine passenden Piktogramme.",
   "pictogram.edit": "Piktogramm ändern",
   "pictogram.edit_title": "Piktogramm für {name}",
-  "pictogram.save": "Piktogramm speichern"
+  "pictogram.save": "Piktogramm speichern",
+  "nav_today": "Heute",
+  "queue.up_next": "Danach",
+  "queue.view_recipe": "Rezept ansehen",
+  "queue.move_up_short": "Nach oben",
+  "queue.move_down_short": "Nach unten",
+  "queue.to_list_action": "Zutaten auf die Einkaufsliste"
 }
