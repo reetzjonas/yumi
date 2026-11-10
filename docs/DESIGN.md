@@ -230,7 +230,10 @@ explicit unsaved review are required. Cookbook pages are not recipe cover images
   return): bottom sheet on phones, centered dialog from 768 px. Header shows the
   object (title + meta) and a close button; destructive items are red.
 - **Cooking view header:** close, title with "Schritt 1 von 6 · 4 Portionen",
-  the wake-lock state as a chip (icon + word), a progress bar below.
+  the wake-lock state as an icon with an accessible label (amber when the screen
+  can turn off), a progress bar below. Ingredients are tappable to mark them as
+  ready for this session; servings change in the all-ingredients sheet. Swiping
+  left or right changes the step.
 - **Empty state:** bold headline, one sentence, one primary next action.
 - **Skeleton:** shaped like the content it replaces; static under reduced motion.
 

@@ -34,11 +34,49 @@
   font-variant-numeric: tabular-nums;
 }
 .wake-chip {
-  display: inline-flex;
+  display: inline-grid;
   flex-shrink: 0;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-control);
+  color: var(--success);
+}
+.wake-chip.is-off {
+  background: var(--warning);
+  color: var(--warning-foreground);
+}
+.ingredient-rows.is-checkable li {
+  padding: 0;
+}
+.ingredient-check {
+  display: flex;
+  flex: 1;
   align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
+  gap: 12px;
+  min-height: 52px;
+  padding: 8px 0;
+  color: inherit;
+  text-align: start;
+}
+.ingredient-check-box {
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border);
+  border-radius: 999px;
+}
+.ingredient-check[aria-pressed="true"] .ingredient-check-box {
+  border-color: var(--success);
+  background: var(--success);
+  color: var(--card);
+}
+.ingredient-check[aria-pressed="true"] .ingredient-check-name,
+.ingredient-check[aria-pressed="true"] .ingredient-quantity {
+  color: var(--muted-foreground);
+  text-decoration: line-through;
 }
 .cooking-bar {
   height: 4px;

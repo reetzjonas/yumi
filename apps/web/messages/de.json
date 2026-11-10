@@ -612,5 +612,6 @@
   "shopping.view_rows": "Zeilen",
   "shopping.view_tiles": "Kacheln",
   "shopping.gesture_hint_tiles": "Tippen hakt ab, lange drücken bearbeitet.",
-  "queue.on_list": "auf der Liste"
+  "queue.on_list": "auf der Liste",
+  "cooking.all_ingredients_servings": "Alle Zutaten · {count} Portionen"
 }

@@ -107,6 +107,14 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
   const navigate = Route.useNavigate();
   const [index, setIndex] = useState(0);
   const [finished, setFinished] = useState(false);
+  // Mise en place: ingredient lines marked as ready for this cooking session.
+  const [ready, setReady] = useState<ReadonlySet<string>>(new Set());
+  const toggleReady = (id: string) =>
+    setReady((current) => {
+      const next = new Set(current);
+      if (!next.delete(id)) next.add(id);
+      return next;
+    });
   const [requestId] = useState(() => crypto.randomUUID());
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const body = useRef<HTMLDivElement>(null);
@@ -170,16 +178,16 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
           </p>
         </div>
         <span
-          className={
-            active ? "badge wake-chip" : "badge badge-warning wake-chip"
-          }
+          className={active ? "wake-chip" : "wake-chip is-off"}
+          role="img"
+          aria-label={active ? m["cooking.awake"]() : m["cooking.sleep"]()}
+          title={active ? m["cooking.awake"]() : m["cooking.sleep"]()}
         >
           {active ? (
-            <Sun size={16} aria-hidden="true" />
+            <Sun size={20} aria-hidden="true" />
           ) : (
-            <SunDim size={16} aria-hidden="true" />
+            <SunDim size={20} aria-hidden="true" />
           )}
-          {active ? m["cooking.awake"]() : m["cooking.sleep"]()}
         </span>
       </header>
       {step && !finished && (
@@ -286,17 +294,10 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
                   lines={lines}
                   base={recipe.servings}
                   servings={servings}
+                  ready={ready}
+                  onToggle={toggleReady}
                 />
               )}
-              <ServingsStepper
-                value={servings}
-                onChange={(next) =>
-                  void navigate({
-                    search: { servings: next },
-                    replace: true,
-                  })
-                }
-              />
               <Button
                 type="button"
                 variant="outline"
@@ -304,13 +305,21 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
                 aria-haspopup="dialog"
                 onClick={() => allSheet.current?.showModal()}
               >
-                {m["cooking.all_ingredients"]()}
+                {m["cooking.all_ingredients_servings"]({ count: servings })}
               </Button>
-              <Sheet
-                ref={allSheet}
-                title={m["cooking.all_ingredients"]()}
-                meta={m["recipes.servings_count"]({ count: servings })}
-              >
+              <Sheet ref={allSheet} title={m["cooking.all_ingredients"]()}>
+                <div className="sheet-row">
+                  <span className="field-label">{m["recipes.servings"]()}</span>
+                  <ServingsStepper
+                    value={servings}
+                    onChange={(next) =>
+                      void navigate({
+                        search: { servings: next },
+                        replace: true,
+                      })
+                    }
+                  />
+                </div>
                 {groupBySection(recipe.ingredients).map((group) => (
                   <div key={group.section ?? ""}>
                     {group.section && (
@@ -320,6 +329,8 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
                       lines={group.lines}
                       base={recipe.servings}
                       servings={servings}
+                      ready={ready}
+                      onToggle={toggleReady}
                     />
                   </div>
                 ))}
@@ -401,13 +412,17 @@ function IngredientLines({
   lines,
   base,
   servings,
+  ready,
+  onToggle,
 }: {
   lines: RecipeDetail["ingredients"];
   base: number;
   servings: number;
+  ready: ReadonlySet<string>;
+  onToggle: (id: string) => void;
 }) {
   return (
-    <ul className="ingredient-rows is-large">
+    <ul className="ingredient-rows is-large is-checkable">
       {lines.map((line) => {
         const parsed = parseIngredientLine(line.rawText);
         const quantity = formatScaledQuantity(
@@ -418,19 +433,29 @@ function IngredientLines({
         );
         return (
           <li key={line.id}>
-            <span className="ingredient-quantity">
-              {quantity ?? ""}
-              {parsed.unitText && ` ${parsed.unitText}`}
-            </span>
-            <span>
-              {line.ingredient
-                ? ingredientName(line.ingredient)
-                : parsed.name || line.rawText}
-              {line.note && <span className="meta">, {line.note}</span>}
-              {line.optional && (
-                <span className="meta"> · {m["recipes.optional"]()}</span>
-              )}
-            </span>
+            <button
+              type="button"
+              className="ingredient-check"
+              aria-pressed={ready.has(line.id)}
+              onClick={() => onToggle(line.id)}
+            >
+              <span className="ingredient-check-box" aria-hidden="true">
+                {ready.has(line.id) && <Check size={16} strokeWidth={3} />}
+              </span>
+              <span className="ingredient-quantity">
+                {quantity ?? ""}
+                {parsed.unitText && ` ${parsed.unitText}`}
+              </span>
+              <span className="ingredient-check-name">
+                {line.ingredient
+                  ? ingredientName(line.ingredient)
+                  : parsed.name || line.rawText}
+                {line.note && <span className="meta">, {line.note}</span>}
+                {line.optional && (
+                  <span className="meta"> · {m["recipes.optional"]()}</span>
+                )}
+              </span>
+            </button>
           </li>
         );
       })}
