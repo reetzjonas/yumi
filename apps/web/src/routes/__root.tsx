@@ -63,14 +63,7 @@ function Root() {
           {matches(pathname, BARE_PATHS) || !me ? (
             <Outlet />
           ) : (
-            <AppShell
-              householdName={
-                me.households.length > 1
-                  ? me.households.find((h) => h.id === me.activeHouseholdId)
-                      ?.name
-                  : undefined
-              }
-            >
+            <AppShell>
               <Outlet />
             </AppShell>
           )}

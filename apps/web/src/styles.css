@@ -4,62 +4,94 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #fbf8f4;
-  --foreground: #1d1917;
+  --background: #f2f1ec;
+  --foreground: #17141f;
   --card: #ffffff;
   --card-foreground: var(--foreground);
   --popover: var(--card);
   --popover-foreground: var(--foreground);
-  --primary: #d2341f;
+  /* The primary action is ink, never a color: color means place or state. */
+  --primary: #17141f;
   --primary-foreground: #ffffff;
-  --primary-hover: #b32a17;
-  --secondary: #f0ebe5;
-  --secondary-foreground: #3b342f;
-  --secondary-hover: #e6dfd7;
+  --primary-hover: #34303f;
+  --secondary: #e9e7df;
+  --secondary-foreground: #17141f;
+  --secondary-hover: #dedbd1;
   --muted: var(--secondary);
-  --muted-foreground: #6b625c;
-  --accent: #f0ebe5;
-  --accent-foreground: #1d1917;
-  --border: #948a82;
+  --muted-foreground: #65626f;
+  --accent: var(--secondary);
+  --accent-foreground: var(--foreground);
+  --border: #8b8898;
   --input: var(--border);
-  --ring: #d2341f;
-  --destructive: #9b1c31;
-  --primary-soft: #fde6e1;
-  --line: #ebe5de;
-  --warning: #f7ecd6;
-  --warning-foreground: #6b470c;
-  --success: #2f7a45;
-  --radius: 0.625rem;
-  --radius-badge: 8px;
-  --radius-control: 14px;
-  --radius-card: 20px;
-  --radius-sheet: 24px;
+  --ring: #17141f;
+  --destructive: #c22d18;
+  --primary-soft: var(--world-tint);
+  --line: #e7e5dd;
+  --warning: #fff1bd;
+  --warning-foreground: #5c4a00;
+  --success: #1f5c45;
+  /* Color worlds: one per section, set by [data-world] on the shell. */
+  --basil: #1f5c45;
+  --basil-tint: #d7eedd;
+  --lemon: #ffd23f;
+  --lemon-tint: #fff1bd;
+  --paprika: #ff6a4d;
+  --paprika-tint: #ffe0d6;
+  --plum: #cfd3ff;
+  --plum-tint: #e9ebff;
+  --ink: #17141f;
+  --world: var(--basil);
+  --on-world: #f4f1e2;
+  --world-tint: var(--basil-tint);
+  --radius: 0.75rem;
+  --radius-badge: 999px;
+  --radius-control: 18px;
+  --radius-card: 24px;
+  --radius-sheet: 32px;
   --font-display:
-    "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+    "Bricolage Grotesque Variable", "Arial Rounded MT Bold", ui-sans-serif,
+    system-ui, sans-serif;
 }
 
 .dark {
-  --background: #171412;
-  --foreground: #f6f1ec;
-  --card: #221e1b;
-  --primary: #ff7a66;
-  --primary-foreground: #3a0d06;
-  --primary-hover: #ff9483;
-  --secondary: #2d2824;
-  --secondary-foreground: #e9e2da;
-  --secondary-hover: #383229;
-  --muted-foreground: #b3a9a1;
-  --accent: #2d2824;
-  --accent-foreground: #f6f1ec;
-  --border: #7d726a;
-  --ring: #ff7a66;
-  --destructive: #ff9aa5;
-  --primary-soft: #45201a;
-  --line: #322c28;
-  --warning: #3d3220;
-  --warning-foreground: #f2d49b;
-  --success: #8fd3a0;
+  --background: #121018;
+  --foreground: #f5f2ea;
+  --card: #1f1c29;
+  --primary: #f5f2ea;
+  --primary-foreground: #17141f;
+  --primary-hover: #ffffff;
+  --secondary: #2a2736;
+  --secondary-foreground: #f5f2ea;
+  --secondary-hover: #353145;
+  --muted-foreground: #a7a3b5;
+  --border: #77738a;
+  --ring: #f5f2ea;
+  --destructive: #ff9a85;
+  --line: #2c2938;
+  --warning: #3d3414;
+  --warning-foreground: #f3dc8a;
+  --success: #74d6a6;
+  --basil: #1f6a4e;
+  --basil-tint: #1c3a2e;
+  --lemon-tint: #3d3414;
+  --paprika-tint: #47231b;
+  --plum-tint: #2b2c4d;
+}
+
+[data-world="liste"] {
+  --world: var(--lemon);
+  --on-world: var(--ink);
+  --world-tint: var(--lemon-tint);
+}
+[data-world="rezepte"] {
+  --world: var(--paprika);
+  --on-world: var(--ink);
+  --world-tint: var(--paprika-tint);
+}
+[data-world="mehr"] {
+  --world: var(--plum);
+  --on-world: var(--ink);
+  --world-tint: var(--plum-tint);
 }
 
 @theme inline {
@@ -90,8 +122,8 @@
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 8px);
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+    "Instrument Sans Variable", ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 @layer base {
@@ -164,148 +196,6 @@
   }
 }
 
-.app-shell {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  height: 100dvh;
-  isolation: isolate;
-}
-.top-bar {
-  grid-row: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: calc(56px + env(safe-area-inset-top));
-  padding: env(safe-area-inset-top) max(8px, env(safe-area-inset-right)) 0
-    max(8px, env(safe-area-inset-left));
-  background: var(--background);
-}
-.top-title-slot {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  min-width: 0;
-}
-.top-title {
-  flex: 1;
-  min-width: 0;
-  margin: 0 0 0 8px;
-  overflow: hidden;
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.03em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.top-back {
-  display: inline-grid;
-  flex-shrink: 0;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-control);
-  color: var(--foreground);
-}
-.top-back:hover {
-  background: var(--secondary);
-}
-.top-back + .top-title {
-  margin-left: 0;
-}
-.household-chip {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  gap: 6px;
-  max-width: 50%;
-  min-height: 44px;
-  padding: 0 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-control);
-  background: var(--card);
-  color: var(--foreground);
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-decoration: none;
-}
-.household-chip span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.brand {
-  display: none;
-}
-.app-navigation {
-  grid-row: 3;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom)
-    env(safe-area-inset-left);
-  border-top: 1px solid var(--line);
-  background: var(--background);
-  z-index: 1;
-}
-.nav-link {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  min-height: 62px;
-  padding: 6px 4px;
-  text-decoration: none;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--muted-foreground);
-}
-.nav-icon {
-  box-sizing: content-box;
-  padding: 3px 16px;
-  border-radius: 999px;
-}
-.nav-link.is-active {
-  color: var(--primary);
-  font-weight: 700;
-}
-.is-active > .nav-icon {
-  background: var(--primary-soft);
-}
-.nav-link:hover {
-  color: var(--foreground);
-}
-.nav-link.is-active:hover {
-  color: var(--primary-hover);
-}
-.app-main {
-  grid-row: 2;
-  min-width: 0;
-  overflow: auto;
-  overscroll-behavior-y: contain;
-  scroll-padding-block: 24px 160px;
-}
-.app-main:focus {
-  outline: none;
-}
-.page-content {
-  width: min(100%, 792px);
-  margin-inline: auto;
-  padding: 16px 16px 48px;
-}
-.page-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 24px;
-}
-.page-header .top-title {
-  margin-left: 0;
-  font-size: 1.75rem;
-  white-space: normal;
-}
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -1711,9 +1601,6 @@ select:focus-visible {
   .recipe-inline-fields > :last-child {
     grid-column: auto;
   }
-  .page-content {
-    padding: 24px 24px 64px;
-  }
   .recipe-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -1747,61 +1634,6 @@ select:focus-visible {
   h1 {
     font-size: 2.125rem;
   }
-  .app-shell {
-    grid-template-columns: 220px minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
-  }
-  .top-bar {
-    grid-column: 2;
-    padding-inline: 24px max(24px, env(safe-area-inset-right));
-  }
-  .app-navigation {
-    grid-column: 1;
-    grid-row: 1 / -1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: calc(16px + env(safe-area-inset-top)) 12px
-      calc(16px + env(safe-area-inset-bottom))
-      max(12px, env(safe-area-inset-left));
-    border-top: 0;
-    border-right: 1px solid var(--line);
-  }
-  .brand {
-    display: block;
-    padding: 6px 12px 22px;
-    color: var(--primary);
-    font-family: var(--font-display);
-    font-size: 1.75rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1;
-    text-decoration: none;
-  }
-  .nav-link {
-    flex-direction: row;
-    justify-content: flex-start;
-    gap: 12px;
-    min-height: 44px;
-    padding: 0 12px;
-    border-radius: var(--radius-control);
-    font-size: 0.9375rem;
-  }
-  .nav-icon {
-    padding: 0;
-  }
-  .is-active > .nav-icon {
-    background: transparent;
-  }
-  .nav-link:hover {
-    background: var(--secondary);
-  }
-  .nav-link.is-active {
-    background: var(--primary-soft);
-  }
-  .app-main {
-    grid-column: 2;
-  }
   .recipe-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -1811,10 +1643,6 @@ select:focus-visible {
   .recipe-columns {
     grid-template-columns: 360px minmax(0, 1fr);
     gap: 40px;
-  }
-  .page-content {
-    width: min(100%, 1064px);
-    padding: 24px 32px 64px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

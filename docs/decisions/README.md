@@ -18,4 +18,5 @@ Alpha: every decision may be revisited. Superseded ADRs stay, marked `Superseded
 | [0012](0012-design-line.md)             | Kitchen-notebook design line with three layout sizes   | Superseded by 0013 |
 | [0013](0013-design-draft-v2.md)         | The interactive prototype defines the screen structure | Superseded by 0015 |
 | [0014](0014-shopping-in-one-view.md)    | Shopping in the list view, no separate shopping mode   | Accepted           |
-| [0015](0015-ux-rework.md)               | UX rework: "Tomate" visual direction, leaner screens   | Accepted           |
+| [0015](0015-ux-rework.md)               | UX rework: "Tomate" visual direction, leaner screens   | Superseded by 0016 |
+| [0016](0016-farbwelten.md)              | "Farbwelten" UI concept built from scratch             | Accepted           |

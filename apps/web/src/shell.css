@@ -1,0 +1,323 @@
+/* Farbwelten shell: stage header, floating navigation and the shared building
+   blocks (ADR 0016). Loaded after styles.css. */
+
+.app-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  height: 100dvh;
+  isolation: isolate;
+}
+.app-main {
+  min-width: 0;
+  overflow: hidden auto;
+  overscroll-behavior-y: contain;
+  scroll-padding-block: 24px 180px;
+}
+.app-main:focus {
+  outline: none;
+}
+.page-content {
+  width: min(100%, 720px);
+  margin-inline: auto;
+  padding: 16px 16px calc(124px + env(safe-area-inset-bottom));
+}
+.stage-slot:has([data-lift]) + .page-content {
+  position: relative;
+  margin-top: -44px;
+}
+
+/* ---- stage ---- */
+.stage {
+  padding: calc(20px + env(safe-area-inset-top))
+    max(20px, env(safe-area-inset-right)) 22px
+    max(20px, env(safe-area-inset-left));
+  border-radius: 0 0 34px 34px;
+  background: var(--world);
+  color: var(--on-world);
+}
+.stage[data-lift] {
+  padding-bottom: 62px;
+}
+.stage-inner {
+  width: min(100%, 680px);
+  margin-inline: auto;
+}
+.stage-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.stage[data-compact] .stage-top {
+  align-items: center;
+}
+.stage-titles {
+  flex: 1;
+  min-width: 0;
+}
+.stage-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 20px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  opacity: 0.88;
+}
+.stage-title {
+  max-width: none;
+  margin: 2px 0 0;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  font-family: var(--font-display);
+  font-size: 2.125rem;
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+.stage[data-compact] .stage-title {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.15;
+}
+.stage-sub {
+  margin-top: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.stage-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+.stage-round,
+.stage-actions > .button {
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--on-world) 14%, transparent);
+  color: inherit;
+}
+.stage-round:hover,
+.stage-actions > .button:hover {
+  background: color-mix(in srgb, var(--on-world) 24%, transparent);
+  color: inherit;
+}
+.stage :focus-visible {
+  outline-color: var(--on-world);
+}
+
+/* ---- navigation: floating pill ---- */
+.app-navigation {
+  position: fixed;
+  z-index: 5;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(calc(100% - 28px), 400px);
+  height: 66px;
+  padding: 0 9px;
+  border-radius: 33px;
+  background: var(--ink);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.24);
+  translate: -50% 0;
+}
+.dark .app-navigation {
+  background: #2a2736;
+}
+.brand {
+  display: none;
+}
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  color: rgb(255 255 255 / 0.68);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.nav-link:hover {
+  color: #ffffff;
+}
+.nav-link:focus-visible {
+  outline-color: #ffffff;
+}
+.nav-link:not(.is-active) > .nav-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.nav-link.is-active {
+  padding: 0 18px 0 14px;
+  background: var(--world);
+  color: var(--on-world);
+}
+[data-immersive] > .app-navigation {
+  display: none;
+}
+
+/* ---- building blocks ---- */
+.button {
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+.button.icon-action {
+  width: 48px;
+  min-width: 48px;
+  padding: 0;
+}
+.chip {
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--card);
+}
+.chip:hover {
+  background: var(--secondary);
+}
+.chip[aria-pressed="true"] {
+  background: var(--foreground);
+  color: var(--background);
+}
+.badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--world-tint);
+  color: var(--foreground);
+}
+.badge-muted {
+  background: var(--secondary);
+  color: var(--foreground);
+}
+.card-list,
+.row-list {
+  border: 0;
+  border-radius: var(--radius-card);
+}
+.section-label {
+  margin: 22px 4px 10px;
+  color: var(--foreground);
+  font-family: var(--font-display);
+  font-size: 1.1875rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  text-transform: none;
+}
+.sheet {
+  border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+  background: var(--background);
+}
+.sheet-content::before {
+  width: 44px;
+  height: 5px;
+  margin: -4px auto -4px;
+  border-radius: 3px;
+  background: var(--border);
+  content: "";
+  opacity: 0.5;
+}
+.sheet-header {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+.sheet-title {
+  font-size: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .page-content {
+    padding: 24px 24px calc(124px + env(safe-area-inset-bottom));
+  }
+  .sheet {
+    border-radius: var(--radius-sheet);
+  }
+  .sheet-content::before {
+    display: none;
+  }
+}
+
+@media (min-width: 1200px) {
+  .app-shell {
+    grid-template-columns: 92px minmax(0, 1fr);
+  }
+  .app-navigation,
+  [data-immersive] > .app-navigation {
+    position: static;
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 8px;
+    width: auto;
+    height: auto;
+    padding: calc(22px + env(safe-area-inset-top)) 0 22px;
+    border-radius: 0;
+    box-shadow: none;
+    translate: none;
+  }
+  .brand {
+    display: block;
+    margin-bottom: 20px;
+    color: #ffffff;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-decoration: none;
+  }
+  .nav-link,
+  .nav-link.is-active {
+    flex-direction: column;
+    gap: 4px;
+    width: 68px;
+    height: 62px;
+    padding: 0;
+    border-radius: 20px;
+    font-size: 0.6875rem;
+  }
+  .nav-link:not(.is-active) > .nav-label {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
+  }
+  .app-main {
+    grid-column: 2;
+  }
+  .page-content {
+    width: min(100%, 1064px);
+    padding: 24px 32px 64px;
+  }
+  .stage {
+    padding: 26px 34px;
+    border-radius: 0;
+  }
+  .stage[data-lift] {
+    padding-bottom: 70px;
+  }
+  .stage-inner {
+    width: min(100%, 1000px);
+  }
+  .stage-title {
+    font-size: 2.5rem;
+  }
+}

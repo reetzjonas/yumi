@@ -1,43 +1,41 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { BookOpen, ListChecks, Menu, Sun, Users } from "lucide-react";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { BookOpen, CircleUser, ShoppingBasket, Sun } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
-import { TitleSlotContext } from "@/components/page";
+import { StageSlotContext } from "@/components/page";
 import { ConnectionStatus } from "@/components/pwa-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { m } from "@/paraglide/messages";
 
+/** Each section is a color world; the world tints the stage and the navigation. */
 const destinations = [
-  { to: "/plan", label: m.nav_today, icon: Sun },
-  { to: "/recipes", label: m.nav_recipes, icon: BookOpen },
-  { to: "/list", label: m.nav_list, icon: ListChecks },
-  { to: "/more", label: m.nav_more, icon: Menu },
+  { to: "/plan", world: "heute", label: m.nav_today, icon: Sun },
+  { to: "/recipes", world: "rezepte", label: m.nav_recipes, icon: BookOpen },
+  { to: "/list", world: "liste", label: m.nav_list, icon: ShoppingBasket },
+  { to: "/more", world: "mehr", label: m.nav_more, icon: CircleUser },
 ] as const;
 
-export function AppShell({
-  children,
-  householdName,
-}: {
-  children: ReactNode;
-  /** Set only when the user can switch between several households. */
-  householdName?: string;
-}) {
+/** Recipe detail: a full-screen read with its own action dock instead of the tabs. */
+const IMMERSIVE = /^\/recipes\/[^/]+\/?$/;
+
+export function AppShell({ children }: { children: ReactNode }) {
   useDesktopShortcuts();
-  const [titleSlot, setTitleSlot] = useState<HTMLDivElement | null>(null);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [stageSlot, setStageSlot] = useState<HTMLDivElement | null>(null);
+  const world =
+    destinations.find((item) => pathname.startsWith(item.to))?.world ?? "heute";
+  const immersive =
+    IMMERSIVE.test(pathname) &&
+    !["/recipes/new", "/recipes/import"].includes(pathname);
   return (
-    <TitleSlotContext value={titleSlot}>
-      <div className="app-shell">
+    <StageSlotContext value={stageSlot}>
+      <div
+        className="app-shell"
+        data-world={world}
+        data-immersive={immersive || undefined}
+      >
         <a className="skip-link" href="#main">
           {m.skip_content()}
         </a>
-        <header className="top-bar">
-          <div ref={setTitleSlot} className="top-title-slot" />
-          {householdName && (
-            <Link to="/more/household" className="household-chip">
-              <Users aria-hidden="true" size={18} />
-              <span>{householdName}</span>
-            </Link>
-          )}
-        </header>
         <nav className="app-navigation" aria-label={m.nav_main()}>
           <Link to="/plan" className="brand">
             yumi
@@ -52,17 +50,13 @@ export function AppShell({
                 "aria-current": "page",
               }}
             >
-              <Icon
-                aria-hidden="true"
-                className="nav-icon"
-                size={20}
-                strokeWidth={1.8}
-              />
-              <span>{label()}</span>
+              <Icon aria-hidden="true" size={22} strokeWidth={2} />
+              <span className="nav-label">{label()}</span>
             </Link>
           ))}
         </nav>
         <main id="main" tabIndex={-1} className="app-main">
+          <div ref={setStageSlot} className="stage-slot" />
           <div className="page-content">
             <ConnectionStatus />
             {children}
@@ -70,7 +64,7 @@ export function AppShell({
         </main>
         <Toaster />
       </div>
-    </TitleSlotContext>
+    </StageSlotContext>
   );
 }
 

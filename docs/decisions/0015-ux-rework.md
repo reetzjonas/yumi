@@ -1,6 +1,6 @@
 # 0015: UX rework with a new visual direction ("Tomate") and leaner screens
 
-- Status: Accepted (alpha)
+- Status: Superseded by 0016 (palette, type, shell); the structural decisions stay
 - Date: 2026-11-10
 
 ## Context

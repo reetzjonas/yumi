@@ -7,7 +7,10 @@ import { queryClient } from "@/lib/query-client";
 import { m } from "@/paraglide/messages";
 import { getLocale, getTextDirection } from "@/paraglide/runtime";
 import { routeTree } from "./routeTree.gen";
+import "@fontsource-variable/bricolage-grotesque/opsz.css";
+import "@fontsource-variable/instrument-sans/index.css";
 import "./styles.css";
+import "./shell.css";
 import "./cooking.css";
 import "./pictogram.css";
 
