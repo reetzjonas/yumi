@@ -218,6 +218,10 @@ explicit unsaved review are required. Cookbook pages are not recipe cover images
   row opens the entry sheet: servings, view recipe, cooked, cook, skip, move up/down
   (the non-drag path), note, date, remove. Below the queue a secondary button pushes
   ingredients to the shopping list.
+- **Recipe detail:** photo (only when there is one), title, description, meta,
+  insights row, then ingredients and steps. A sticky bar at the bottom holds Kochen
+  (primary) and Einplanen. Everything else (add to list, share, edit, source,
+  delete) lives in the overflow menu opened from the top bar.
 - **Overflow menu / sheet:** native `<dialog>` (focus trap, Escape, focus
   return): bottom sheet on phones, centered dialog from 768 px. Header shows the
   object (title + meta) and a close button; destructive items are red.

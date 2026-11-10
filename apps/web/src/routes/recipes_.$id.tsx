@@ -1,7 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { parseIngredientLine, unitSchema } from "@yumi/shared";
-import { Clock, Flame, Link as LinkIcon, Pencil, Trash2 } from "lucide-react";
+import {
+  Clock,
+  Ellipsis,
+  Flame,
+  Link as LinkIcon,
+  ListChecks,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import { useRef } from "react";
 import { toast } from "sonner";
 import { BackLink, PageHeader } from "@/components/page";
@@ -41,6 +49,7 @@ function Recipe() {
   const navigate = useNavigate();
   const queueSheet = useRef<HTMLDialogElement>(null);
   const listSheet = useRef<HTMLDialogElement>(null);
+  const menuSheet = useRef<HTMLDialogElement>(null);
   const query = useQuery({
     queryKey: ["recipes", householdId, "detail", id],
     queryFn: async () =>
@@ -70,6 +79,20 @@ function Recipe() {
         title={m["recipes.detail_title"]()}
         heading={false}
         back={<BackLink to="/recipes" label={m.nav_recipes()} />}
+        actions={
+          recipe && (
+            <Button
+              type="button"
+              variant="ghost"
+              className="icon-action"
+              aria-label={m["recipes.more_actions"]()}
+              aria-haspopup="dialog"
+              onClick={() => menuSheet.current?.showModal()}
+            >
+              <Ellipsis size={22} aria-hidden="true" />
+            </Button>
+          )
+        }
       />
       {query.isPending ? (
         <Skeleton className="h-32 w-full" />
@@ -80,7 +103,7 @@ function Recipe() {
       ) : (
         recipe && (
           <>
-            {recipe.imageKey ? (
+            {recipe.imageKey && (
               <img
                 className="recipe-hero"
                 src={recipeImageUrl(id, recipe.imageKey, "full")}
@@ -88,8 +111,6 @@ function Recipe() {
                 width={1200}
                 height={750}
               />
-            ) : (
-              <div className="recipe-hero is-empty" />
             )}
             <h1 className="recipe-title">{recipe.title}</h1>
             {recipe.description && (
@@ -119,67 +140,56 @@ function Recipe() {
               </div>
             )}
             <RecipeInsights key={`${householdId}-${id}`} recipe={recipe} />
-            <div className="recipe-primary-actions">
-              <Button asChild>
-                <Link to="/cook/$id" params={{ id }} search={{ servings }}>
-                  <Flame size={20} aria-hidden="true" />
-                  {m["recipes.cook_action"]()}
-                </Link>
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                aria-haspopup="dialog"
-                onClick={() => queueSheet.current?.showModal()}
-              >
-                {m["recipes.plan_action"]()}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                aria-haspopup="dialog"
-                onClick={() => listSheet.current?.showModal()}
-              >
-                {m["recipes.list_action"]()}
-              </Button>
-            </div>
-            <div className="recipe-secondary-actions">
-              <RecipeSharing recipeId={id} title={recipe.title} />
-              <Button asChild variant="ghost">
-                <Link to="/recipes/$id/edit" params={{ id }}>
-                  <Pencil size={18} aria-hidden="true" />
-                  {m["recipes.edit"]()}
-                </Link>
-              </Button>
-              <Button
-                variant="ghost"
-                className="button-danger-text"
-                disabled={remove.isPending}
-                onClick={() => {
-                  if (
-                    window.confirm(
-                      m["recipes.delete_confirm"]({ title: recipe.title }),
-                    )
-                  )
-                    remove.mutate();
-                }}
-              >
-                <Trash2 size={18} aria-hidden="true" />
-                {m["recipes.delete"]()}
-              </Button>
-              {recipe.sourceUrl && (
-                <Button asChild variant="ghost">
-                  <a
-                    href={recipe.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <LinkIcon size={18} aria-hidden="true" />
-                    {new URL(recipe.sourceUrl).hostname.replace(/^www\./, "")}
-                  </a>
+            <Sheet ref={menuSheet} title={recipe.title}>
+              <div className="menu-list">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  aria-haspopup="dialog"
+                  onClick={() => {
+                    menuSheet.current?.close();
+                    listSheet.current?.showModal();
+                  }}
+                >
+                  <ListChecks size={20} aria-hidden="true" />
+                  {m["recipes.list_action"]()}
                 </Button>
-              )}
-            </div>
+                <RecipeSharing recipeId={id} title={recipe.title} />
+                <Button asChild variant="ghost">
+                  <Link to="/recipes/$id/edit" params={{ id }}>
+                    <Pencil size={20} aria-hidden="true" />
+                    {m["recipes.edit"]()}
+                  </Link>
+                </Button>
+                {recipe.sourceUrl && (
+                  <Button asChild variant="ghost">
+                    <a
+                      href={recipe.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <LinkIcon size={20} aria-hidden="true" />
+                      {new URL(recipe.sourceUrl).hostname.replace(/^www\./, "")}
+                    </a>
+                  </Button>
+                )}
+                <Button
+                  variant="destructive"
+                  disabled={remove.isPending}
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        m["recipes.delete_confirm"]({ title: recipe.title }),
+                      )
+                    )
+                      remove.mutate();
+                  }}
+                >
+                  <Trash2 size={20} aria-hidden="true" />
+                  {m["recipes.delete"]()}
+                </Button>
+              </div>
+            </Sheet>
             <Sheet
               ref={queueSheet}
               title={m["queue.add"]()}
@@ -297,17 +307,6 @@ function Recipe() {
                         </li>
                       ))}
                     </ol>
-                    <Button asChild variant="outline" className="w-full">
-                      <Link
-                        to="/cook/$id"
-                        params={{ id }}
-                        search={{ servings }}
-                      >
-                        {m["recipes.cook_view_link"]({
-                          count: recipe.steps.length,
-                        })}
-                      </Link>
-                    </Button>
                   </>
                 )}
                 {recipe.nutrition && (
@@ -317,6 +316,22 @@ function Recipe() {
                   />
                 )}
               </section>
+            </div>
+            <div className="sticky-action recipe-action-bar">
+              <Button asChild>
+                <Link to="/cook/$id" params={{ id }} search={{ servings }}>
+                  <Flame size={20} aria-hidden="true" />
+                  {m["recipes.cook_action"]()}
+                </Link>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                aria-haspopup="dialog"
+                onClick={() => queueSheet.current?.showModal()}
+              >
+                {m["recipes.plan_action"]()}
+              </Button>
             </div>
           </>
         )

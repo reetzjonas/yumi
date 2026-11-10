@@ -1393,27 +1393,6 @@ select:focus-visible {
   display: grid;
   gap: 8px;
 }
-.recipe-primary-actions {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin: 14px 0 8px;
-}
-.recipe-primary-actions .button {
-  padding-inline: 8px;
-  text-align: center;
-}
-.recipe-secondary-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-bottom: 8px;
-}
-.recipe-secondary-actions > .button {
-  padding-inline: 12px;
-  color: var(--primary);
-  font-size: 0.875rem;
-}
 .recipe-columns {
   display: grid;
   gap: 8px;
@@ -2452,4 +2431,28 @@ body [data-sonner-toast][data-styled="true"].shopping-feedback [data-button] {
   background: transparent;
   color: var(--primary);
   text-decoration: underline;
+}
+.menu-list {
+  display: grid;
+  gap: 2px;
+}
+.menu-list .button {
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 52px;
+  gap: 14px;
+  font-weight: 600;
+}
+.recipe-action-bar {
+  display: flex;
+  gap: 8px;
+}
+.recipe-action-bar > :first-child {
+  flex: 2;
+}
+.recipe-action-bar > * {
+  flex: 1;
+}
+.recipe-detail > .recipe-title:first-child {
+  margin-top: 8px;
 }

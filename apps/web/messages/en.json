@@ -605,5 +605,6 @@
   "queue.view_recipe": "View recipe",
   "queue.move_up_short": "Move up",
   "queue.move_down_short": "Move down",
-  "queue.to_list_action": "Ingredients to the shopping list"
+  "queue.to_list_action": "Ingredients to the shopping list",
+  "recipes.more_actions": "More actions"
 }
