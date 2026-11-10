@@ -16,8 +16,10 @@ Pipeline, cheapest step first:
    is confident only for an exact name or synonym or a plural ending of one; pure trigram links need a
    score of 0.7. Lines with confidence below ~0.7 or without a confident link go to the LLM in one
    batched call. Lines that still have no catalog match create a household
-   ingredient during import. The AI ingredient-create feature proposes name, category, unit, pack sizes,
-   density or piece weight and a nutrition estimate; without AI the parsed name is used.
+   ingredient during import. The AI ingredient-create feature proposes name, category (a supermarket
+   aisle, see the hints in `ingredient-suggestions.ts`), unit, pack sizes, density, piece weight and a
+   nutrition estimate. It is told the unit the recipe line uses, so the proposal carries the factor
+   that converts that amount to grams. Without AI the parsed name is used.
 6. The user always gets a **review screen** before saving.
 
 Status: steps 1-6 are implemented. `POST /api/recipes/import` (`apps/api/src/routes/recipe-import.ts`,
@@ -28,8 +30,11 @@ characters of readable text and returns a validated recipe draft. Pages without 
 and failed AI calls retain `import_no_recipe`, allowing manual entry. Structured imports do not need the
 recipe AI feature. Low-confidence or unmatched ingredient lines are sent in one batch to the ingredient
 parsing feature; failed or incomplete batches retain the rule-based results. Catalog linking always runs
-server-side against the active household. Missing ingredients are created only in that household and
-capped per import; AI-suggested fields, including nutrition, are marked as estimates and never touch the
+server-side against the active household. Missing ingredients are created only in that household. A household
+ingredient that a line links to but that has no nutrition, or no way to weigh the line's amount, gets
+one more proposal that fills only its empty fields, so an entry created without AI or by hand is
+completed by a later import. Global entries are never changed. Proposals are capped at 20 per import
+and fetched four at a time; AI-suggested fields, including nutrition, are marked as estimates and never touch the
 global catalog. Created ingredients remain in the household catalog even if the recipe is not saved.
 Measure words with a sensible unit get one when no counted catalog part matches
 ("1 Becher Schmand" is one pack, a Handvoll 30 g, a Schuss 20 ml, a Messerspitze a pinch), so the

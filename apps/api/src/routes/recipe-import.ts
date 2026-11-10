@@ -1,5 +1,10 @@
 import { ingredient, ingredientCategory } from "@yumi/db/schema";
-import { PHOTO_IMPORT_MAX_BYTES, PHOTO_IMPORT_MAX_COUNT } from "@yumi/shared";
+import {
+  ingredientWeightG,
+  PHOTO_IMPORT_MAX_BYTES,
+  PHOTO_IMPORT_MAX_COUNT,
+  type Unit,
+} from "@yumi/shared";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
@@ -76,8 +81,12 @@ type ParsedImportLine = Awaited<
   ReturnType<typeof parseIngredientLines>
 >[number];
 
-const MAX_AUTO_CREATED_INGREDIENTS = 20;
+/** AI proposals per import: new ingredients plus incomplete ones to fill in. */
+const MAX_INGREDIENT_PROPOSALS = 20;
+const PROPOSAL_CONCURRENCY = 4;
 const AI_NUTRITION_SOURCE = "AI estimate";
+
+type Suggestion = Awaited<ReturnType<typeof suggestIngredient>>;
 
 /**
  * Creates a household ingredient for a line without a catalog match. The AI
@@ -87,11 +96,8 @@ const AI_NUTRITION_SOURCE = "AI estimate";
 async function createMissingIngredient(
   householdId: string,
   parsed: ParsedImportLine,
-  client: typeof ai,
+  suggestion: Suggestion,
 ) {
-  const name = parsed.name.trim();
-  if (!name || name.length > 100) return null;
-  const suggestion = await suggestIngredient(name, client);
   const existing = await matchParsedLine(householdId, {
     ...parsed,
     name: suggestion.draft.nameDe,
@@ -101,7 +107,6 @@ async function createMissingIngredient(
     return {
       id: existing.ingredient.id,
       categoryId: existing.ingredient.categoryId,
-      created: false,
     };
   const [created] = await db
     .insert(ingredient)
@@ -114,9 +119,65 @@ async function createMissingIngredient(
           : null,
     })
     .returning({ id: ingredient.id, categoryId: ingredient.categoryId });
-  return created
-    ? { id: created.id, categoryId: created.categoryId, created: true }
-    : null;
+  return created ?? null;
+}
+
+/**
+ * A household ingredient that cannot feed the recipe's nutrition: it has no
+ * profile, or the line's amount does not convert to grams. Global entries are
+ * maintained by the seed and never completed here.
+ */
+function isIncomplete(householdId: string, line: ParsedImportLine) {
+  const row = line.ingredient;
+  if (!row || row.householdId !== householdId) return false;
+  if (!row.nutritionPer100g) return true;
+  return (
+    line.quantity !== null &&
+    ingredientWeightG(line.quantity, line.unit ?? "pcs", row) === null
+  );
+}
+
+/** Fills only what the ingredient leaves open; values the household set stay. */
+async function completeIngredient(
+  row: NonNullable<ParsedImportLine["ingredient"]>,
+  suggestion: Suggestion,
+) {
+  if (suggestion.method !== "ai") return row.categoryId;
+  const { draft } = suggestion;
+  const fillNutrition = !row.nutritionPer100g && draft.nutritionPer100g;
+  const [updated] = await db
+    .update(ingredient)
+    .set({
+      nutritionPer100g: row.nutritionPer100g ?? draft.nutritionPer100g,
+      nutritionSource: fillNutrition
+        ? AI_NUTRITION_SOURCE
+        : row.nutritionSource,
+      densityGPerMl: row.densityGPerMl ?? draft.densityGPerMl,
+      pieceWeightG: row.pieceWeightG ?? draft.pieceWeightG,
+      packSizes: row.packSizes.length ? row.packSizes : draft.packSizes,
+      categoryId: row.categoryId ?? draft.categoryId,
+      defaultUnit: row.defaultUnit ?? draft.defaultUnit,
+      icon: row.icon ?? draft.icon ?? null,
+    })
+    .where(eq(ingredient.id, row.id))
+    .returning({ categoryId: ingredient.categoryId });
+  return updated?.categoryId ?? row.categoryId;
+}
+
+/** Runs the tasks with a small pool, so an import does not wait on one call at a time. */
+async function pooled<T>(tasks: readonly (() => Promise<T>)[], limit: number) {
+  const results: T[] = [];
+  let next = 0;
+  await Promise.all(
+    Array.from({ length: Math.min(limit, tasks.length) }, async () => {
+      while (next < tasks.length) {
+        const index = next++;
+        const task = tasks[index];
+        if (task) results[index] = await task();
+      }
+    }),
+  );
+  return results;
 }
 
 async function linkDraftIngredients(
@@ -134,21 +195,56 @@ async function linkDraftIngredients(
     .from(ingredientCategory)
     .where(eq(ingredientCategory.key, "spices"))
     .limit(1);
-  let createdIngredients = 0;
+
+  // One proposal per distinct name, for lines without a match and for
+  // incomplete household ingredients.
+  const proposalName = (line: ParsedImportLine) => {
+    if (line.ingredient)
+      return isIncomplete(householdId, line) ? line.ingredient.nameDe : null;
+    const name = line.name.trim();
+    return name && name.length <= 100 ? name : null;
+  };
+  const wanted = new Map<string, { name: string; unit: Unit | null }>();
+  for (const line of parsed) {
+    const name = proposalName(line);
+    const key = name?.toLowerCase();
+    if (!name || !key || wanted.has(key)) continue;
+    if (wanted.size >= MAX_INGREDIENT_PROPOSALS) break;
+    wanted.set(key, { name, unit: line.unit });
+  }
+  const proposed = await pooled(
+    [...wanted.values()].map(
+      ({ name, unit }) =>
+        () =>
+          suggestIngredient(name, client, unit),
+    ),
+    PROPOSAL_CONCURRENCY,
+  );
+  const suggestions = new Map(
+    [...wanted.keys()].map((key, index) => [key, proposed[index]] as const),
+  );
+
+  const completed = new Map<string, string | null>();
   const ingredients: RecipeImportDraft["ingredients"] = [];
   for (const [index, line] of draft.ingredients.entries()) {
     const match = parsed[index];
     let ingredientId = match?.ingredient?.id ?? null;
     let categoryId = match?.ingredient?.categoryId ?? null;
-    if (
-      !ingredientId &&
-      match &&
-      createdIngredients < MAX_AUTO_CREATED_INGREDIENTS
-    ) {
-      const created = await createMissingIngredient(householdId, match, client);
+    const suggestion =
+      match && suggestions.get(proposalName(match)?.toLowerCase() ?? "");
+    if (match && suggestion && !match.ingredient) {
+      const created = await createMissingIngredient(
+        householdId,
+        match,
+        suggestion,
+      );
       ingredientId = created?.id ?? null;
       categoryId = created?.categoryId ?? categoryId;
-      if (created?.created) createdIngredients += 1;
+    } else if (match?.ingredient && suggestion) {
+      const row = match.ingredient;
+      if (!completed.has(row.id))
+        completed.set(row.id, await completeIngredient(row, suggestion));
+      categoryId = completed.get(row.id) ?? categoryId;
     }
     ingredients.push({
       ...line,

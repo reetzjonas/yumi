@@ -247,3 +247,119 @@ test("the import endpoint rejects private targets and anonymous callers", async 
   });
   expect(anonymous.status).toBe(401);
 });
+
+test("an import completes an incomplete household ingredient and keeps its own values", async () => {
+  const nutrition = {
+    energyKcal: 120,
+    proteinG: 2,
+    fatG: 1,
+    carbsG: 20,
+    sugarG: 4,
+    fiberG: 3,
+    saltG: 0.02,
+  };
+  const server = aiServer("ollama", ({ model }) =>
+    completion(
+      "ollama",
+      model,
+      JSON.stringify({
+        nameDe: "Glitzerstaub",
+        nameEn: "Glitter dust",
+        synonyms: [],
+        categoryKey: "baking",
+        defaultUnit: "tsp",
+        densityGPerMl: 0.5,
+        pieceWeightG: 2,
+        nutritionPer100g: nutrition,
+        packSizes: [{ quantity: 50, unit: "g" }],
+        icon: null,
+      }),
+    ),
+  );
+  const suggestionClient = createAi(
+    {
+      ...server.config,
+      features: {
+        ...server.config.features,
+        "ingredient-parse": {
+          ...server.config.features["ingredient-parse"],
+          enabled: false,
+        },
+      },
+    },
+    (event) => server.events.push(event),
+  );
+  const id = await householdId();
+  const [own] = await db
+    .insert(ingredient)
+    .values({
+      householdId: id,
+      nameDe: "Glitzerstaub",
+      nameEn: "Glitzerstaub",
+      pieceWeightG: 5,
+    })
+    .returning({ id: ingredient.id });
+  if (!own) throw new Error("missing household ingredient");
+  const read = () =>
+    db
+      .select({
+        categoryId: ingredient.categoryId,
+        densityGPerMl: ingredient.densityGPerMl,
+        pieceWeightG: ingredient.pieceWeightG,
+        nutritionPer100g: ingredient.nutritionPer100g,
+        nutritionSource: ingredient.nutritionSource,
+        packSizes: ingredient.packSizes,
+      })
+      .from(ingredient)
+      .where(eq(ingredient.id, own.id));
+
+  const result = await importRecipeDraft(
+    id,
+    "https://example.org/zwiebelsuppe",
+    transport,
+    suggestionClient,
+  );
+
+  expect(result.draft.ingredients[1]?.ingredientId).toBe(own.id);
+  const [completed] = await read();
+  expect(completed).toMatchObject({
+    densityGPerMl: 0.5,
+    pieceWeightG: 5,
+    nutritionPer100g: nutrition,
+    nutritionSource: "AI estimate",
+    packSizes: [{ quantity: 50, unit: "g" }],
+  });
+  expect(completed?.categoryId).not.toBeNull();
+  expect(server.requests()).toBe(1);
+
+  // Complete now: a second import leaves it alone.
+  await importRecipeDraft(
+    id,
+    "https://example.org/zwiebelsuppe",
+    transport,
+    suggestionClient,
+  );
+  expect(server.requests()).toBe(1);
+});
+
+test("without AI an incomplete household ingredient stays as it is", async () => {
+  const id = await householdId();
+  const [own] = await db
+    .insert(ingredient)
+    .values({ householdId: id, nameDe: "Glitzerstaub", nameEn: "Glitzerstaub" })
+    .returning({ id: ingredient.id });
+
+  const result = await importRecipeDraft(
+    id,
+    "https://example.org/zwiebelsuppe",
+    transport,
+    createAi(),
+  );
+
+  expect(result.draft.ingredients[1]?.ingredientId).toBe(own?.id ?? null);
+  const [row] = await db
+    .select({ nutritionPer100g: ingredient.nutritionPer100g })
+    .from(ingredient)
+    .where(eq(ingredient.id, own?.id ?? ""));
+  expect(row?.nutritionPer100g).toBeNull();
+});
