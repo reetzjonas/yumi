@@ -51,7 +51,12 @@ export function AppShell({
                 "aria-current": "page",
               }}
             >
-              <Icon aria-hidden="true" size={20} strokeWidth={1.8} />
+              <Icon
+                aria-hidden="true"
+                className="nav-icon"
+                size={20}
+                strokeWidth={1.8}
+              />
               <span>{label()}</span>
             </Link>
           ))}

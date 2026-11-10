@@ -1,33 +1,27 @@
 # yumi design line
 
-The binding summary of how yumi looks and behaves. The structural reference is
-the interactive prototype in [`design/yumi-draft.html`](design/yumi-draft.html)
-(open it in a browser; board 2, specs on board 4): every screen follows its
-layout, order and controls. Features built after the draft get a place inside
-that structure. When a detail of the draft breaks a rule or token in this file,
-this file wins. Why: [ADR 0012](decisions/0012-design-line.md) (palette, type,
-rules) and [ADR 0013](decisions/0013-design-draft-v2.md) (structure, layout sizes).
+The binding summary of how yumi looks and behaves. Why: [ADR 0015](decisions/0015-ux-rework.md)
+(palette, type, structure) and [ADR 0013](decisions/0013-design-draft-v2.md) (layout sizes).
+`design/yumi-draft.html` is a historical snapshot and not a reference anymore.
 
 ## 1. Identity
 
-A shared kitchen notebook: cream paper, olive ink, rust for the one thing you
-should tap. A calm utility; recipes and list items are the decoration. No stock
-imagery, gradients, blur, decorative accent borders or promotional copy.
+A calm kitchen tool: warm near-white paper, near-black text, tomato red for the one thing you
+should tap. Recipe photos and list pictograms are the decoration. Soft filled surfaces instead of
+outlined boxes. No stock imagery, gradients, blur, decorative accent borders or promotional copy.
 
 ## 2. Rules for every screen
 
-1. **One primary action per view.** Exactly one filled rust button. Everything
-   else is outline, ghost or a text link. Row actions are never rust. Views
+1. **One primary action per view.** Exactly one filled red button. Everything
+   else is a soft fill, ghost or a text link. Row actions are never red. Views
    that save automatically (settings) have no primary button.
-2. **Color carries meaning.** Rust = do, olive = fine / done / info, amber =
-   waiting, red = gone. Status is never hue alone: it always has an icon or a
+2. **Color carries meaning.** Red = do, green = fine / done, amber =
+   waiting, wine red with an icon or word = gone. Status is never hue alone: it always has an icon or a
    word ("wartet", "fällig", "abgehakt von Anna"). Sync pending is never red.
 3. **No placeholders for unbuilt features.** No disabled "kommt bald" buttons,
    no empty "Nährwerte" rows. A feature appears when it works.
 4. **Lists are scannable.** Library, shopping and settings rows are one or two
-   lines; secondary actions live in an overflow menu or the edit sheet. Queue
-   entries are the exception: they carry servings and cooking actions inline as
-   in the draft.
+   lines; secondary actions live in an overflow menu or the edit sheet.
 5. **AI always has a manual path** that is visible next to the AI entry point;
    with AI disabled the manual path becomes the primary one.
 6. **Borders separate, shadows lift.** Only floating surfaces (sheets, dialogs,
@@ -39,51 +33,50 @@ imagery, gradients, blur, decorative accent borders or promotional copy.
 
 | Token (CSS var)              | Light             | Dark              | Use                                       |
 | ---------------------------- | ----------------- | ----------------- | ----------------------------------------- |
-| background                   | #fcfaf5           | #1a1e18           | Page paper                                |
-| foreground                   | #292e24           | #f4f1e8           | Body text, icons                          |
-| card / popover               | #ffffff           | #242a21           | Cards, rows, inputs, floating surfaces    |
-| primary / -foreground        | #a43d28 / #ffffff | #f2aa8f / #381b12 | The one primary action, links, active tab |
-| primary-hover                | #85301f           | #ffc1a8           | Hover of primary                          |
-| primary-soft                 | #f6e3dc           | #4a2c22           | "Vorschlag" badge, selected star          |
-| secondary / muted            | #f1ece2           | #2e352a           | Soft surfaces, skeletons, timer dock      |
-| secondary-foreground         | #424c3a           | #e3e8da           | Text on secondary                         |
-| muted-foreground             | #64675b           | #b8c0ad           | Meta text, hints                          |
-| accent / -foreground         | #e8eddf / #35482d | #35432d / #e2edda | Info notes, tags, active navigation       |
-| border / input               | #858778           | #858f79           | Inputs, steppers, checkboxes (3:1 min)    |
-| line                         | #ddd8cb           | #3a4234           | Decorative dividers and card outlines     |
-| ring                         | #93412b           | #efae91           | Focus ring                                |
-| destructive                  | #ac2928           | #ffb0a9           | Delete, remove, timer alarm               |
+| background                   | #fbf8f4           | #171412           | Page paper, bars                          |
+| foreground                   | #1d1917           | #f6f1ec           | Body text, icons                          |
+| card / popover               | #ffffff           | #221e1b           | Cards, inputs, floating surfaces          |
+| primary / -foreground        | #d2341f / #ffffff | #ff7a66 / #3a0d06 | The one primary action, links, active tab |
+| primary-hover                | #b32a17           | #ff9483           | Hover of primary                          |
+| primary-soft                 | #fde6e1           | #45201a           | Tags, selected chip, active tab pill      |
+| secondary / muted / accent   | #f0ebe5           | #2d2824           | Secondary buttons, chips, steppers        |
+| secondary-hover              | #e6dfd7           | #383229           | Hover of soft fills                       |
+| secondary-foreground         | #3b342f           | #e9e2da           | Text on secondary                         |
+| muted-foreground             | #6b625c           | #b3a9a1           | Meta text, hints                          |
+| border / input               | #948a82           | #7d726a           | Text inputs, checkboxes (3:1 min)         |
+| line                         | #ebe5de           | #322c28           | Dividers and card outlines                |
+| ring                         | #d2341f           | #ff7a66           | Focus ring                                |
+| destructive                  | #9b1c31           | #ff9aa5           | Delete, remove, timer alarm               |
 | warning / warning-foreground | #f7ecd6 / #6b470c | #3d3220 / #f2d49b | Offline banner, sync pending, "fällig"    |
-| success                      | #3f6b2e           | #a9cf8f           | Checked items, progress, presence         |
+| success                      | #2f7a45           | #8fd3a0           | Checked items, progress, presence         |
 
-`line` is decorative only and never the sole boundary of an interactive control.
+`line` is decorative only. Buttons, chips and steppers are filled and need no border; text inputs
+and checkboxes keep the `border` token.
 
 ## 4. Typography
 
-- **Sans** (system stack) for everything you read while doing something.
-- **Display serif** `ui-serif, "Iowan Old Style", "Palatino Linotype", Georgia,
-  serif` (no web font) for page titles, recipe titles and empty-state headlines.
+One sans family (system stack, `Inter` first when installed, no web font). Titles get their
+character from weight and tracking, not from a second typeface.
 
-| Role      | Size / line height        | Weight    |
-| --------- | ------------------------- | --------- |
-| display   | 28/1.15 (34 at >=1200 px) | serif 600 |
-| title     | 21/1.2                    | serif 600 |
-| heading   | 17/1.3                    | sans 700  |
-| body      | 16/1.5                    | sans 400  |
-| label     | 14/1.3                    | sans 600  |
-| meta      | 13/1.35                   | sans 400  |
-| overline  | 12/1, caps, +0.06em       | sans 700  |
-| cook step | 26 phone -> 34 tablet     | sans 500  |
+| Role      | Size / line height       | Weight       |
+| --------- | ------------------------ | ------------ |
+| display   | 28/1.1 (34 at >=1200 px) | 800, -0.03em |
+| title     | 24/1.15                  | 800, -0.03em |
+| heading   | 17/1.3                   | 700          |
+| body      | 16/1.5                   | 400          |
+| label     | 14/1.3                   | 600          |
+| meta      | 13/1.35                  | 400          |
+| overline  | 12/1, caps, +0.06em      | 700          |
+| cook step | 26 phone -> 34 tablet    | 500          |
 
 Quantities and timers use `tabular-nums`. Inputs never go below 16 px.
 
 ## 5. Spacing, radii, elevation, motion
 
 - Spacing on a 4 px base: 4, 8, 12, 16, 24, 32, 48. Gutter 16 phone, 24 tablet+.
-  Row height 56 (shopping rows 60). Targets at least 44x44.
-- Radii: 6 badge, 8 base, 10 control, 12 card, 16 sheet. No full pills: chips are
-  10 px rectangles.
-- Elevation: 0 flat with border, 1 sheet/menu, 2 dialog/toast.
+  Row height 56. Targets at least 44x44.
+- Radii: 8 badge, 10 chip, 14 control, 20 card, 24 sheet. Checkboxes are round.
+- Elevation: 0 flat, 1 sheet/menu, 2 dialog/toast.
 - Motion: 150 ms press/toggle, 200 ms ease-out for sheets and dialogs in, 150 ms
   out. Checked shopping rows stay 600 ms before moving to "Erledigt".
   `prefers-reduced-motion` removes movement, keeps state changes.
@@ -96,7 +89,7 @@ Quantities and timers use `tabular-nums`. Inputs never go below 16 px.
 | 768 - 1199 | Same top bar and bottom tabs                                     | One column, centered, max 760 px  |
 | >= 1200    | 220 px sidebar (wordmark, four sections); top bar with the title | One column, centered, max 1000 px |
 
-The top bar carries the page title (serif title role) on the left and the
+The top bar carries the page title (title role) on the left and the
 household chip on the right; detail screens show a back arrow before the title.
 Columns inside the content column: recipe cards 2 / 3 / 4 per row; recipe
 detail from 768 px ingredients (340-360 px) beside the steps; shopping
@@ -215,7 +208,7 @@ priorities are source, upload limits and page order, then extraction. File and
 camera inputs, ordered removable pages, pending state, inline errors and the
 explicit unsaved review are required. Cookbook pages are not recipe cover images.
 
-- **Button:** primary (filled rust), outline, ghost, destructive. Fixed geometry
+- **Button:** primary (filled red), secondary (soft fill), ghost, destructive. Fixed geometry
   in every state; press scales to 0.98.
 - **Queue entry:** position number, thumbnail, title, meta line
   ("4 Portionen · Do · 40 Min"), optional suggestion reason; then a servings
@@ -227,7 +220,7 @@ explicit unsaved review are required. Cookbook pages are not recipe cover images
   object (title + meta) and a close button; destructive items are red.
 - **Cooking view header:** close, title with "Schritt 1 von 6 · 4 Portionen",
   the wake-lock state as a chip (icon + word), a progress bar below.
-- **Empty state:** serif headline, one sentence, one primary next action.
+- **Empty state:** bold headline, one sentence, one primary next action.
 - **Skeleton:** shaped like the content it replaces; static under reduced motion.
 
 ## 8. Cross-cutting states
@@ -250,5 +243,3 @@ button alternative; on touch the edit button stays visually hidden by choice.
 - Small refinements: change this file in the same commit as the code.
 - A change to a rule in section 2, the palette, the type families, the
   breakpoints or the reference structure: new ADR, then update this file.
-- The draft is a reference snapshot; update it when a screen changes in a way
-  the text cannot carry.

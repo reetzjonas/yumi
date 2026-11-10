@@ -14,8 +14,8 @@ export const pwaOptions = {
     scope: "/",
     display: "standalone",
     orientation: "any",
-    theme_color: "#fcfaf5",
-    background_color: "#fcfaf5",
+    theme_color: "#fbf8f4",
+    background_color: "#fbf8f4",
     share_target: {
       action: "/recipes/import",
       method: "GET",

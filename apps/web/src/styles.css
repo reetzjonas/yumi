@@ -4,59 +4,62 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #fcfaf5;
-  --foreground: #292e24;
+  --background: #fbf8f4;
+  --foreground: #1d1917;
   --card: #ffffff;
   --card-foreground: var(--foreground);
   --popover: var(--card);
   --popover-foreground: var(--foreground);
-  --primary: #a43d28;
+  --primary: #d2341f;
   --primary-foreground: #ffffff;
-  --primary-hover: #85301f;
-  --secondary: #f1ece2;
-  --secondary-foreground: #424c3a;
+  --primary-hover: #b32a17;
+  --secondary: #f0ebe5;
+  --secondary-foreground: #3b342f;
+  --secondary-hover: #e6dfd7;
   --muted: var(--secondary);
-  --muted-foreground: #64675b;
-  --accent: #e8eddf;
-  --accent-foreground: #35482d;
-  --border: #858778;
+  --muted-foreground: #6b625c;
+  --accent: #f0ebe5;
+  --accent-foreground: #1d1917;
+  --border: #948a82;
   --input: var(--border);
-  --ring: #93412b;
-  --destructive: #ac2928;
-  --primary-soft: #f6e3dc;
-  --line: #ddd8cb;
+  --ring: #d2341f;
+  --destructive: #9b1c31;
+  --primary-soft: #fde6e1;
+  --line: #ebe5de;
   --warning: #f7ecd6;
   --warning-foreground: #6b470c;
-  --success: #3f6b2e;
-  --radius: 0.5rem;
-  --radius-badge: 6px;
-  --radius-control: 10px;
-  --radius-card: 12px;
-  --radius-sheet: 16px;
+  --success: #2f7a45;
+  --radius: 0.625rem;
+  --radius-badge: 8px;
+  --radius-control: 14px;
+  --radius-card: 20px;
+  --radius-sheet: 24px;
   --font-display:
-    ui-serif, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
 }
 
 .dark {
-  --background: #1a1e18;
-  --foreground: #f4f1e8;
-  --card: #242a21;
-  --primary: #f2aa8f;
-  --primary-foreground: #381b12;
-  --primary-hover: #ffc1a8;
-  --secondary: #2e352a;
-  --secondary-foreground: #e3e8da;
-  --muted-foreground: #b8c0ad;
-  --accent: #35432d;
-  --accent-foreground: #e2edda;
-  --border: #858f79;
-  --ring: #efae91;
-  --destructive: #ffb0a9;
-  --primary-soft: #4a2c22;
-  --line: #3a4234;
+  --background: #171412;
+  --foreground: #f6f1ec;
+  --card: #221e1b;
+  --primary: #ff7a66;
+  --primary-foreground: #3a0d06;
+  --primary-hover: #ff9483;
+  --secondary: #2d2824;
+  --secondary-foreground: #e9e2da;
+  --secondary-hover: #383229;
+  --muted-foreground: #b3a9a1;
+  --accent: #2d2824;
+  --accent-foreground: #f6f1ec;
+  --border: #7d726a;
+  --ring: #ff7a66;
+  --destructive: #ff9aa5;
+  --primary-soft: #45201a;
+  --line: #322c28;
   --warning: #3d3220;
   --warning-foreground: #f2d49b;
-  --success: #a9cf8f;
+  --success: #8fd3a0;
 }
 
 @theme inline {
@@ -146,9 +149,9 @@
   h1 {
     font-family: var(--font-display);
     font-size: 1.75rem;
-    font-weight: 600;
-    line-height: 1.15;
-    letter-spacing: -0.01em;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
   }
   h2 {
     font-size: 1.0625rem;
@@ -176,7 +179,6 @@
   min-height: calc(56px + env(safe-area-inset-top));
   padding: env(safe-area-inset-top) max(8px, env(safe-area-inset-right)) 0
     max(8px, env(safe-area-inset-left));
-  border-bottom: 1px solid var(--line);
   background: var(--background);
 }
 .top-title-slot {
@@ -191,10 +193,10 @@
   margin: 0 0 0 8px;
   overflow: hidden;
   font-family: var(--font-display);
-  font-size: 1.3125rem;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: normal;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -244,7 +246,7 @@
   padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom)
     env(safe-area-inset-left);
   border-top: 1px solid var(--line);
-  background: var(--card);
+  background: var(--background);
   z-index: 1;
 }
 .nav-link {
@@ -260,9 +262,17 @@
   font-weight: 500;
   color: var(--muted-foreground);
 }
+.nav-icon {
+  box-sizing: content-box;
+  padding: 3px 16px;
+  border-radius: 999px;
+}
 .nav-link.is-active {
   color: var(--primary);
   font-weight: 700;
+}
+.is-active > .nav-icon {
+  background: var(--primary-soft);
 }
 .nav-link:hover {
   color: var(--foreground);
@@ -320,12 +330,12 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 44px;
+  min-height: 46px;
   min-width: 44px;
-  padding: 0 16px;
+  padding: 0 18px;
   border-radius: var(--radius-control);
   font-size: 0.9375rem;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.1;
   text-decoration: none;
   border: 1px solid transparent;
@@ -339,27 +349,25 @@
   background: var(--primary-hover);
 }
 .button-secondary {
-  background: var(--card);
-  border-color: var(--border);
+  background: var(--secondary);
   color: var(--foreground);
 }
-.button-secondary:hover,
+.button-secondary:hover {
+  background: var(--secondary-hover);
+}
 .button-ghost:hover {
-  background: var(--accent);
-  color: var(--accent-foreground);
+  background: var(--secondary);
 }
 .button-ghost {
   background: transparent;
   color: var(--foreground);
 }
 .button-outline {
-  background: var(--card);
-  border-color: var(--border);
+  background: var(--secondary);
   color: var(--foreground);
 }
 .button-outline:hover {
-  background: var(--accent);
-  color: var(--accent-foreground);
+  background: var(--secondary-hover);
 }
 .button-destructive {
   background: transparent;
@@ -541,7 +549,8 @@ body
   color: var(--primary);
   font-family: var(--font-display);
   font-size: 2.5rem;
-  font-weight: 600;
+  font-weight: 800;
+  letter-spacing: -0.04em;
   line-height: 1;
 }
 @media (min-width: 768px) {
@@ -665,7 +674,8 @@ select:focus-visible {
   color: var(--primary);
   font-family: var(--font-display);
   font-size: 2.5rem;
-  font-weight: 600;
+  font-weight: 800;
+  letter-spacing: -0.04em;
 }
 .about-facts {
   grid-template-columns: auto minmax(0, 1fr);
@@ -953,7 +963,7 @@ select:focus-visible {
   width: 26px;
   height: 26px;
   border: 2px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: 999px;
   transition:
     background-color 150ms,
     border-color 150ms;
@@ -1081,29 +1091,27 @@ select:focus-visible {
   align-items: center;
   min-height: 44px;
   padding: 0 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-control);
-  background: var(--card);
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--secondary);
   color: var(--foreground);
   font-size: 0.875rem;
+  font-weight: 600;
   white-space: nowrap;
 }
 .chip:hover {
-  background: var(--accent);
-  color: var(--accent-foreground);
+  background: var(--secondary-hover);
 }
 .chip[aria-pressed="true"] {
-  border-color: var(--foreground);
-  background: var(--foreground);
-  color: var(--background);
-  font-weight: 600;
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 .badge {
   display: inline-block;
   padding: 2px 7px;
   border-radius: var(--radius-badge);
-  background: var(--accent);
-  color: var(--accent-foreground);
+  background: var(--primary-soft);
+  color: var(--primary);
   font-size: 0.75rem;
   font-weight: 600;
   white-space: nowrap;
@@ -1276,7 +1284,8 @@ select:focus-visible {
 .recipe-hero {
   display: block;
   width: calc(100% + 32px);
-  height: 200px;
+  max-width: none;
+  height: 220px;
   margin: -16px -16px 16px;
   object-fit: cover;
 }
@@ -1289,8 +1298,9 @@ select:focus-visible {
   margin: 0 0 6px;
   font-family: var(--font-display);
   font-size: 1.75rem;
-  font-weight: 600;
-  line-height: 1.15;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
 }
 .recipe-detail .recipe-description {
   color: var(--muted-foreground);
@@ -1435,9 +1445,9 @@ select:focus-visible {
   align-items: center;
   margin: 0;
   padding: 0;
-  border: 1px solid var(--border);
+  border: 0;
   border-radius: var(--radius-control);
-  background: var(--card);
+  background: var(--secondary);
 }
 .stepper-button {
   display: inline-grid;
@@ -1771,7 +1781,8 @@ select:focus-visible {
     color: var(--primary);
     font-family: var(--font-display);
     font-size: 1.75rem;
-    font-weight: 600;
+    font-weight: 800;
+    letter-spacing: -0.03em;
     line-height: 1;
     text-decoration: none;
   }
@@ -1783,6 +1794,12 @@ select:focus-visible {
     padding: 0 12px;
     border-radius: var(--radius-control);
     font-size: 0.9375rem;
+  }
+  .nav-icon {
+    padding: 0;
+  }
+  .is-active > .nav-icon {
+    background: transparent;
   }
   .nav-link:hover {
     background: var(--secondary);
@@ -2018,7 +2035,8 @@ a.queue-title:hover {
 .sheet-title {
   font-family: var(--font-display);
   font-size: 1.3125rem;
-  font-weight: 600;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   line-height: 1.2;
 }
 @media (min-width: 768px) {
