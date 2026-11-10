@@ -129,6 +129,33 @@ describe("recipes", () => {
     ]);
   });
 
+  test("list search also matches ingredient names", async () => {
+    const c = await householdMember("ingredient-search");
+    const onion = await onionId(c);
+    await createRecipe(c, {
+      title: "Herbstkuchen",
+      ingredients: [{ rawText: "2 Zwiebeln", ingredientId: onion }],
+    });
+    await createRecipe(c, {
+      title: "Ofengemüse",
+      ingredients: [{ rawText: "1 Zucchini" }],
+    });
+    await createRecipe(c, { title: "Pfannkuchen" });
+
+    const titles = async (q: string) =>
+      (
+        (await (
+          await c.request(`/api/recipes?q=${encodeURIComponent(q)}`)
+        ).json()) as Recipe[]
+      ).map((r) => r.title);
+    expect(await titles("zucchini")).toEqual(["Ofengemüse"]);
+    // Matches the linked catalog name in the other language too.
+    expect(await titles("onion")).toEqual(["Herbstkuchen"]);
+    expect(await titles("kuchen")).toEqual(
+      expect.arrayContaining(["Herbstkuchen", "Pfannkuchen"]),
+    );
+  });
+
   test("saving automatically links catalog translations and parsed raw names", async () => {
     const c = await householdMember("recipe-auto-steps");
     const onion = await onionId(c);

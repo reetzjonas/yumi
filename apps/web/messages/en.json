@@ -513,7 +513,7 @@
   "ingredients.nutrition_hint": "Fill in all seven values or leave them all empty.",
   "ingredients.nutrition_incomplete": "Please fill in all seven nutrition values or leave them all empty.",
   "recipes.detail_title": "Recipe",
-  "recipes.search_placeholder": "Search titles",
+  "recipes.search_placeholder": "Search title or ingredient",
   "recipes.count_one": "1 recipe",
   "recipes.count": "{count} recipes",
   "recipes.reset_filters": "Reset filters",

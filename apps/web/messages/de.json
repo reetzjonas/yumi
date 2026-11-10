@@ -513,7 +513,7 @@
   "ingredients.nutrition_hint": "Fülle alle sieben Werte aus oder lass alle leer.",
   "ingredients.nutrition_incomplete": "Bitte fülle alle sieben Nährwerte aus oder lass alle leer.",
   "recipes.detail_title": "Rezept",
-  "recipes.search_placeholder": "Titel suchen",
+  "recipes.search_placeholder": "Titel oder Zutat suchen",
   "recipes.count_one": "1 Rezept",
   "recipes.count": "{count} Rezepte",
   "recipes.reset_filters": "Filter zurücksetzen",

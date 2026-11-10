@@ -284,6 +284,15 @@ export const recipes = new Hono<HouseholdEnv>()
               ? or(
                   ilike(recipe.title, `%${escapeLike(q)}%`),
                   sql`word_similarity(${q}, ${recipe.title}) >= 0.4`,
+                  sql`exists (
+                    select 1 from ${recipeIngredient}
+                    left join ${ingredient}
+                      on ${ingredient.id} = ${recipeIngredient.ingredientId}
+                    where ${recipeIngredient.recipeId} = ${recipe.id}
+                      and (${recipeIngredient.rawText} ilike ${`%${escapeLike(q)}%`}
+                        or ${ingredient.nameDe} ilike ${`%${escapeLike(q)}%`}
+                        or ${ingredient.nameEn} ilike ${`%${escapeLike(q)}%`})
+                  )`,
                 )
               : undefined,
             tag ? arrayContains(recipe.tags, [tag]) : undefined,
