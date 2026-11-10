@@ -516,7 +516,6 @@
   "recipes.search_placeholder": "Search titles",
   "recipes.count_one": "1 recipe",
   "recipes.count": "{count} recipes",
-  "recipes.show_mode": "Show: {mode}",
   "recipes.reset_filters": "Reset filters",
   "recipes.cooked_ago": "Cooked {ago}",
   "recipes.cooked_never": "Never cooked",
@@ -606,5 +605,6 @@
   "queue.move_up_short": "Move up",
   "queue.move_down_short": "Move down",
   "queue.to_list_action": "Ingredients to the shopping list",
-  "recipes.more_actions": "More actions"
+  "recipes.more_actions": "More actions",
+  "recipes.show_label": "Show"
 }

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { BookOpen, Download, Plus, Search, Star } from "lucide-react";
+import { BookOpen, Download, Plus, Search, Star, Utensils } from "lucide-react";
 import { useEffect, useState } from "react";
 import { EmptyState } from "@/components/page";
 import { Button } from "@/components/ui/button";
@@ -129,16 +129,20 @@ export function RecipeLibrary() {
               ? m["recipes.count_one"]()
               : m["recipes.count"]({ count: recipes.data.length }))}
         </span>
-        <Button
-          variant="ghost"
-          className="recipe-mode"
-          aria-describedby={mode ? "recipe-mode-hint" : undefined}
-          onClick={() =>
-            setMode(modes[(modes.indexOf(mode) + 1) % modes.length] ?? "")
-          }
-        >
-          {m["recipes.show_mode"]({ mode: modeLabel(mode) })}
-        </Button>
+        <label className="recipe-mode">
+          <span>{m["recipes.show_label"]()}</span>
+          <select
+            value={mode}
+            aria-describedby={mode ? "recipe-mode-hint" : undefined}
+            onChange={(event) => setMode(event.target.value as Mode)}
+          >
+            {modes.map((value) => (
+              <option key={value} value={value}>
+                {modeLabel(value)}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
       {mode && (
         <p id="recipe-mode-hint" className="meta">
@@ -190,7 +194,9 @@ export function RecipeLibrary() {
                     height={250}
                   />
                 ) : (
-                  <span className="recipe-card-media is-empty" />
+                  <span className="recipe-card-media is-empty">
+                    <Utensils aria-hidden="true" size={28} strokeWidth={1.5} />
+                  </span>
                 )}
                 <span className="recipe-card-content">
                   <span className="recipe-card-title">{recipe.title}</span>

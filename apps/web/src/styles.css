@@ -1164,9 +1164,21 @@ select:focus-visible {
   gap: 12px;
 }
 .recipe-mode {
-  padding-inline: 8px;
-  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted-foreground);
+  font-size: 0.8125rem;
+}
+.recipe-mode select {
+  width: auto;
+  min-height: 40px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: var(--radius);
+  background-color: var(--secondary);
   font-size: 0.875rem;
+  font-weight: 600;
 }
 .recipe-grid {
   display: grid;
@@ -1197,9 +1209,10 @@ select:focus-visible {
   object-fit: cover;
 }
 .recipe-card-media.is-empty {
-  background:
-    repeating-linear-gradient(135deg, var(--line) 0 8px, transparent 8px 16px),
-    var(--secondary);
+  display: grid;
+  place-items: center;
+  background: var(--secondary);
+  color: var(--muted-foreground);
 }
 .recipe-card-content {
   display: flex;
@@ -1288,11 +1301,6 @@ select:focus-visible {
   height: 220px;
   margin: -16px -16px 16px;
   object-fit: cover;
-}
-.recipe-hero.is-empty {
-  background:
-    repeating-linear-gradient(135deg, var(--line) 0 8px, transparent 8px 16px),
-    var(--secondary);
 }
 .recipe-title {
   margin: 0 0 6px;
