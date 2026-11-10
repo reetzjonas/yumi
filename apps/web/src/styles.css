@@ -926,7 +926,7 @@ select:focus-visible {
   position: relative;
   display: flex;
   align-items: center;
-  min-height: 60px;
+  min-height: 56px;
   padding-inline-end: 8px;
   background: var(--background);
   transition: transform 150ms ease-out;
@@ -942,8 +942,8 @@ select:focus-visible {
   align-items: center;
   gap: 12px;
   min-width: 0;
-  min-height: 60px;
-  padding: 8px 8px 8px 16px;
+  min-height: 56px;
+  padding: 6px 8px 6px 16px;
   border: 0;
   background: transparent;
   color: inherit;
@@ -974,25 +974,28 @@ select:focus-visible {
   color: var(--card);
 }
 .list-item-body {
-  display: grid;
-  flex: 1;
-  justify-items: start;
-  gap: 4px;
-  min-width: 0;
-}
-.list-item-title {
   display: flex;
-  flex-wrap: wrap;
+  flex: 1;
   align-items: baseline;
-  gap: 2px 8px;
-  max-width: 100%;
-  overflow-wrap: anywhere;
+  gap: 8px;
+  min-width: 0;
 }
 .shopping-name {
   min-width: 0;
+  overflow-wrap: anywhere;
   font-weight: 600;
 }
+.shopping-source {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted-foreground);
+  font-size: 0.8125rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .shopping-quantity {
+  flex-shrink: 0;
   color: var(--muted-foreground);
   font-variant-numeric: tabular-nums;
 }
@@ -2463,4 +2466,126 @@ body [data-sonner-toast][data-styled="true"].shopping-feedback [data-button] {
 }
 .recipe-detail > .recipe-title:first-child {
   margin-top: 8px;
+}
+.list-view-toggle {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  justify-self: end;
+  gap: 2px;
+  margin: 0 0 -52px;
+  padding: 2px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--secondary);
+}
+.list-view-toggle button {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 36px;
+  border-radius: calc(var(--radius) - 2px);
+  color: var(--muted-foreground);
+}
+.list-view-toggle button[aria-pressed="true"] {
+  background: var(--card);
+  color: var(--foreground);
+}
+.list-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.list-tile-item {
+  position: relative;
+  min-width: 0;
+}
+.list-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+  min-height: 104px;
+  padding: 12px 6px 8px;
+  border-radius: var(--radius-card);
+  background: hsl(var(--tile-hue, 30) var(--tile-saturation, 72%) 90%);
+  color: #1d1917;
+  text-align: center;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-touch-callout: none;
+  transition: transform 120ms ease-out;
+}
+.dark .list-tile {
+  background: hsl(var(--tile-hue, 30) var(--tile-saturation, 28%) 24%);
+  color: var(--foreground);
+}
+.list-tile-item:not([style]) {
+  --tile-saturation: 12%;
+}
+.list-tile:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.list-tile-name {
+  display: -webkit-box;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.2;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.list-tile-quantity {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+}
+.list-tile-item[data-checked="true"] .list-tile {
+  background: var(--secondary);
+  color: var(--muted-foreground);
+}
+.list-tile-item[data-checked="true"] .list-tile-name {
+  text-decoration: line-through;
+}
+.list-tile-item[data-checked="true"] .pictogram {
+  opacity: 0.5;
+}
+.list-tile-edit {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: inherit;
+}
+@media (hover: hover) and (pointer: fine) {
+  .list-tile-edit {
+    opacity: 0;
+  }
+  .list-tile-item:hover .list-tile-edit,
+  .list-tile-edit:focus-visible {
+    opacity: 1;
+  }
+}
+@media (pointer: coarse) {
+  .list-tile-edit:not(:focus-visible) {
+    width: 1px;
+    min-width: 0;
+    height: 1px;
+    min-height: 0;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .list-tile {
+    transition: none;
+  }
 }

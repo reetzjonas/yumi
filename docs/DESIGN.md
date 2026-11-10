@@ -102,15 +102,19 @@ The cooking view is a full-screen mode outside the shell at every size;
 shopping stays in the list view (ADR 0014). From 768 px the cooking view uses two columns: ingredients for the step
 left, the step right.
 
-Layout: Learned shopping route - follow the store's observed item order -> stack
-inside the list view; scroll owner: `.app-main`; rows keep the route order and
-only consecutive rows of one category share a heading. Tapping a row checks it,
-long-press edits, swipe left removes with undo; with a fine pointer an edit
-button shows on hover/focus. The store chip in the toolbar marks the trip store;
-only then do checks train the route. Reading priorities are quick add, store,
-remaining items in route order, then checked items. The store editor offers a
-secondary reset with an inline failure message; manual category order overrides
-learning until reset.
+Layout: Shopping list - one view to add and check (ADR 0014); scroll owner:
+`.app-main`. Reading priorities are quick add, store, remaining items in route
+order, then checked items. Quick add is one field (Enter adds; "Milch, Eier" adds
+several) with a button for the catalog tiles; matches show as chips, creating a new
+catalog entry comes after them. A toggle switches between rows and tiles, stored
+per device. Rows are one line: check circle, pictogram, name, source recipes as
+muted text, quantity right-aligned; tapping checks, long-press edits, swipe left
+removes with undo, and with a fine pointer an edit button shows on hover/focus.
+Tiles carry pictogram, name and quantity on the category color; tapping checks,
+long-press edits, removal lives in the edit sheet. Rows keep the learned route
+order and only consecutive rows of one category share a heading. The store chip
+marks the trip store; only then do checks train the route. The store editor offers
+a secondary reset; manual category order overrides learning until reset.
 
 Layout: Cooking view - keep the current instruction and its ingredients visible
 inside a bounded viewport -> scroll-body-shell; scroll owner: `.cooking-body`;

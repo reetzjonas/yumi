@@ -429,7 +429,7 @@
   "stores.no_store": "Kein Laden (Standard-Reihenfolge)",
   "stores.manage": "Läden verwalten",
   "shopping.quick_label": "Schnell hinzufügen",
-  "shopping.quick_placeholder": "Artikel hinzufügen …",
+  "shopping.quick_placeholder": "Milch, Eier, 500 g Mehl …",
   "shopping.quick_hint": "Gib Menge und Artikel ein und drücke Enter oder wähle einen Vorschlag.",
   "shopping.add": "Hinzufügen",
   "shopping.suggestions": "Vorschläge",
@@ -606,5 +606,10 @@
   "queue.move_down_short": "Nach unten",
   "queue.to_list_action": "Zutaten auf die Einkaufsliste",
   "recipes.more_actions": "Weitere Aktionen",
-  "recipes.show_label": "Anzeigen"
+  "recipes.show_label": "Anzeigen",
+  "shopping.quick_several": "{count} Artikel – mit Enter alle hinzufügen",
+  "shopping.view_label": "Ansicht",
+  "shopping.view_rows": "Zeilen",
+  "shopping.view_tiles": "Kacheln",
+  "shopping.gesture_hint_tiles": "Tippen hakt ab, lange drücken bearbeitet."
 }

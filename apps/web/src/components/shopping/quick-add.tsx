@@ -1,6 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { parseIngredientLine, quickAddFields } from "@yumi/shared";
-import { LayoutGrid, Plus } from "lucide-react";
+import {
+  parseIngredientLine,
+  quickAddFields,
+  splitQuickAdd,
+} from "@yumi/shared";
+import { LayoutGrid } from "lucide-react";
 import { useId, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -33,8 +37,11 @@ export function QuickAdd({
   const categories = useShoppingCategories();
   const [text, setText] = useState("");
   const [created, setCreated] = useState<CreatedIngredient | null>(null);
+  const parts = splitQuickAdd(text);
+  const several = parts.length > 1;
   const parsed = parseIngredientLine(text);
-  const q = (parsed.name || text).trim();
+  // Suggestions and catalog creation only make sense for a single entry.
+  const q = several ? "" : (parsed.name || text).trim();
   const suggestions = useQuery({
     queryKey: ["shopping", householdId, "catalog", q],
     enabled: !!householdId && q.length > 1,
@@ -45,8 +52,8 @@ export function QuickAdd({
   });
   const [matching, setMatching] = useState(false);
   const busy = events.isPending || matching;
-  const add = (fields: ReturnType<typeof quickAddFields>) =>
-    events.mutate([addItemEvent(fields)], {
+  const add = (...fields: ReturnType<typeof quickAddFields>[]) =>
+    events.mutate(fields.map(addItemEvent), {
       onSuccess: () => {
         setText("");
         setCreated(null);
@@ -78,20 +85,22 @@ export function QuickAdd({
         }
         setMatching(true);
         try {
-          const [line] = await (
+          const lines = await (
             await ensureOk(
-              await api.ingredients.parse.$post({ json: { lines: [text] } }),
+              await api.ingredients.parse.$post({ json: { lines: parts } }),
             )
           ).json();
-          if (!line) return;
+          if (!lines.length) return;
           add(
-            quickAddFields(
-              line,
-              line.ingredient && {
-                id: line.ingredient.id,
-                name: ingredientName(line.ingredient),
-                categoryId: line.ingredient.categoryId,
-              },
+            ...lines.map((line) =>
+              quickAddFields(
+                line,
+                line.ingredient && {
+                  id: line.ingredient.id,
+                  name: ingredientName(line.ingredient),
+                  categoryId: line.ingredient.categoryId,
+                },
+              ),
             ),
           );
         } catch (error) {
@@ -110,7 +119,7 @@ export function QuickAdd({
           className="quick-add-input"
           value={text}
           autoComplete="off"
-          enterKeyHint="done"
+          enterKeyHint="send"
           maxLength={200}
           placeholder={m["shopping.quick_placeholder"]()}
           aria-describedby={`${id}-hint`}
@@ -119,14 +128,6 @@ export function QuickAdd({
             setCreated(null);
           }}
         />
-        <Button
-          variant={text.trim() ? "default" : "outline"}
-          className="icon-action"
-          aria-label={m["shopping.add"]()}
-          disabled={busy || !text.trim()}
-        >
-          <Plus size={20} aria-hidden="true" />
-        </Button>
         <Button
           type="button"
           variant="outline"
@@ -141,18 +142,15 @@ export function QuickAdd({
       <p id={`${id}-hint`} className="sr-only">
         {m["shopping.quick_hint"]()}
       </p>
+      {several && (
+        <p className="row-detail" role="status">
+          {m["shopping.quick_several"]({ count: parts.length })}
+        </p>
+      )}
       {created && (
         <p className="row-detail" role="status">
           {m["ingredients.linked"]({ name: ingredientName(created) })}
         </p>
-      )}
-      {!created && q.length > 1 && q.length <= 100 && !knownName && (
-        <CreateIngredient
-          key={q}
-          name={q}
-          disabled={busy}
-          onCreated={setCreated}
-        />
       )}
       {suggestions.isError && (
         <p className="form-error" role="alert">
@@ -196,6 +194,14 @@ export function QuickAdd({
             </li>
           ))}
         </ul>
+      )}
+      {!created && q.length > 1 && q.length <= 100 && !knownName && (
+        <CreateIngredient
+          key={q}
+          name={q}
+          disabled={busy}
+          onCreated={setCreated}
+        />
       )}
     </form>
   );

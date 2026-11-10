@@ -4,8 +4,17 @@ import {
   mergeShoppingItems,
   sortShoppingItems,
 } from "@yumi/shared";
-import { Check, Pencil, ShoppingBasket, Trash2, X } from "lucide-react";
 import {
+  Check,
+  Grid2x2,
+  Pencil,
+  Rows3,
+  ShoppingBasket,
+  Trash2,
+  X,
+} from "lucide-react";
+import {
+  type CSSProperties,
   type PointerEvent as ReactPointerEvent,
   useRef,
   useState,
@@ -17,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Pictogram } from "@/components/ui/pictogram";
 import { Sheet } from "@/components/ui/sheet";
 import { errorMessage } from "@/lib/api-error";
+import { readPreference, writePreference } from "@/lib/preferences";
 import { formatQuantity, ingredientName } from "@/lib/recipes";
 import {
   addItemEvent,
@@ -31,9 +41,29 @@ const SETTLE_MS = 600;
 const LONG_PRESS_MS = 450;
 const GESTURE_SLOP_PX = 10;
 const HINT_KEY = "yumi.shopping.gesture-hint-dismissed";
+const VIEW_KEY = "yumi.shopping.view";
 
 type LearnedOrder = ReturnType<typeof learnShoppingOrder>;
 const NO_LEARNING: LearnedOrder = { ingredients: [], categories: [] };
+
+function sourceTitles(
+  sources: ShoppingList["items"][number]["sources"],
+  recipes: ShoppingList["recipes"],
+) {
+  return recipes
+    .filter((recipe) =>
+      sources.some(
+        (source) => source.kind === "recipe" && source.id === recipe.id,
+      ),
+    )
+    .map((recipe) => recipe.title)
+    .join(", ");
+}
+
+const amountText = (row: MergedItem) =>
+  row.amounts
+    .map((amount) => formatQuantity(amount.quantity, amount.unit))
+    .join(" + ");
 
 function RecipeSources({
   sources,
@@ -96,6 +126,7 @@ function ShoppingRow({
   const suppressClick = useRef(false);
   const [offset, setOffset] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const sources = sourceTitles(row.sources, recipes);
 
   const finish = () => {
     if (gesture.current) window.clearTimeout(gesture.current.timer);
@@ -191,21 +222,10 @@ function ShoppingRow({
           </span>
           <Pictogram icon={icon} fallback={fallback} size={32} />
           <span className="list-item-body">
-            <span className="list-item-title">
-              <span className="shopping-name">{row.label}</span>
-              <span className="shopping-quantity">
-                {row.amounts
-                  .map((amount) => formatQuantity(amount.quantity, amount.unit))
-                  .join(" + ")}
-              </span>
-            </span>
-            <RecipeSources sources={row.sources} recipes={recipes} />
-            {row.itemIds.length > 1 && (
-              <span className="meta">
-                {m["shopping.merged"]({ count: row.itemIds.length })}
-              </span>
-            )}
+            <span className="shopping-name">{row.label}</span>
+            {sources && <span className="shopping-source">{sources}</span>}
           </span>
+          <span className="shopping-quantity">{amountText(row)}</span>
         </button>
         <Button
           type="button"
@@ -228,7 +248,103 @@ function ShoppingRow({
   );
 }
 
-function GestureHint() {
+function ShoppingTile({
+  row,
+  checked,
+  disabled,
+  error,
+  icon,
+  fallback,
+  hue,
+  onToggle,
+  onEdit,
+}: {
+  row: MergedItem;
+  checked: boolean;
+  disabled: boolean;
+  error?: string;
+  icon?: string | null;
+  fallback?: string | null;
+  /** Category hue; undefined keeps the neutral tile. */
+  hue?: number;
+  onToggle: () => void;
+  onEdit: () => void;
+}) {
+  const press = useRef<{ x: number; y: number; timer: number } | null>(null);
+  const suppressClick = useRef(false);
+  const cancel = () => {
+    if (press.current) window.clearTimeout(press.current.timer);
+    press.current = null;
+  };
+  return (
+    <li
+      className="list-tile-item"
+      data-checked={checked}
+      style={
+        hue === undefined ? undefined : ({ "--tile-hue": hue } as CSSProperties)
+      }
+    >
+      <button
+        type="button"
+        className="list-tile"
+        aria-pressed={checked}
+        disabled={disabled}
+        onClick={() => {
+          if (suppressClick.current) suppressClick.current = false;
+          else onToggle();
+        }}
+        onPointerDown={(event) => {
+          if (event.button !== 0 || disabled) return;
+          suppressClick.current = false;
+          press.current = {
+            x: event.clientX,
+            y: event.clientY,
+            timer: window.setTimeout(() => {
+              press.current = null;
+              suppressClick.current = true;
+              navigator.vibrate?.(10);
+              onEdit();
+            }, LONG_PRESS_MS),
+          };
+        }}
+        onPointerMove={(event) => {
+          const start = press.current;
+          if (
+            start &&
+            Math.hypot(event.clientX - start.x, event.clientY - start.y) >
+              GESTURE_SLOP_PX
+          )
+            cancel();
+        }}
+        onPointerUp={cancel}
+        onPointerCancel={cancel}
+        onContextMenu={(event) => event.preventDefault()}
+      >
+        <Pictogram icon={icon} fallback={fallback} size={36} />
+        <span className="list-tile-name">{row.label}</span>
+        <span className="list-tile-quantity">{amountText(row)}</span>
+      </button>
+      <Button
+        type="button"
+        variant="ghost"
+        className="icon-action list-tile-edit"
+        aria-haspopup="dialog"
+        aria-label={m["shopping.edit_item"]({ name: row.label })}
+        title={m["shopping.edit_item"]({ name: row.label })}
+        onClick={onEdit}
+      >
+        <Pencil size={16} aria-hidden="true" />
+      </Button>
+      {error && (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      )}
+    </li>
+  );
+}
+
+function GestureHint({ tiles }: { tiles: boolean }) {
   const [visible, setVisible] = useState(
     () =>
       window.matchMedia("(pointer: coarse)").matches &&
@@ -237,7 +353,11 @@ function GestureHint() {
   if (!visible) return null;
   return (
     <p className="gesture-hint">
-      <span>{m["shopping.gesture_hint"]()}</span>
+      <span>
+        {tiles
+          ? m["shopping.gesture_hint_tiles"]()
+          : m["shopping.gesture_hint"]()}
+      </span>
       <Button
         type="button"
         variant="ghost"
@@ -274,6 +394,10 @@ export function ShoppingItems({
   const [editKey, setEditKey] = useState<string | null>(null);
   const [actionRow, setActionRow] = useState<string | null>(null);
   const [settling, setSettling] = useState<Record<string, MergedItem>>({});
+  const [view, setView] = useState<"rows" | "tiles">(() =>
+    readPreference(VIEW_KEY) === "tiles" ? "tiles" : "rows",
+  );
+  const tiles = view === "tiles";
   const rows = mergeShoppingItems(
     list.items.map((item) => ({
       ...item,
@@ -412,40 +536,84 @@ export function ShoppingItems({
     );
   }
 
-  const renderRow = (row: MergedItem) => (
-    <ShoppingRow
-      key={row.key}
-      row={row}
-      checked={row.checked || settlingKeys.has(row.key)}
-      recipes={list.recipes}
-      disabled={events.isPending}
-      icon={
-        list.items.find((item) => item.id === row.itemIds[0])?.ingredient?.icon
-      }
-      fallback={
-        categories.find((category) => category.id === row.categoryId)?.icon
-      }
-      error={
+  const renderRow = (row: MergedItem) => {
+    const shared = {
+      row,
+      checked: row.checked || settlingKeys.has(row.key),
+      disabled: events.isPending,
+      icon: list.items.find((item) => item.id === row.itemIds[0])?.ingredient
+        ?.icon,
+      fallback: categories.find((category) => category.id === row.categoryId)
+        ?.icon,
+      error:
         actionRow === row.key && events.isError
           ? errorMessage(events.error)
-          : undefined
-      }
-      onToggle={() => toggle(row)}
-      onEdit={() => {
+          : undefined,
+      onToggle: () => toggle(row),
+      onEdit: () => {
         setEditKey(row.key);
         sheet.current?.showModal();
-      }}
-      onRemove={() => remove(row)}
-    />
-  );
+      },
+    };
+    if (!tiles)
+      return (
+        <ShoppingRow
+          key={row.key}
+          {...shared}
+          recipes={list.recipes}
+          onRemove={() => remove(row)}
+        />
+      );
+    const categoryIndex = categories.findIndex(
+      (category) => category.id === row.categoryId,
+    );
+    return (
+      <ShoppingTile
+        key={row.key}
+        {...shared}
+        hue={categoryIndex < 0 ? undefined : (categoryIndex * 47 + 20) % 360}
+      />
+    );
+  };
+  const itemsClass = tiles ? "list-tiles" : "list-items";
 
   return (
     <div className="shopping-items">
-      <GestureHint />
+      <GestureHint tiles={tiles} />
+      <fieldset className="list-view-toggle">
+        <legend className="sr-only">{m["shopping.view_label"]()}</legend>
+        {(["rows", "tiles"] as const).map((value) => (
+          <button
+            key={value}
+            type="button"
+            aria-pressed={view === value}
+            aria-label={
+              value === "rows"
+                ? m["shopping.view_rows"]()
+                : m["shopping.view_tiles"]()
+            }
+            title={
+              value === "rows"
+                ? m["shopping.view_rows"]()
+                : m["shopping.view_tiles"]()
+            }
+            onClick={() => {
+              setView(value);
+              writePreference(VIEW_KEY, value);
+            }}
+          >
+            {value === "rows" ? (
+              <Rows3 size={18} aria-hidden="true" />
+            ) : (
+              <Grid2x2 size={18} aria-hidden="true" />
+            )}
+          </button>
+        ))}
+      </fieldset>
       {runs.map((run) => (
         <section key={run.rows[0]?.key} className="shopping-category">
           <h2 className="section-label">{categoryName(run.categoryId)}</h2>
-          <ul className="list-items">{run.rows.map(renderRow)}</ul>
+          <ul className={itemsClass}>{run.rows.map(renderRow)}</ul>
         </section>
       ))}
       {!!done.length && (
@@ -466,7 +634,7 @@ export function ShoppingItems({
               {m["shopping.clear_checked"]()}
             </Button>
           </div>
-          <ul className="list-items">{done.map(renderRow)}</ul>
+          <ul className={itemsClass}>{done.map(renderRow)}</ul>
         </section>
       )}
       <Sheet

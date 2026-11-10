@@ -175,6 +175,17 @@ export interface QuickAddMatch {
 }
 
 /**
+ * Splits quick-add input into several entries: "Milch, Eier; Butter" gives three.
+ * A comma directly before a digit is a decimal comma ("1,5 kg Mehl") and does not split.
+ */
+export function splitQuickAdd(text: string): string[] {
+  return text
+    .split(/,(?!\d)|;|\n/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+/**
  * Turns typed input like "2 Milch" or "500g Hack" into list item fields. A measure
  * without a unit code ("2 Becher Sahne") stays in the label, so it is not linked.
  */

@@ -4,6 +4,7 @@ import {
   type MergeableItem,
   mergeShoppingItems,
   quickAddFields,
+  splitQuickAdd,
 } from "./shopping";
 
 const onion = "00000000-0000-4000-8000-000000000001";
@@ -123,5 +124,23 @@ describe("quickAddFields", () => {
     expect(
       quickAddFields(parseIngredientLine("2-3 Zwiebeln"), null),
     ).toMatchObject({ label: "Zwiebeln", quantity: 3 });
+  });
+});
+
+describe("splitQuickAdd", () => {
+  test("splits on commas, semicolons and line breaks", () => {
+    expect(splitQuickAdd("Milch, Eier;Butter\n2 Tomaten")).toEqual([
+      "Milch",
+      "Eier",
+      "Butter",
+      "2 Tomaten",
+    ]);
+  });
+  test("keeps decimal commas and drops empty parts", () => {
+    expect(splitQuickAdd("1,5 kg Mehl, , 0,5 l Milch,")).toEqual([
+      "1,5 kg Mehl",
+      "0,5 l Milch",
+    ]);
+    expect(splitQuickAdd("  ")).toEqual([]);
   });
 });

@@ -429,7 +429,7 @@
   "stores.no_store": "No store (default order)",
   "stores.manage": "Manage stores",
   "shopping.quick_label": "Quick add",
-  "shopping.quick_placeholder": "Add item …",
+  "shopping.quick_placeholder": "Milk, eggs, 500 g flour …",
   "shopping.quick_hint": "Type an amount and an item, then press Enter or pick a suggestion.",
   "shopping.add": "Add",
   "shopping.suggestions": "Suggestions",
@@ -606,5 +606,10 @@
   "queue.move_down_short": "Move down",
   "queue.to_list_action": "Ingredients to the shopping list",
   "recipes.more_actions": "More actions",
-  "recipes.show_label": "Show"
+  "recipes.show_label": "Show",
+  "shopping.quick_several": "{count} items – press Enter to add them all",
+  "shopping.view_label": "View",
+  "shopping.view_rows": "Rows",
+  "shopping.view_tiles": "Tiles",
+  "shopping.gesture_hint_tiles": "Tap to check, long-press to edit."
 }
