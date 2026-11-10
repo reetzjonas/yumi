@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Megaphone, ShoppingBasket } from "lucide-react";
-import { useRef, useState } from "react";
+import { BookOpen, Megaphone, Plus, ShoppingBasket } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { EmptyState, PageHeader } from "@/components/page";
 import { RecipePicker } from "@/components/queue/recipe-picker";
@@ -74,9 +74,65 @@ function HouseholdLists() {
   useWakeLock(!!tripStore);
   const open = detail.data?.items.filter((item) => !item.checked).length ?? 0;
   const total = detail.data?.items.length ?? 0;
+  const listName = lists.data?.find((list) => list.id === listId)?.name;
+  const openAdd = () => quickSheet.current?.showModal();
+  const addOnce = useRef(false);
+  useEffect(() => {
+    // `?add=1` (app shortcut, push notification) starts with the add sheet.
+    if (add && listId && !addOnce.current) {
+      addOnce.current = true;
+      quickSheet.current?.showModal();
+    }
+  }, [add, listId]);
   return (
     <>
-      <PageHeader title={m["shopping.title"]()} />
+      <PageHeader
+        title={listName ?? m["shopping.title"]()}
+        lift={!!listId}
+        eyebrow={
+          listId && (
+            <StoreSessionChip
+              storeId={tripStore?.id ?? null}
+              stores={stores.data ?? []}
+              onChoose={session.choose}
+            />
+          )
+        }
+        sub={
+          total > 0 && (
+            <>
+              {m["shopping.list_remaining"]({ open, total })}
+              <ShoppingSyncStatus listId={listId} />
+            </>
+          )
+        }
+        actions={
+          listId && (
+            <ListManager
+              selectedId={listId}
+              onSelect={setSelectedId}
+              store={
+                detail.data && (
+                  <StoreSelect
+                    listId={listId}
+                    storeId={detail.data.defaultStoreId}
+                    stores={stores.data ?? []}
+                  />
+                )
+              }
+            />
+          )
+        }
+      >
+        {total > 0 && (
+          <progress
+            className="stage-progress"
+            max={total}
+            value={total - open}
+            aria-label={m["shopping.progress_label"]()}
+          />
+        )}
+      </PageHeader>
       {lists.isPending ? (
         <Skeleton className="h-32 w-full" />
       ) : lists.isError ? (
@@ -93,47 +149,6 @@ function HouseholdLists() {
         </EmptyState>
       ) : (
         <div className="shopping-page">
-          <ListManager
-            selectedId={listId}
-            onSelect={setSelectedId}
-            store={
-              detail.data && (
-                <StoreSelect
-                  listId={listId}
-                  storeId={detail.data.defaultStoreId}
-                  stores={stores.data ?? []}
-                />
-              )
-            }
-          >
-            <StoreSessionChip
-              storeId={tripStore?.id ?? null}
-              stores={stores.data ?? []}
-              onChoose={session.choose}
-            />
-          </ListManager>
-          <QuickAdd
-            key={`add-${listId}`}
-            autoFocus={add}
-            listId={listId}
-            onTiles={() => quickSheet.current?.showModal()}
-          />
-          {total > 0 && (
-            <div className="list-progress">
-              <div className="list-progress-row">
-                <ShoppingSyncStatus listId={listId} />
-                <span className="meta">
-                  {m["shopping.list_progress"]({ done: total - open, total })}
-                </span>
-              </div>
-              <progress
-                className="progress-bar"
-                max={total}
-                value={total - open}
-                aria-label={m["shopping.progress_label"]()}
-              />
-            </div>
-          )}
           {total === 0 && <ShoppingSyncStatus listId={listId} />}
           {learned.isError && (
             <p className="form-error" role="alert">
@@ -160,32 +175,45 @@ function HouseholdLists() {
                 categoryOrder={store?.categoryOrder}
                 learned={learned.data}
                 onActivity={session.touch}
-                onQuickAdd={() => quickSheet.current?.showModal()}
+                onQuickAdd={openAdd}
               />
             )
           )}
-          {pushKey.data && (
+          <div className="list-extras">
             <Button
               type="button"
               variant="outline"
-              className="w-full"
-              disabled={trip.isPending}
-              onClick={() => trip.mutate()}
+              aria-haspopup="dialog"
+              onClick={() => recipeSheet.current?.showModal()}
             >
-              <Megaphone size={20} aria-hidden="true" />
-              {m["push.going_shopping"]()}
+              <BookOpen size={20} aria-hidden="true" />
+              {m["shopping.add_from_recipe"]()}
             </Button>
-          )}
-          <Button
+            {pushKey.data && (
+              <Button
+                type="button"
+                variant="outline"
+                disabled={trip.isPending}
+                onClick={() => trip.mutate()}
+              >
+                <Megaphone size={20} aria-hidden="true" />
+                {m["push.going_shopping"]()}
+              </Button>
+            )}
+          </div>
+          <button
             type="button"
-            variant="outline"
-            className="w-full"
+            className="add-dock"
             aria-haspopup="dialog"
-            onClick={() => recipeSheet.current?.showModal()}
+            onClick={openAdd}
           >
-            {m["shopping.add_from_recipe"]()}
-          </Button>
+            <span>{m["shopping.quick_placeholder"]()}</span>
+            <span className="add-dock-plus">
+              <Plus size={22} aria-hidden="true" />
+            </span>
+          </button>
           <Sheet ref={quickSheet} title={m["shopping.quick_sheet"]()}>
+            <QuickAdd key={`add-${listId}`} listId={listId} autoFocus />
             {detail.data && (
               <ItemTiles
                 key={`tiles-${listId}`}

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ChevronDown, Pencil, Plus, Trash2 } from "lucide-react";
+import { Ellipsis, Pencil, Plus, Trash2 } from "lucide-react";
 import { type ReactNode, useId, useRef, useState } from "react";
 import { Field, FormError } from "@/components/auth-layout";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 import { ensureOk, errorMessage } from "@/lib/api-error";
 import { useMe } from "@/lib/session";
 import { useShoppingLists } from "@/lib/shopping";
+import { useShoppingView } from "@/lib/shopping-view";
 import { m } from "@/paraglide/messages";
 
 type Panel = "menu" | "create" | "rename" | "delete";
@@ -130,16 +131,16 @@ export function ListManager({
   const selected = lists.data?.find((list) => list.id === selectedId);
   const sheet = useRef<HTMLDialogElement>(null);
   const [panel, setPanel] = useState<Panel>("menu");
+  const [view, setView] = useShoppingView();
   const action = useListAction(onSelect, () => sheet.current?.close());
   if (!selected) return null;
   const name = selected.name;
 
   return (
-    <div className="list-toolbar">
+    <>
       <Button
         type="button"
-        variant="outline"
-        className="list-switch"
+        variant="ghost"
         aria-label={m["shopping.list_actions"]({ name })}
         aria-haspopup="dialog"
         onClick={() => {
@@ -148,10 +149,8 @@ export function ListManager({
           sheet.current?.showModal();
         }}
       >
-        <span>{name}</span>
-        <ChevronDown size={18} aria-hidden="true" />
+        <Ellipsis size={22} aria-hidden="true" />
       </Button>
-      {children}
       <Sheet
         ref={sheet}
         title={m["shopping.lists_title"]()}
@@ -207,6 +206,26 @@ export function ListManager({
               </li>
             </ul>
             {store}
+            <fieldset className="settings-group">
+              <legend className="field-label">
+                {m["shopping.view_label"]()}
+              </legend>
+              <div className="segmented">
+                {(["rows", "tiles"] as const).map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-pressed={view === value}
+                    onClick={() => setView(value)}
+                  >
+                    {value === "rows"
+                      ? m["shopping.view_rows"]()
+                      : m["shopping.view_tiles"]()}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+            {children}
             <ul className="queue-menu">
               <li>
                 <Button
@@ -268,6 +287,6 @@ export function ListManager({
           message={action.isError ? errorMessage(action.error) : null}
         />
       </Sheet>
-    </div>
+    </>
   );
 }

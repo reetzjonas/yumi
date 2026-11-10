@@ -4,7 +4,7 @@ import {
   quickAddFields,
   splitQuickAdd,
 } from "@yumi/shared";
-import { LayoutGrid } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useId, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -26,11 +26,9 @@ import { m } from "@/paraglide/messages";
 
 export function QuickAdd({
   listId,
-  onTiles,
   autoFocus = false,
 }: {
   listId: string;
-  onTiles: () => void;
   autoFocus?: boolean;
 }) {
   const id = useId();
@@ -121,11 +119,11 @@ export function QuickAdd({
           className="quick-add-input"
           value={text}
           autoComplete="off"
-          // biome-ignore lint/a11y/noAutofocus: the "add item" app shortcut asks for this field
+          // biome-ignore lint/a11y/noAutofocus: the add sheet exists to type into this field
           autoFocus={autoFocus}
           enterKeyHint="send"
           maxLength={200}
-          placeholder={m["shopping.quick_placeholder"]()}
+          placeholder={m["shopping.quick_input_placeholder"]()}
           aria-describedby={`${id}-hint`}
           onChange={(event) => {
             setText(event.target.value);
@@ -133,14 +131,11 @@ export function QuickAdd({
           }}
         />
         <Button
-          type="button"
-          variant="outline"
           className="icon-action"
-          aria-label={m["shopping.quick_sheet"]()}
-          aria-haspopup="dialog"
-          onClick={onTiles}
+          aria-label={m["shopping.add"]()}
+          disabled={busy || !text.trim()}
         >
-          <LayoutGrid size={20} aria-hidden="true" />
+          <Plus size={22} aria-hidden="true" />
         </Button>
       </div>
       <p id={`${id}-hint`} className="sr-only">

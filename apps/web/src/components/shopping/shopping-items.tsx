@@ -6,9 +6,8 @@ import {
 } from "@yumi/shared";
 import {
   Check,
-  Grid2x2,
+  ChevronDown,
   Pencil,
-  Rows3,
   ShoppingBasket,
   Trash2,
   X,
@@ -26,7 +25,6 @@ import { Button } from "@/components/ui/button";
 import { Pictogram } from "@/components/ui/pictogram";
 import { Sheet } from "@/components/ui/sheet";
 import { errorMessage } from "@/lib/api-error";
-import { readPreference, writePreference } from "@/lib/preferences";
 import { formatShoppingQuantity, ingredientName } from "@/lib/recipes";
 import {
   addItemEvent,
@@ -35,13 +33,13 @@ import {
   type ShoppingList,
   useShoppingEvents,
 } from "@/lib/shopping";
+import { useShoppingView } from "@/lib/shopping-view";
 import { m } from "@/paraglide/messages";
 
 const SETTLE_MS = 600;
 const LONG_PRESS_MS = 450;
 const GESTURE_SLOP_PX = 10;
 const HINT_KEY = "yumi.shopping.gesture-hint-dismissed";
-const VIEW_KEY = "yumi.shopping.view";
 
 type LearnedOrder = ReturnType<typeof learnShoppingOrder>;
 const NO_LEARNING: LearnedOrder = { ingredients: [], categories: [] };
@@ -127,6 +125,7 @@ function ShoppingRow({
   const [offset, setOffset] = useState(0);
   const [dragging, setDragging] = useState(false);
   const sources = sourceTitles(row.sources, recipes);
+  const quantity = amountText(row);
 
   const finish = () => {
     if (gesture.current) window.clearTimeout(gesture.current.timer);
@@ -225,7 +224,7 @@ function ShoppingRow({
             <span className="shopping-name">{row.label}</span>
             {sources && <span className="shopping-source">{sources}</span>}
           </span>
-          <span className="shopping-quantity">{amountText(row)}</span>
+          {quantity && <span className="shopping-quantity">{quantity}</span>}
         </button>
         <Button
           type="button"
@@ -394,9 +393,7 @@ export function ShoppingItems({
   const [editKey, setEditKey] = useState<string | null>(null);
   const [actionRow, setActionRow] = useState<string | null>(null);
   const [settling, setSettling] = useState<Record<string, MergedItem>>({});
-  const [view, setView] = useState<"rows" | "tiles">(() =>
-    readPreference(VIEW_KEY) === "tiles" ? "tiles" : "rows",
-  );
+  const [view] = useShoppingView();
   const tiles = view === "tiles";
   const rows = mergeShoppingItems(
     list.items.map((item) => ({
@@ -579,63 +576,44 @@ export function ShoppingItems({
 
   return (
     <div className="shopping-items">
-      <GestureHint tiles={tiles} />
-      <fieldset className="list-view-toggle">
-        <legend className="sr-only">{m["shopping.view_label"]()}</legend>
-        {(["rows", "tiles"] as const).map((value) => (
-          <button
-            key={value}
-            type="button"
-            aria-pressed={view === value}
-            aria-label={
-              value === "rows"
-                ? m["shopping.view_rows"]()
-                : m["shopping.view_tiles"]()
-            }
-            title={
-              value === "rows"
-                ? m["shopping.view_rows"]()
-                : m["shopping.view_tiles"]()
-            }
-            onClick={() => {
-              setView(value);
-              writePreference(VIEW_KEY, value);
-            }}
-          >
-            {value === "rows" ? (
-              <Rows3 size={18} aria-hidden="true" />
-            ) : (
-              <Grid2x2 size={18} aria-hidden="true" />
-            )}
-          </button>
-        ))}
-      </fieldset>
       {runs.map((run) => (
-        <section key={run.rows[0]?.key} className="shopping-category">
-          <h2 className="section-label">{categoryName(run.categoryId)}</h2>
+        <section key={run.rows[0]?.key} className="aisle">
+          <h2 className="aisle-heading">
+            <span className="aisle-icon">
+              <Pictogram
+                icon={
+                  categories.find((item) => item.id === run.categoryId)?.icon
+                }
+                size={22}
+              />
+            </span>
+            <span className="aisle-name">{categoryName(run.categoryId)}</span>
+            <span className="aisle-count">{run.rows.length}</span>
+          </h2>
           <ul className={itemsClass}>{run.rows.map(renderRow)}</ul>
         </section>
       ))}
+      <GestureHint tiles={tiles} />
       {!!done.length && (
-        <section className="shopping-category shopping-done">
-          <div className="shopping-done-heading">
-            <h2 className="section-label">
-              {m["shopping.done_count"]({ count: done.length })}
-            </h2>
-            <Button
-              variant="ghost"
-              disabled={events.isPending}
-              onClick={() =>
-                events.mutate(
-                  checkedIds.map((id) => itemEvent(id, "item_removed")),
-                )
-              }
-            >
-              {m["shopping.clear_checked"]()}
-            </Button>
-          </div>
+        <details className="cart-tray">
+          <summary>
+            <span>{m["shopping.done_count"]({ count: done.length })}</span>
+            <ChevronDown size={20} aria-hidden="true" />
+          </summary>
           <ul className={itemsClass}>{done.map(renderRow)}</ul>
-        </section>
+          <Button
+            variant="ghost"
+            disabled={events.isPending}
+            onClick={() =>
+              events.mutate(
+                checkedIds.map((id) => itemEvent(id, "item_removed")),
+              )
+            }
+          >
+            <Trash2 size={18} aria-hidden="true" />
+            {m["shopping.clear_checked"]()}
+          </Button>
+        </details>
       )}
       <Sheet
         ref={sheet}

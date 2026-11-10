@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Check, Store } from "lucide-react";
 import { useRef } from "react";
-import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import type { Store as StoreRow } from "@/lib/stores";
 import { m } from "@/paraglide/messages";
@@ -23,10 +22,9 @@ export function StoreSessionChip({
   };
   return (
     <>
-      <Button
+      <button
         type="button"
-        variant="outline"
-        className="store-chip"
+        className="stage-chip"
         data-active={!!store}
         aria-haspopup="dialog"
         aria-label={
@@ -34,9 +32,13 @@ export function StoreSessionChip({
         }
         onClick={() => sheet.current?.showModal()}
       >
-        <Store size={18} aria-hidden="true" />
-        <span>{store ? store.name : m["shopping.pick_store"]()}</span>
-      </Button>
+        <Store size={16} aria-hidden="true" />
+        <span>
+          {store
+            ? m["shopping.at_store"]({ name: store.name })
+            : m["shopping.pick_store"]()}
+        </span>
+      </button>
       <Sheet ref={sheet} title={m["shopping.trip_store"]()}>
         <p className="meta">{m["shopping.store_session_hint"]()}</p>
         {stores.length > 0 ? (

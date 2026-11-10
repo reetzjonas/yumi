@@ -11,6 +11,7 @@ import "@fontsource-variable/bricolage-grotesque/opsz.css";
 import "@fontsource-variable/instrument-sans/index.css";
 import "./styles.css";
 import "./shell.css";
+import "./list.css";
 import "./cooking.css";
 import "./pictogram.css";
 

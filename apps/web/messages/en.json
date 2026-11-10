@@ -429,7 +429,7 @@
   "stores.no_store": "No store (default order)",
   "stores.manage": "Manage stores",
   "shopping.quick_label": "Quick add",
-  "shopping.quick_placeholder": "Milk, eggs, 500 g flour …",
+  "shopping.quick_placeholder": "Add an item …",
   "shopping.quick_hint": "Type an amount and an item, then press Enter or pick a suggestion.",
   "shopping.add": "Add",
   "shopping.suggestions": "Suggestions",
@@ -560,7 +560,7 @@
   "shopping.active": "active",
   "shopping.edit_item": "Edit {name}",
   "shopping.merged": "{count} entries merged",
-  "shopping.done_count": "Done ({count})",
+  "shopping.done_count": "In the cart · {count}",
   "shopping.edit_title": "Edit item",
   "shopping.list_progress": "{done} of {total} done",
   "shopping.remove_all": "Remove all entries",
@@ -649,5 +649,7 @@
   "push.denied": "The browser does not allow notifications. Allow them in the site settings.",
   "push.going_shopping": "Tell the household: I am going shopping",
   "push.trip_sent": "The household has been told.",
-  "push.trip_nobody": "Nobody else has notifications turned on."
+  "push.trip_nobody": "Nobody else has notifications turned on.",
+  "shopping.list_remaining": "{open} of {total} to go",
+  "shopping.quick_input_placeholder": "Milk, eggs, 500 g flour …"
 }

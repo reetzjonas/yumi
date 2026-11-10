@@ -429,7 +429,7 @@
   "stores.no_store": "Kein Laden (Standard-Reihenfolge)",
   "stores.manage": "Läden verwalten",
   "shopping.quick_label": "Schnell hinzufügen",
-  "shopping.quick_placeholder": "Milch, Eier, 500 g Mehl …",
+  "shopping.quick_placeholder": "Artikel hinzufügen …",
   "shopping.quick_hint": "Gib Menge und Artikel ein und drücke Enter oder wähle einen Vorschlag.",
   "shopping.add": "Hinzufügen",
   "shopping.suggestions": "Vorschläge",
@@ -560,7 +560,7 @@
   "shopping.active": "aktiv",
   "shopping.edit_item": "{name} bearbeiten",
   "shopping.merged": "{count} Einträge zusammengeführt",
-  "shopping.done_count": "Erledigt ({count})",
+  "shopping.done_count": "Im Wagen · {count}",
   "shopping.edit_title": "Artikel bearbeiten",
   "shopping.list_progress": "{done} von {total} erledigt",
   "shopping.remove_all": "Alle Einträge entfernen",
@@ -649,5 +649,7 @@
   "push.denied": "Der Browser erlaubt keine Benachrichtigungen. Erlaube sie in den Website-Einstellungen.",
   "push.going_shopping": "Bescheid sagen: Ich gehe einkaufen",
   "push.trip_sent": "Der Haushalt weiß Bescheid.",
-  "push.trip_nobody": "Niemand sonst hat Benachrichtigungen eingeschaltet."
+  "push.trip_nobody": "Niemand sonst hat Benachrichtigungen eingeschaltet.",
+  "shopping.list_remaining": "Noch {open} von {total}",
+  "shopping.quick_input_placeholder": "Milch, Eier, 500 g Mehl …"
 }
