@@ -31,7 +31,9 @@ parsing feature; failed or incomplete batches retain the rule-based results. Cat
 server-side against the active household. Missing ingredients are created only in that household and
 capped per import; AI-suggested fields, including nutrition, are marked as estimates and never touch the
 global catalog. Created ingredients remain in the household catalog even if the recipe is not saved.
-Unquantified lines linked to a spice or sauce are marked `excludeFromNutrition`, so salt and pepper to
+Measure words with a sensible unit get one when no counted catalog part matches
+("1 Becher Schmand" is one pack, a Handvoll 30 g, a Schuss 20 ml, a Messerspitze a pinch), so the
+amount can be scaled and weighed. Unquantified lines linked to a spice or sauce are marked `excludeFromNutrition`, so salt and pepper to
 taste do not dilute the nutrition coverage.
 
 URL entry points: paste a URL or share it from a mobile browser into the installed PWA.

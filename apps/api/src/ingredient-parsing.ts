@@ -61,7 +61,10 @@ export async function parseIngredientLines(
       parsed[index] = await matchParsedLine(householdId, {
         ...original,
         ...line,
-        unitText: null,
+        // Without a unit from the model the measure word still decides the unit.
+        unitText: line.unit
+          ? null
+          : parseIngredientLine(lines[index] ?? "").unitText,
       });
     }),
   );

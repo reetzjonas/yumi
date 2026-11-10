@@ -168,6 +168,7 @@ async function loadRecipe(householdId: string, id: string, userId: string) {
           nutritionPer100g: ingredient.nutritionPer100g,
           densityGPerMl: ingredient.densityGPerMl,
           pieceWeightG: ingredient.pieceWeightG,
+          packSizes: ingredient.packSizes,
         },
       })
       .from(recipeIngredient)

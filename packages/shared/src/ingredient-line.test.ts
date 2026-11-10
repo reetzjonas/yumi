@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import {
   type ParsedIngredientLine,
   parseIngredientLine,
+  resolveMeasureWord,
 } from "./ingredient-line";
 
 type Expected = Partial<Omit<ParsedIngredientLine, "raw" | "confidence">>;
@@ -137,5 +138,20 @@ describe("parseIngredientLine", () => {
       0.8,
     );
     expect(parseIngredientLine("").confidence).toBe(0);
+  });
+});
+
+describe("resolveMeasureWord", () => {
+  test.each([
+    ["1 Becher Schmand", { quantity: 1, unit: "pack", unitText: null }],
+    ["2 Handvoll Rucola", { quantity: 60, unit: "g", unitText: null }],
+    ["1 Schuss Weißwein", { quantity: 20, unit: "ml", name: "Weißwein" }],
+    ["1 Msp. Muskat", { quantity: 1, unit: "pinch", unitText: null }],
+    ["2 Zehen Knoblauch", { quantity: 2, unit: null, unitText: "Zehen" }],
+    ["200 g Mehl", { quantity: 200, unit: "g" }],
+  ] as const)("%s", (line, expected) => {
+    expect(resolveMeasureWord(parseIngredientLine(line))).toMatchObject(
+      expected,
+    );
   });
 });

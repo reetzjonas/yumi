@@ -30,8 +30,8 @@ capabilities are excluded. See [household transfer](data-transfer.md).
   meat), the seed documents a computed average in its `source`. Household ingredients created during
   import can carry an AI-estimated profile with `nutrition_source = "AI estimate"`.
 - Recipe detail returns `nutrition` per serving of the base recipe, or null when no line counts.
-  Lines without quantity, linked nutrition or a gram conversion (density, piece weight; never for
-  pinch, bunch, can, pack) are listed in `excludedIngredients` and reported as partial coverage.
+  Lines without quantity, linked nutrition or a gram conversion (density, piece weight; can, pack and
+  bunch through the ingredient's first pack size with a weight; a pinch counts as 0.4 g) are listed in `excludedIngredients` and reported as partial coverage.
   Lines marked `exclude_from_nutrition` are intentionally ignored: they leave both the sum and the
   coverage denominator, and the result reports them as `ignoredIngredients` (e.g. salt and pepper
   to taste).

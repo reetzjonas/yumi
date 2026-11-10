@@ -94,6 +94,11 @@ const MEASURE_WORDS = new Set([
   "msp",
   "messerspitze",
   "handvoll",
+  "schuss",
+  "spritzer",
+  "splash",
+  "tub",
+  "tubs",
   "würfel",
   "kugel",
   "kugeln",
@@ -117,6 +122,47 @@ const MEASURE_WORDS = new Set([
   "head",
   "heads",
 ]);
+
+/** Measure words with a sensible unit: a tub is a pack, a handful about 30 g. */
+const MEASURE_UNITS: Record<string, [Unit, number]> = {
+  becher: ["pack", 1],
+  tub: ["pack", 1],
+  tubs: ["pack", 1],
+  handvoll: ["g", 30],
+  handful: ["g", 30],
+  schuss: ["ml", 20],
+  splash: ["ml", 20],
+  spritzer: ["ml", 5],
+  msp: ["pinch", 1],
+  messerspitze: ["pinch", 1],
+};
+
+/**
+ * Gives a recipe line with a known measure word a unit code, so its amount can
+ * be scaled and weighed: "1 Becher Schmand" is one pack, "2 Handvoll Rucola" 60 g.
+ * Lines with a unit or an unknown measure word are returned unchanged.
+ */
+export function resolveMeasureWord<
+  T extends Pick<
+    ParsedIngredientLine,
+    "quantity" | "quantityMax" | "unit" | "unitText"
+  >,
+>(parsed: T): T {
+  if (parsed.unit || !parsed.unitText) return parsed;
+  const measure =
+    MEASURE_UNITS[parsed.unitText.toLowerCase().replace(/\.$/, "")];
+  if (!measure) return parsed;
+  const [unit, factor] = measure;
+  const scale = (value: number | null) =>
+    value === null ? null : round(value * factor);
+  return {
+    ...parsed,
+    quantity: scale(parsed.quantity),
+    quantityMax: scale(parsed.quantityMax),
+    unit,
+    unitText: null,
+  };
+}
 
 const MODIFIER_WORDS = new Set([
   "groß",

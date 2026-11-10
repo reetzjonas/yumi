@@ -1,5 +1,5 @@
 import { ingredient } from "@yumi/db/schema";
-import type { ParsedIngredientLine } from "@yumi/shared";
+import { type ParsedIngredientLine, resolveMeasureWord } from "@yumi/shared";
 import { and, eq, isNull, or, sql } from "drizzle-orm";
 import { db } from "./db";
 
@@ -135,21 +135,23 @@ export async function matchParsedLine(
       }
     }
   }
-  const match = await bestMatch(householdId, parsed.name, false);
+  // No counted part matched, so a measure word may still name a unit ("Becher").
+  const resolved = resolveMeasureWord(parsed);
+  const match = await bestMatch(householdId, resolved.name, false);
   if (match)
     return {
-      ...parsed,
+      ...resolved,
       ingredient: match.row,
       confidentMatch: match.confident,
     };
   // "Salz und Pfeffer" falls back to its first item, as an unconfident link.
-  const first = parsed.name.split(/\s+(?:und|and|oder|or|&)\s+|\s*\/\s*/i)[0];
+  const first = resolved.name.split(/\s+(?:und|and|oder|or|&)\s+|\s*\/\s*/i)[0];
   const fallback =
-    first && first !== parsed.name
+    first && first !== resolved.name
       ? await bestMatch(householdId, first, false)
       : null;
   return {
-    ...parsed,
+    ...resolved,
     ingredient: fallback?.row ?? null,
     confidentMatch: false,
   };

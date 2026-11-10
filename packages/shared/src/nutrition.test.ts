@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { ingredientInputSchema } from "./catalog";
 import {
   calculateRecipeNutrition,
+  ingredientWeightG,
   type NutritionValues,
   nutritionForPortions,
   nutritionValuesSchema,
@@ -186,8 +187,8 @@ describe("calculateRecipeNutrition", () => {
     });
   });
 
-  test.each(["pinch", "bunch", "can", "pack"] as const)(
-    "%s has no assumed gram weight even with density and piece weight",
+  test.each(["bunch", "can", "pack"] as const)(
+    "%s has no gram weight without a pack size, even with density and piece weight",
     (unit) => {
       const result = calculateRecipeNutrition([line, { ...line, unit }], 1);
 
@@ -241,5 +242,66 @@ describe("calculateRecipeNutrition", () => {
       ignoredIngredients: 0,
       excludedIngredients: [],
     });
+  });
+});
+
+describe("ingredientWeightG", () => {
+  const bare = {
+    nutritionPer100g: profile,
+    densityGPerMl: null,
+    pieceWeightG: null,
+  };
+
+  test("cans, packs and bunches weigh the first pack size that has a weight", () => {
+    const packSizes = [
+      { quantity: 8, unit: "pcs" },
+      { quantity: 400, unit: "g" },
+    ];
+    expect(ingredientWeightG(2, "can", { ...bare, packSizes })).toBe(800);
+    expect(ingredientWeightG(0.5, "pack", { ...bare, packSizes })).toBe(200);
+    expect(
+      ingredientWeightG(1, "bunch", {
+        ...bare,
+        packSizes: [{ quantity: 30, unit: "g" }],
+      }),
+    ).toBe(30);
+  });
+
+  test("a pack counted in pieces or millilitres uses the piece weight or density", () => {
+    expect(
+      ingredientWeightG(1, "pack", {
+        ...bare,
+        pieceWeightG: 60,
+        packSizes: [{ quantity: 6, unit: "pcs" }],
+      }),
+    ).toBe(360);
+    expect(
+      ingredientWeightG(1, "can", {
+        ...bare,
+        densityGPerMl: 0.97,
+        packSizes: [{ quantity: 400, unit: "ml" }],
+      }),
+    ).toBeCloseTo(388);
+  });
+
+  test("a pinch has a fixed weight and a pack without sizes stays unknown", () => {
+    expect(ingredientWeightG(2, "pinch", bare)).toBeCloseTo(0.8);
+    expect(ingredientWeightG(1, "pack", bare)).toBeNull();
+    expect(ingredientWeightG(1, "tbsp", bare)).toBeNull();
+  });
+
+  test("recipe nutrition counts a can through its pack size", () => {
+    const result = calculateRecipeNutrition(
+      [
+        {
+          quantity: 1,
+          unit: "can",
+          ingredient: { ...bare, packSizes: [{ quantity: 400, unit: "g" }] },
+        },
+      ],
+      2,
+    );
+    expect(result?.perServing.energyKcal).toBe(400);
+    expect(result?.excludedIngredients).toEqual([]);
   });
 });
