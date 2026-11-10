@@ -613,5 +613,11 @@
   "shopping.view_tiles": "Tiles",
   "shopping.gesture_hint_tiles": "Tap to check, long-press to edit.",
   "queue.on_list": "on the list",
-  "cooking.all_ingredients_servings": "All ingredients · {count} servings"
+  "cooking.all_ingredients_servings": "All ingredients · {count} servings",
+  "recipes.notes_title": "For next time",
+  "recipes.notes_add": "Note for next time",
+  "recipes.notes_edit": "Change",
+  "recipes.notes_save": "Save note",
+  "recipes.notes_saved": "Saved.",
+  "recipes.notes_placeholder": "e.g. less salt, 5 more minutes in the oven"
 }

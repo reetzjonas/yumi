@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useRef, useState, useSyncExternalStore } from "react";
 import { StepTimers } from "@/components/cooking/step-timers";
+import { RecipeNotes } from "@/components/recipes/recipe-notes";
 import { ServingsStepper } from "@/components/recipes/servings-selector";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
@@ -242,6 +243,9 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
               <h3 className="import-card-title">{m["cooking.how_was_it"]()}</h3>
               <FinishRating recipe={recipe} />
             </div>
+            <div className="import-card">
+              <RecipeNotes recipe={recipe} startEditing />
+            </div>
             <Button asChild className="w-full">
               <Link
                 to="/recipes/$id"
@@ -267,6 +271,12 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
               className="cooking-instruction"
               aria-label={m["recipes.steps"]()}
             >
+              {index === 0 && recipe.cookingNotes && (
+                <p className="cooking-notes">
+                  <strong>{m["recipes.notes_title"]()}:</strong>{" "}
+                  {recipe.cookingNotes}
+                </p>
+              )}
               <p className="cooking-step-label">
                 {m["cooking.step_label"]({ number: index + 1 })}
               </p>

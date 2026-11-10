@@ -613,5 +613,11 @@
   "shopping.view_tiles": "Kacheln",
   "shopping.gesture_hint_tiles": "Tippen hakt ab, lange drücken bearbeitet.",
   "queue.on_list": "auf der Liste",
-  "cooking.all_ingredients_servings": "Alle Zutaten · {count} Portionen"
+  "cooking.all_ingredients_servings": "Alle Zutaten · {count} Portionen",
+  "recipes.notes_title": "Fürs nächste Mal",
+  "recipes.notes_add": "Notiz fürs nächste Mal",
+  "recipes.notes_edit": "Ändern",
+  "recipes.notes_save": "Notiz speichern",
+  "recipes.notes_saved": "Gespeichert.",
+  "recipes.notes_placeholder": "z. B. weniger Salz, 5 Minuten länger im Ofen"
 }

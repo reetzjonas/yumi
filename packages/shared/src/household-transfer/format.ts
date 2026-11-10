@@ -57,6 +57,8 @@ export const householdTransferDataSchema = z.strictObject({
     row.extend({
       title: text,
       description: text.nullable(),
+      // Absent in archives written before cooking notes existed.
+      cookingNotes: text.nullable().default(null),
       servings: positiveInteger,
       prepMinutes: integer.nullable(),
       cookMinutes: integer.nullable(),

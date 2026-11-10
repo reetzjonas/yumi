@@ -23,6 +23,8 @@ export const recipe = pgTable(
     householdId: householdId(),
     title: text().notNull(),
     description: text(),
+    /** Household notes for the next time ("less salt"), shown before cooking. */
+    cookingNotes: text(),
     servings: integer().notNull().default(2),
     prepMinutes: integer(),
     cookMinutes: integer(),

@@ -129,6 +129,28 @@ describe("recipes", () => {
     ]);
   });
 
+  test("cooking notes are saved per recipe and scoped to the household", async () => {
+    const c = await householdMember("notes-owner");
+    const outsider = await householdMember("notes-outsider");
+    const created = await createRecipe(c, { title: "Dal" });
+    const put = (client: Client, notes: string | null) =>
+      client.request(`/api/recipes/${created.id}/notes`, {
+        method: "PUT",
+        body: JSON.stringify({ notes }),
+      });
+    const notes = async () =>
+      z
+        .object({ cookingNotes: z.string().nullable() })
+        .parse(await (await c.request(`/api/recipes/${created.id}`)).json())
+        .cookingNotes;
+    expect(await notes()).toBeNull();
+    expect((await put(c, "  Weniger Salz  ")).status).toBe(204);
+    expect(await notes()).toBe("Weniger Salz");
+    expect((await put(outsider, "x")).status).toBe(404);
+    expect((await put(c, " ")).status).toBe(204);
+    expect(await notes()).toBeNull();
+  });
+
   test("list search also matches ingredient names", async () => {
     const c = await householdMember("ingredient-search");
     const onion = await onionId(c);

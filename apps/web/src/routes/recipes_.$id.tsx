@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { BackLink, PageHeader } from "@/components/page";
 import { AddRecipeToQueue } from "@/components/queue/add-recipe";
 import { RecipeInsights } from "@/components/recipes/recipe-insights";
+import { RecipeNotes } from "@/components/recipes/recipe-notes";
 import { RecipeNutrition } from "@/components/recipes/recipe-nutrition";
 import { RecipeSharing } from "@/components/recipes/recipe-sharing";
 import { ServingsStepper } from "@/components/recipes/servings-selector";
@@ -140,6 +141,7 @@ function Recipe() {
               </div>
             )}
             <RecipeInsights key={`${householdId}-${id}`} recipe={recipe} />
+            <RecipeNotes key={`notes-${householdId}-${id}`} recipe={recipe} />
             <Sheet ref={menuSheet} title={recipe.title}>
               <div className="menu-list">
                 <Button

@@ -1683,7 +1683,8 @@ select:focus-visible {
   width: 20px;
   height: 20px;
 }
-.recipe-form textarea {
+.recipe-form textarea,
+.recipe-notes-form textarea {
   width: 100%;
   min-height: 100px;
   padding: 12px;
@@ -2588,4 +2589,46 @@ body [data-sonner-toast][data-styled="true"].shopping-feedback [data-button] {
   .list-tile {
     transition: none;
   }
+}
+.recipe-notes {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 12px 8px 12px 14px;
+  border-radius: var(--radius-control);
+  background: var(--warning);
+  color: var(--warning-foreground);
+}
+.recipe-notes-main {
+  flex: 1;
+  min-width: 0;
+}
+.recipe-notes-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+}
+.recipe-notes-text,
+.cooking-notes {
+  white-space: pre-wrap;
+}
+.recipe-notes-add {
+  margin-top: 4px;
+  padding-inline: 8px;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+.recipe-notes-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+.cooking-notes {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: var(--radius-control);
+  background: var(--warning);
+  color: var(--warning-foreground);
 }

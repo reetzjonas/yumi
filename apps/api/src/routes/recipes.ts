@@ -136,6 +136,7 @@ async function loadRecipe(householdId: string, id: string, userId: string) {
       ...summaryColumns,
       ...recipeInsights(householdId, userId),
       description: recipe.description,
+      cookingNotes: recipe.cookingNotes,
       sourceUrl: recipe.sourceUrl,
       createdAt: recipe.createdAt,
     })
@@ -189,6 +190,7 @@ async function loadRecipe(householdId: string, id: string, userId: string) {
     id: row.id,
     title: row.title,
     description: row.description,
+    cookingNotes: row.cookingNotes,
     servings: row.servings,
     prepMinutes: row.prepMinutes,
     cookMinutes: row.cookMinutes,
@@ -370,6 +372,25 @@ export const recipes = new Hono<HouseholdEnv>()
     });
     return c.json(await loadRecipe(householdId, id, c.get("user").id));
   })
+  .put(
+    `${ID}/notes`,
+    validator("json", (value) =>
+      z.object({ notes: z.string().trim().max(4000).nullable() }).parse(value),
+    ),
+    async (c) => {
+      const id = z.uuid().parse(c.req.param("id"));
+      await assertRecipeOwned(c.get("householdId"), id);
+      // Notes are not recipe content: updatedAt (library order) stays untouched.
+      await db
+        .update(recipe)
+        .set({
+          cookingNotes: c.req.valid("json").notes || null,
+          updatedAt: sql`${recipe.updatedAt}`,
+        })
+        .where(eq(recipe.id, id));
+      return c.body(null, 204);
+    },
+  )
   .put(
     `${ID}/rating`,
     validator("json", (value) =>
