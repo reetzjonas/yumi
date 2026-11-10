@@ -13,6 +13,7 @@ import "./styles.css";
 import "./shell.css";
 import "./list.css";
 import "./today.css";
+import "./recipes.css";
 import "./cooking.css";
 import "./pictogram.css";
 

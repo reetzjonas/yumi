@@ -313,7 +313,7 @@
   "recipes.search": "Search recipes",
   "recipes.filter_tags": "Filter by tag",
   "recipes.all_tags": "All",
-  "recipes.total_time": "Total time: {time}",
+  "recipes.total_time": "total",
   "recipes.suggestions": "What shall we cook?",
   "recipes.suggestions_all": "All recipes",
   "recipes.suggestions_neglected": "Not cooked in a while",
@@ -601,7 +601,6 @@
   "queue.move_down_short": "Move down",
   "queue.to_list_action": "Ingredients to the shopping list",
   "recipes.more_actions": "More actions",
-  "recipes.show_label": "Show",
   "shopping.quick_several": "{count} items – press Enter to add them all",
   "shopping.view_label": "View",
   "shopping.view_rows": "Rows",
@@ -656,5 +655,8 @@
   "queue.up_today": "Up today",
   "queue.open_items": "{count} open",
   "queue.leftovers_none": "nothing left",
-  "queue.plan_hint": "Recipe or idea"
+  "queue.plan_hint": "Recipe or idea",
+  "recipes.mode_neglected": "Not lately",
+  "recipes.mode_quick": "Quick",
+  "recipes.mode_favorites": "Favorites"
 }

@@ -75,7 +75,7 @@ export function RecipePicker({
   const picked = recipes.data?.find((recipe) => recipe.id === pickedId);
   return (
     <div className="recipe-picker">
-      <label className="recipe-search">
+      <label className="search-field">
         <Search aria-hidden="true" size={20} strokeWidth={1.8} />
         <input
           type="search"
