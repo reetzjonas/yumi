@@ -632,5 +632,12 @@
   "queue.plan_leftovers": "Reste einplanen",
   "queue.plan_leftovers_next": "Es bleibt etwas übrig: Reste als Nächstes einplanen",
   "queue.leftovers_planned": "Reste sind eingeplant",
-  "queue.leftover_meal": "Reste: {name}"
+  "queue.leftover_meal": "Reste: {name}",
+  "queue.week_tab": "Vorschlag",
+  "queue.week_hint": "Ein Mix aus Resten, lange nicht Gekochtem und etwas Schnellem. Abwählen, was nicht passt.",
+  "queue.week_hint_ai": "Von der KI aus euren Rezepten ausgesucht. Abwählen, was nicht passt.",
+  "queue.week_add": "{count} Gerichte einplanen",
+  "queue.week_add_one": "1 Gericht einplanen",
+  "queue.week_again": "Neu vorschlagen",
+  "queue.week_empty": "Alle Rezepte sind schon eingeplant, oder es gibt noch keine."
 }

@@ -62,9 +62,11 @@ Use `extraEnv` for configuration and `extraEnvFrom` with a Kubernetes Secret for
 | `AI_RECIPE_IMPORT_ENABLED`     | `true`                      | Enable `recipe-import` when AI is globally enabled.                                                                    |
 | `AI_INGREDIENT_PARSE_ENABLED`  | `true`                      | Enable `ingredient-parse` when AI is globally enabled.                                                                 |
 | `AI_INGREDIENT_CREATE_ENABLED` | `true`                      | Enable `ingredient-create` when AI is globally enabled.                                                                |
+| `AI_MEAL_PLAN_ENABLED`         | `true`                      | Enable `meal-plan` (week suggestion) when AI is globally enabled.                                                      |
 | `AI_RECIPE_IMPORT_MODEL`       | `AI_MODEL`                  | Model override for recipe extraction; select a vision-capable model for photos.                                        |
 | `AI_INGREDIENT_PARSE_MODEL`    | `AI_MODEL`                  | Model override for batched ingredient parsing.                                                                         |
 | `AI_INGREDIENT_CREATE_MODEL`   | `AI_MODEL`                  | Model override for ingredient proposals.                                                                               |
+| `AI_MEAL_PLAN_MODEL`           | `AI_MODEL`                  | Model override for the week suggestion.                                                                                |
 
 Set `AI_ENABLED=true`, a model, and the selected provider's key to enable a hosted
 provider. For local inference set `AI_PROVIDER=ollama`, choose an installed model

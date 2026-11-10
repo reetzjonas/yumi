@@ -16,9 +16,11 @@ import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { validator } from "hono/validator";
 import { z } from "zod";
+import { ai } from "../ai";
 import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
 import { db } from "../db";
 import { consumeLeftovers } from "../leftovers";
+import { suggestWeek } from "../week-suggestion";
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -80,6 +82,21 @@ export const queue = new Hono<HouseholdEnv>()
         .where(queued(c.get("householdId")))
         .orderBy(asc(mealQueueEntry.position), asc(mealQueueEntry.id)),
     ),
+  )
+  .get(
+    "/week-suggestion",
+    validator("query", (value) =>
+      z.object({ locale: z.enum(["de", "en"]).default("de") }).parse(value),
+    ),
+    async (c) =>
+      c.json(
+        await suggestWeek(
+          c.get("householdId"),
+          c.get("user").id,
+          c.req.valid("query").locale,
+          ai,
+        ),
+      ),
   )
   .post(
     "/",

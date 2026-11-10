@@ -120,11 +120,13 @@ describe("AI availability", () => {
     );
 
     expect(results).toEqual(
-      ["vision-model", "batch-model", "shared-model"].map((name) => ({
-        status: "success",
-        value: { name },
-        usage: { inputTokens: 8, outputTokens: 3, totalTokens: 11 },
-      })),
+      ["vision-model", "batch-model", "shared-model", "shared-model"].map(
+        (name) => ({
+          status: "success",
+          value: { name },
+          usage: { inputTokens: 8, outputTokens: 3, totalTokens: 11 },
+        }),
+      ),
     );
   });
 

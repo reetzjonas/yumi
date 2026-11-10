@@ -632,5 +632,12 @@
   "queue.plan_leftovers": "Plan leftovers",
   "queue.plan_leftovers_next": "Something left over: plan leftovers next",
   "queue.leftovers_planned": "Leftovers are planned",
-  "queue.leftover_meal": "Leftovers: {name}"
+  "queue.leftover_meal": "Leftovers: {name}",
+  "queue.week_tab": "Suggestion",
+  "queue.week_hint": "A mix of leftovers, long-neglected and something quick. Untick what does not fit.",
+  "queue.week_hint_ai": "Picked by the AI from your recipes. Untick what does not fit.",
+  "queue.week_add": "Plan {count} meals",
+  "queue.week_add_one": "Plan 1 meal",
+  "queue.week_again": "Suggest again",
+  "queue.week_empty": "All recipes are planned already, or there are none yet."
 }

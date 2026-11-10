@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ListChecks, Plus, Soup } from "lucide-react";
+import { ListChecks, Plus, Soup, Sparkles } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { EmptyState, PageHeader } from "@/components/page";
@@ -8,6 +8,7 @@ import { AddFreeMeal } from "@/components/queue/add-free-meal";
 import { MealQueueEntry } from "@/components/queue/queue-entry";
 import { RecipePicker } from "@/components/queue/recipe-picker";
 import { QueueShoppingPreview } from "@/components/queue/shopping-preview";
+import { WeekSuggestion } from "@/components/queue/week-suggestion";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -46,7 +47,7 @@ function MealQueue({
   const [announcement, setAnnouncement] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const pickerSheet = useRef<HTMLDialogElement>(null);
-  const [addKind, setAddKind] = useState<"recipe" | "free">("recipe");
+  const [addKind, setAddKind] = useState<"recipe" | "free" | "week">("recipe");
   const shoppingSheet = useRef<HTMLDialogElement>(null);
   const [shoppingPending, setShoppingPending] = useState(false);
   const [shoppingAdded, setShoppingAdded] = useState<number | null>(null);
@@ -251,11 +252,22 @@ function MealQueue({
           >
             {m["queue.without_recipe"]()}
           </Button>
+          <Button
+            type="button"
+            variant={addKind === "week" ? "secondary" : "ghost"}
+            aria-pressed={addKind === "week"}
+            onClick={() => setAddKind("week")}
+          >
+            <Sparkles size={18} aria-hidden="true" />
+            {m["queue.week_tab"]()}
+          </Button>
         </div>
         {addKind === "recipe" ? (
           <RecipePicker suggestions />
-        ) : (
+        ) : addKind === "free" ? (
           <AddFreeMeal onAdded={() => pickerSheet.current?.close()} />
+        ) : (
+          <WeekSuggestion onAdded={() => pickerSheet.current?.close()} />
         )}
       </Sheet>
       {query.isPending ? (

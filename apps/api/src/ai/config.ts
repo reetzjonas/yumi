@@ -4,6 +4,7 @@ export const aiFeatures = [
   "recipe-import",
   "ingredient-parse",
   "ingredient-create",
+  "meal-plan",
 ] as const;
 export type AiFeature = (typeof aiFeatures)[number];
 export type AiProvider = "openrouter" | "openai" | "anthropic" | "ollama";
@@ -27,6 +28,8 @@ const envSchema = z.object({
   AI_INGREDIENT_PARSE_MODEL: optionalText,
   AI_INGREDIENT_CREATE_ENABLED: flag.default(true),
   AI_INGREDIENT_CREATE_MODEL: optionalText,
+  AI_MEAL_PLAN_ENABLED: flag.default(true),
+  AI_MEAL_PLAN_MODEL: optionalText,
   AI_TIMEOUT_MS: z.coerce.number().int().min(1).max(300_000).default(30_000),
   AI_MAX_RETRIES: z.coerce.number().int().min(0).max(5).default(2),
   OPENROUTER_API_KEY: optionalText,
@@ -95,6 +98,10 @@ export function readAiConfig(
       "ingredient-create": {
         enabled: env.AI_INGREDIENT_CREATE_ENABLED,
         model: env.AI_INGREDIENT_CREATE_MODEL ?? env.AI_MODEL,
+      },
+      "meal-plan": {
+        enabled: env.AI_MEAL_PLAN_ENABLED,
+        model: env.AI_MEAL_PLAN_MODEL ?? env.AI_MODEL,
       },
     },
   };
