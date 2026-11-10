@@ -386,13 +386,16 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
           )}
           <Button
             variant="outline"
+            className="cooking-prev"
             disabled={index === 0 || cooked.isPending}
+            aria-label={m["cooking.previous"]()}
+            title={m["cooking.previous"]()}
             onClick={() => go(index - 1)}
           >
-            <ArrowLeft size={20} aria-hidden="true" />
-            {m["cooking.previous"]()}
+            <ArrowLeft size={24} aria-hidden="true" />
           </Button>
           <Button
+            className="cooking-next"
             disabled={cooked.isPending}
             aria-busy={cooked.isPending}
             onClick={() => (last ? cooked.mutate() : go(index + 1))}

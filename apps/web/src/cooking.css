@@ -285,3 +285,169 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- Farbwelten: the cooking view is always dark, one statement per screen ---- */
+.cooking-view {
+  --background: #17141f;
+  --foreground: #f6f2e8;
+  --card: #231f2e;
+  --secondary: #2e2a3a;
+  --secondary-hover: #3a3549;
+  --muted: #2e2a3a;
+  --muted-foreground: #aba7b9;
+  --accent: #2e2a3a;
+  --accent-foreground: #f6f2e8;
+  --border: #77738a;
+  --line: #2c2938;
+  --primary: var(--lemon);
+  --primary-foreground: var(--ink);
+  --primary-hover: #ffe07a;
+  --ring: var(--lemon);
+  --success: #74d6a6;
+  --destructive: #ff9a85;
+  --warning: #3d3414;
+  --warning-foreground: #f3dc8a;
+  --world-tint: #3d3414;
+  color-scheme: dark;
+}
+.cooking-header {
+  gap: 12px;
+  padding-inline: max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-left));
+}
+.cooking-header > .button {
+  width: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  background: rgb(255 255 255 / 0.1);
+}
+.cooking-header h1 {
+  color: var(--muted-foreground);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.wake-chip {
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.1);
+}
+.progress-bar.cooking-bar {
+  width: calc(100% - 40px);
+  height: 6px;
+  margin: 8px 20px 0;
+  border-radius: 3px;
+  background: rgb(255 255 255 / 0.16);
+}
+.cooking-bar::-webkit-progress-bar {
+  background: transparent;
+}
+.cooking-bar::-webkit-progress-value {
+  border-radius: 3px;
+  background: var(--lemon);
+}
+.cooking-bar::-moz-progress-bar {
+  border-radius: 3px;
+  background: var(--lemon);
+}
+.cooking-body {
+  padding: 28px 22px;
+  gap: 26px;
+}
+.cooking-step-label {
+  color: var(--lemon);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.cooking-step-text {
+  font-family: var(--font-display);
+  font-size: 1.9375rem;
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: -0.025em;
+}
+.step-timers .button {
+  min-height: 56px;
+  border: 2px solid var(--paprika);
+  background: transparent;
+  color: #ffb8a8;
+}
+/* Ingredients of the step are chips to tick off. */
+.cooking-ingredients > h2 {
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+.cooking-ingredients > .ingredient-rows.is-checkable {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cooking-ingredients > .ingredient-rows.is-checkable > li {
+  border: 0;
+}
+.cooking-ingredients > .ingredient-rows .ingredient-check {
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 18px 0 12px;
+  border-radius: 24px;
+  background: rgb(255 255 255 / 0.1);
+  font-size: 1rem;
+  font-weight: 600;
+}
+.cooking-ingredients > .ingredient-rows .ingredient-quantity {
+  width: auto;
+}
+.cooking-ingredients > .ingredient-rows .ingredient-check[aria-pressed="true"] {
+  background: var(--basil);
+}
+.cooking-ingredients
+  > .ingredient-rows
+  .ingredient-check[aria-pressed="true"]
+  > span {
+  color: #ffffff;
+  text-decoration: none;
+}
+.cooking-ingredients
+  > .ingredient-rows
+  .ingredient-check[aria-pressed="true"]
+  > .ingredient-check-box {
+  border-color: #ffffff;
+  background: transparent;
+}
+.cooking-footer {
+  flex-wrap: nowrap;
+  gap: 10px;
+  padding: 12px 16px max(18px, env(safe-area-inset-bottom));
+  border-top: 0;
+}
+.cooking-footer .button.cooking-prev {
+  flex-shrink: 0;
+  width: 64px;
+  min-height: 64px;
+  padding: 0;
+  background: rgb(255 255 255 / 0.1);
+}
+.cooking-footer .button.cooking-next {
+  flex: 1;
+  min-height: 64px;
+  font-size: 1.125rem;
+}
+.cooking-finish-icon {
+  background: var(--basil);
+  color: #ffffff;
+}
+.cooking-notes {
+  border-radius: 18px;
+}
+@media (min-width: 768px) {
+  .cooking-step-text {
+    font-size: 2.5rem;
+  }
+  .cooking-footer {
+    justify-content: center;
+  }
+  .cooking-footer .button.cooking-next {
+    flex: 0 1 420px;
+  }
+}

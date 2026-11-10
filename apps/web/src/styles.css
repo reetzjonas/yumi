@@ -436,7 +436,11 @@ body
   gap: 12px;
 }
 .auth-brand {
-  color: var(--primary);
+  align-self: flex-start;
+  padding: 10px 18px 12px;
+  border-radius: 22px;
+  background: var(--basil);
+  color: #f4f1e2;
   font-family: var(--font-display);
   font-size: 2.5rem;
   font-weight: 800;
@@ -1219,9 +1223,7 @@ select:focus-visible {
   object-fit: cover;
 }
 .recipe-image-preview.is-empty {
-  background:
-    repeating-linear-gradient(135deg, var(--line) 0 8px, transparent 8px 16px),
-    var(--secondary);
+  background: var(--world-tint);
 }
 .recipe-image-actions {
   display: flex;

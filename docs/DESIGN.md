@@ -1,255 +1,152 @@
-# yumi design line
+# yumi design line: "Farbwelten"
 
-The binding summary of how yumi looks and behaves. Why: [ADR 0015](decisions/0015-ux-rework.md)
-(palette, type, structure) and [ADR 0013](decisions/0013-design-draft-v2.md) (layout sizes).
-`design/yumi-draft.html` is a historical snapshot and not a reference anymore.
+The binding summary of how yumi looks and behaves. Why: [ADR 0016](decisions/0016-farbwelten.md).
+The approved concept board lives on branch `prototype/design-directions`; `design/yumi-draft.html`
+is a historical snapshot and not a reference.
 
-## 1. Identity
+## 1. Principles
 
-A calm kitchen tool: warm near-white paper, near-black text, tomato red for the one thing you
-should tap. Recipe photos and list pictograms are the decoration. Soft filled surfaces instead of
-outlined boxes. No stock imagery, gradients, blur, decorative accent borders or promotional copy.
+1. **Every world has its color.** Heute is basil green, Liste lemon, Rezepte paprika, Mehr plum.
+   The color is a large surface (the stage), never just an accent. You always see where you are.
+2. **Tap at the bottom, read at the top.** Navigation, adding, cooking and stepping live in the
+   thumb zone. The top carries the title and state ("Noch 9 von 12").
+3. **Ink is the action.** The one primary action of a view is a black pill (cream in dark mode).
+   Color means place or state, never "tap here". Red is only for deleting.
+4. **Cards, not lines.** Content sits in round cards on a neutral ground. Aisles, meals and
+   figures are tiles of their own, not table rows.
+5. **Illustration instead of placeholders.** A recipe without a photo shows the pictogram of its
+   first ingredient on a tint (`RecipeArt`). With a photo, the photo fills the same frame.
+6. **No placeholders for unbuilt or unavailable features.** No disabled "coming soon" buttons; a
+   feature that needs AI or push keys is hidden when those are missing.
+7. **AI always has a manual path** next to it.
+8. **Copy:** German first, informal "du"; destructive dialogs name the object.
 
-## 2. Rules for every screen
+## 2. Color
 
-1. **One primary action per view.** Exactly one filled red button. Everything
-   else is a soft fill, ghost or a text link. Row actions are never red. Views
-   that save automatically (settings) have no primary button.
-2. **Color carries meaning.** Red = do, green = fine / done, amber =
-   waiting, wine red with an icon or word = gone. Status is never hue alone: it always has an icon or a
-   word ("wartet", "fällig", "abgehakt von Anna"). Sync pending is never red.
-3. **No placeholders for unbuilt features.** No disabled "kommt bald" buttons,
-   no empty "Nährwerte" rows. A feature appears when it works.
-4. **Lists are scannable.** Library, shopping and settings rows are one or two
-   lines; secondary actions live in an overflow menu or the edit sheet.
-5. **AI always has a manual path** that is visible next to the AI entry point;
-   with AI disabled the manual path becomes the primary one.
-6. **Borders separate, shadows lift.** Only floating surfaces (sheets, dialogs,
-   menus, toasts) get a shadow.
-7. **Copy:** German first, informal "du"; destructive dialogs name the object
-   ("Liste „Wocheneinkauf“ löschen?").
+| Token (CSS var)       | Light             | Dark              | Use                                      |
+| --------------------- | ----------------- | ----------------- | ---------------------------------------- |
+| background            | #f2f1ec           | #121018           | Ground                                   |
+| foreground / ink      | #17141f           | #f5f2ea           | Text, icons                              |
+| card                  | #ffffff           | #1f1c29           | Cards, inputs, docks                     |
+| primary / -foreground | #17141f / #ffffff | #f5f2ea / #17141f | The one primary action                   |
+| secondary             | #e9e7df           | #2a2736           | Soft buttons, pills, steppers            |
+| muted-foreground      | #65626f           | #a7a3b5           | Meta text                                |
+| border / input        | #8b8898           | #77738a           | Text inputs, check circles (3:1 minimum) |
+| line                  | #e7e5dd           | #2c2938           | Dividers inside cards                    |
+| destructive           | #c22d18           | #ff9a85           | Delete, remove                           |
+| success               | #1f5c45           | #74d6a6           | Checked, done                            |
+| warning / -foreground | #fff1bd / #5c4a00 | #3d3414 / #f3dc8a | Notes, offline, sync pending             |
 
-## 3. Color
+Worlds (`data-world` on the shell sets `--world`, `--on-world`, `--world-tint`):
 
-| Token (CSS var)              | Light             | Dark              | Use                                       |
-| ---------------------------- | ----------------- | ----------------- | ----------------------------------------- |
-| background                   | #fbf8f4           | #171412           | Page paper, bars                          |
-| foreground                   | #1d1917           | #f6f1ec           | Body text, icons                          |
-| card / popover               | #ffffff           | #221e1b           | Cards, inputs, floating surfaces          |
-| primary / -foreground        | #d2341f / #ffffff | #ff7a66 / #3a0d06 | The one primary action, links, active tab |
-| primary-hover                | #b32a17           | #ff9483           | Hover of primary                          |
-| primary-soft                 | #fde6e1           | #45201a           | Tags, selected chip, active tab pill      |
-| secondary / muted / accent   | #f0ebe5           | #2d2824           | Secondary buttons, chips, steppers        |
-| secondary-hover              | #e6dfd7           | #383229           | Hover of soft fills                       |
-| secondary-foreground         | #3b342f           | #e9e2da           | Text on secondary                         |
-| muted-foreground             | #6b625c           | #b3a9a1           | Meta text, hints                          |
-| border / input               | #948a82           | #7d726a           | Text inputs, checkboxes (3:1 min)         |
-| line                         | #ebe5de           | #322c28           | Dividers and card outlines                |
-| ring                         | #d2341f           | #ff7a66           | Focus ring                                |
-| destructive                  | #9b1c31           | #ff9aa5           | Delete, remove, timer alarm               |
-| warning / warning-foreground | #f7ecd6 / #6b470c | #3d3220 / #f2d49b | Offline banner, sync pending, "fällig"    |
-| success                      | #2f7a45           | #8fd3a0           | Checked items, progress, presence         |
+| World   | world   | on-world | tint (light / dark) |
+| ------- | ------- | -------- | ------------------- |
+| heute   | #1f5c45 | #f4f1e2  | #d7eedd / #1c3a2e   |
+| liste   | #ffd23f | #17141f  | #fff1bd / #3d3414   |
+| rezepte | #ff6a4d | #17141f  | #ffe0d6 / #47231b   |
+| mehr    | #cfd3ff | #17141f  | #e9ebff / #2b2c4d   |
 
-`line` is decorative only. Buttons, chips and steppers are filled and need no border; text inputs
-and checkboxes keep the `border` token.
+Text on a world color always uses `--on-world`, never `--foreground`, because worlds keep their
+color in dark mode. Status is never color alone: it carries an icon or a word.
 
-## 4. Typography
+## 3. Type
 
-One sans family (system stack, `Inter` first when installed, no web font). Titles get their
-character from weight and tracking, not from a second typeface.
+Bricolage Grotesque (titles, figures) and Instrument Sans (text), bundled with
+`@fontsource-variable` and precached; no request to a font service.
 
-| Role      | Size / line height       | Weight       |
-| --------- | ------------------------ | ------------ |
-| display   | 28/1.1 (34 at >=1200 px) | 800, -0.03em |
-| title     | 24/1.15                  | 800, -0.03em |
-| heading   | 17/1.3                   | 700          |
-| body      | 16/1.5                   | 400          |
-| label     | 14/1.3                   | 600          |
-| meta      | 13/1.35                  | 400          |
-| overline  | 12/1, caps, +0.06em      | 700          |
-| cook step | 26 phone -> 34 tablet    | 500          |
+| Role       | Font and size                        |
+| ---------- | ------------------------------------ |
+| stage      | Bricolage 800, 34/1.02, -0.035em     |
+| card title | Bricolage 800, 25-30/1.06            |
+| section    | Bricolage 700, 19                    |
+| figure     | Bricolage 800, 28 (stat tiles)       |
+| row        | Instrument Sans 600, 16              |
+| body       | Instrument Sans 400, 16/1.5          |
+| meta       | Instrument Sans 500, 12-13           |
+| cook step  | Bricolage 600, 31 phone -> 40 tablet |
 
 Quantities and timers use `tabular-nums`. Inputs never go below 16 px.
 
-## 5. Spacing, radii, elevation, motion
+## 4. Shape, spacing, motion
 
-- Spacing on a 4 px base: 4, 8, 12, 16, 24, 32, 48. Gutter 16 phone, 24 tablet+.
-  Row height 56. Targets at least 44x44.
-- Radii: 8 badge, 10 chip, 14 control, 20 card, 24 sheet. Checkboxes are round.
-- Elevation: 0 flat, 1 sheet/menu, 2 dialog/toast.
-- Motion: 150 ms press/toggle, 200 ms ease-out for sheets and dialogs in, 150 ms
-  out. Checked shopping rows stay 600 ms before moving to "Erledigt".
-  `prefers-reduced-motion` removes movement, keeps state changes.
+- Radii: buttons, chips and pills are full pills; inputs 18; cards 24-28; stage bottom and sheets
+  32-34; check marks are circles.
+- Spacing on a 4 px base; gutter 16 on phones. Targets at least 44x44, rows 56.
+- Shadows only on floating things: navigation, docks, the add button, sheets.
+- Motion: 150 ms press/toggle, 200 ms for sheets. `prefers-reduced-motion` removes movement.
 
-## 6. Layout and breakpoints
+## 5. Shell
 
-| Width      | Navigation                                                       | Content                           |
-| ---------- | ---------------------------------------------------------------- | --------------------------------- |
-| < 768      | Top bar (page title + page actions), bottom tabs with labels     | One column, 16 px gutter          |
-| 768 - 1199 | Same top bar and bottom tabs                                     | One column, centered, max 760 px  |
-| >= 1200    | 220 px sidebar (wordmark, four sections); top bar with the title | One column, centered, max 1000 px |
+| Width   | Navigation                                        | Content                     |
+| ------- | ------------------------------------------------- | --------------------------- |
+| < 1200  | Floating dark pill at the bottom, max 400 px wide | One column, max 720 px      |
+| >= 1200 | Dark rail on the left, 92 px, icons with labels   | Up to 1064 px, multi-column |
 
-The top bar carries the page title (title role) on the left and the page's own
-actions as icon buttons on the right (add, import, suggestions); detail screens show
-a back arrow before the title. The household chip appears only when the user belongs
-to several households. Tabs: Heute, Rezepte, Liste, Mehr.
-Columns inside the content column: recipe cards 2 / 3 / 4 per row; recipe
-detail from 768 px ingredients (340-360 px) beside the steps; shopping
-categories 2 (tablet) / 3 (desktop) columns; sheets become centered 560 px
-dialogs from 768 px.
+- **Stage** (`PageHeader`): every page starts with it. Eyebrow, title, optional status line,
+  round action buttons on the right, optional content inside (search, progress). `lift` lets the
+  first card overlap the stage. Sub-pages pass a back button and get a compact stage.
+- **Navigation:** Heute, Rezepte, Liste, Mehr. The active item shows its label on the world color.
+  Recipe detail is immersive on phones: the navigation hides and the action dock takes its place.
+- The content column owns its scroll (`.app-main`); there is no horizontal page scroll down to
+  320 px. Safe-area insets extend the stage, navigation and docks.
+- On >= 1200 px, `/` focuses search and `n` starts a new recipe.
 
-The cooking view is a full-screen mode outside the shell at every size;
-shopping stays in the list view (ADR 0014). From 768 px the cooking view uses two columns: ingredients for the step
-left, the step right.
+## 6. Screens
 
-Layout: Shopping list - one view to add and check (ADR 0014); scroll owner:
-`.app-main`. Reading priorities are quick add, store, remaining items in route
-order, then checked items. Quick add is one field (Enter adds; "Milch, Eier" adds
-several) with a button for the catalog tiles; matches show as chips, creating a new
-catalog entry comes after them. A toggle switches between rows and tiles, stored
-per device. Rows are one line: check circle, pictogram, name, source recipes as
-muted text, quantity right-aligned; tapping checks, long-press edits, swipe left
-removes with undo, and with a fine pointer an edit button shows on hover/focus.
-Tiles carry pictogram, name and quantity on the category color; tapping checks,
-long-press edits, removal lives in the edit sheet. Rows keep the learned route
-order and only consecutive rows of one category share a heading. The store chip
-marks the trip store; only then do checks train the route. The store editor offers
-a secondary reset; manual category order overrides learning until reset.
+- **Heute (`/plan`, start):** stage with the date and "Was gibt’s heute?"; the meal of the day as
+  a card (art, title, pills for time, servings, day and list status; Kochen as the primary action,
+  Gekocht, more); two stat tiles (open shopping items, expected leftovers); "Danach" as a
+  horizontal rail of meal cards ending in an add card. Tapping a card opens the entry sheet
+  (servings, view recipe, cooked, cook, skip, move earlier/later, note, date, remove). A soft button
+  pushes ingredients to the list. From 1200 px the card sits left and tiles and rail right.
+- **Liste (`/list`):** stage with the trip store as eyebrow, the list name, "Noch x von y" and a
+  progress bar; the round button opens the list menu (switch, create, rename, default store,
+  rows or tiles, delete). Aisles are cards with icon, name and count. A row has the check circle,
+  pictogram, name with source recipes below, and the quantity as a pill. Tapping checks,
+  long-press edits, swipe left removes with undo; with a fine pointer an edit button shows on
+  hover. Checked items collapse into the "Im Wagen" tray. Tiles are the alternative view. The add
+  dock floats above the navigation and opens the add sheet: field first, matches as large tiles,
+  recents and the catalog below; "Milch, Eier" adds several. Rows keep the learned route order
+  (ADR 0014); only consecutive rows of one category share a card.
+- **Rezepte (`/recipes`):** stage with the count, title and search; one chip strip (all, not
+  lately, quick, favorites, then tags); a grid of art tiles 2/3/4 per row with a "last cooked"
+  badge; a floating add button; import is the round stage action.
+- **Rezept (`/recipes/$id`):** cover (photo or illustration) with round back and more buttons; the
+  body overlaps the cover: title, description, stats (time, rating and history), tags, the note for
+  next time, then ingredients and steps. Phones switch between the two with a segmented control;
+  from 768 px both columns show. The floating dock holds Kochen, plan and add to list. Share, edit,
+  source and delete are in the more menu.
+- **Kochen (`/cook/$id`):** always dark, outside the shell. Round close button, title, wake-lock
+  state as an icon, a thin progress bar; the step in large type; detected timers as outlined
+  buttons; the step's ingredients as chips to tick off; "Alle Zutaten" opens the sheet with the
+  servings stepper. Footer: round back button and a large lemon next button that becomes "mark
+  cooked" on the last step. Swiping changes the step. The finish screen offers rating, the note for
+  next time and planning leftovers. Scroll owner: `.cooking-body`.
+- **Mehr (`/more`):** plum stage, one card list (household, history, stores, pantry, recurring,
+  data, settings), then the install hint. Sub-pages use the compact stage.
+- **Import (`/recipes/import`):** one field for a link or pasted text, the primary action, manual
+  entry below; the photo section only with a vision model. The draft is reviewed in the editor.
+- **Sheets:** native `<dialog>`; a bottom sheet with a grab handle on phones, a centered dialog
+  from 768 px. The header shows the object and a close button; destructive items are red.
+- **Timer dock:** follows active timers across routes above the navigation; see
+  `docs/concepts/cooking-mode.md`.
 
-Layout: Cooking view - keep the current instruction and its ingredients visible
-inside a bounded viewport -> scroll-body-shell; scroll owner: `.cooking-body`;
-header and navigation stay fixed, with a step overview in landscape. Avoid
-document scrolling, nested vertical scrollers and content-width grid tracks.
+## 7. Cross-cutting states
 
-Layout: Step ingredient assignments - associate automatic/manual choices with
-their step -> stack inside the existing recipe editor; scroll owner: `.app-main`;
-avoid nested scrollers and fixed-width checkbox labels.
+Offline (notice under the stage: what works, what waits), sync pending (count in the stage of the
+list), AI disabled (manual path only), empty (bold headline, one sentence, one primary action),
+loading (skeleton shaped like the content), error (human cause plus retry), no household (route to
+onboarding), permission denied (camera, notifications, wake lock: fallback and explanation).
 
-Layout: Suggestions and leftovers - recipe suggestions live in the add-to-plan
-sheet as one chip strip above the recipe list (all, fits leftovers, not cooked in
-a while, quick, favorites). Expected leftovers have their own page
-(`/plan/suggestions`, "Reste", reached from the top bar of Heute); scroll owner:
-`.app-main`. Leftover rows show localized ingredient names and amounts, with
-secondary edit and dismiss actions; editing expands one compact quantity/unit form
-beneath its row and failures stay beside the affected row.
+## 8. Accessibility
 
-Layout: Free-text meals - share the ordered planning list with recipe entries;
-scroll owner: `.app-main`. The existing add sheet offers a recipe picker or a
-compact title/note/date form. Free-text rows show the title, "Without recipe",
-optional date and note; editing uses the existing sheet. Keep recipe-only cook,
-servings and shopping actions off free-text entries.
+WCAG 2.2 AA. Text contrast at least 4.5:1, input and check boundaries 3:1, focus ring 2 px at 3 px
+offset (in `--on-world` on a stage). Every gesture (long-press, swipe) has a button alternative
+that stays reachable by keyboard and screen reader. Inactive navigation items keep their label for
+assistive technology. Reordering the plan works with buttons in the entry sheet.
 
-Cooking view brief: the primary action is Next, becoming Mark cooked on the last
-step. Reading priorities are the current instruction, its ingredients, then
-progress. Required controls are close, previous, next, step overview, wake-lock
-status and editable ingredient assignments in the recipe editor. Empty recipes
-offer editing; request failures appear beside the completion action. Decorative
-badges and duplicate recipe metadata are left out.
-Ingredient text retains the project's 16 px body and 14 px secondary roles;
-the active instruction uses the larger cook-step role.
-
-Layout: Timer dock - follow active timers across routes -> compact floating
-utility above the cooking footer or shell navigation; scroll owner:
-`.timer-dock-content`; avoid nested scrolling and covering the cooking controls.
-Main scroll regions reserve the dock's measured height so their final actions
-remain reachable above it, including when the dock is expanded.
-Reserve this space as scrollable trailing content, not container padding that
-can exceed a short viewport. Expanded cooking timers stay between the measured
-header and footer, keeping both navigation bars reachable.
-Detected durations are outline buttons beneath the current instruction. The
-dock starts collapsed, supports parallel countdowns, pause/resume and cancellation,
-and distinguishes completed alarms with a bell and status text. Only completion
-is announced to assistive technology.
-
-The page title in the top bar is the page's h1; when the content carries its
-own title (recipe detail) the top bar label is plain text. The content column owns its scroll;
-there is no page scroll behind it and no horizontal page scroll down to 320 px.
-On phones, tag filters are one horizontally scrolling strip. Safe-area insets extend bars, tabs and sidebar. On
-> = 1200 px, `/` focuses search and `n` starts a new recipe.
-
-## 7. Component patterns
-
-Layout: Public recipe sharing - read a recipe before saving a personal copy ->
-full-screen detail outside the app shell; scroll owner: `.shared-content`.
-Keep the compact brand header fixed and use the existing ingredient/step columns
-from 768 px. The primary action is Save to my household. Reading priorities are
-recipe title and image, ingredients and steps, then the source. Required content
-includes quantities, servings, sections, notes, optional markers, preparation and
-cooking times, tags, source link, save feedback and unavailable-link state.
-Household identity, ratings and cooking history are omitted.
-
-Layout: Recipe sharing controls - create and manage independent links -> the
-existing recipe detail sheet; scroll owner: the sheet body. The primary action
-is Create link. Show an optional expiry field, the public-access explanation,
-each link's URL, creation and expiry dates, copy and revoke actions, and errors
-beside the affected action. Use no additional filled row actions.
-
-Layout: Household data transfer - move a complete household archive -> a single
-column at `/more/data`, reached from More; scroll owner: `.app-main`. Export is
-a secondary download action. Import is the primary action and requires selecting
-a JSON file and reviewing its counts first. Show the active household, format and
-size limits, additive-copy behavior, selected filename, recipe/catalog/list/queue
-counts, inline errors and a success receipt. Existing records remain in place;
-repeated imports create additional copies. Keep authentication and access tokens
-out of the archive. Avoid nested scrolling and decoration around the count list.
-
-Layout: Recipe insights - choose a meal using personal ratings and household
-cooking history -> stack inside the existing library and recipe detail;
-scroll owner: `.app-main`. Avoid a second scroll region for ratings or history.
-Cooking stays the recipe's primary action. Ratings use five secondary star
-controls with an explicit clear action and inline errors. History is collapsed
-under the last-cooked date and names the cooking household member. The library
-offers one suggestion selector for neglected recipes, personal favorites and
-recipes with known preparation plus cooking time of at most 30 minutes.
-
-Layout: Recipe import - one field takes a recipe link or pasted recipe text, then
-the draft is reviewed in the existing recipe editor; scroll owner: `.app-main`.
-The primary action loads the source; manual entry is the secondary action below.
-The photo section (camera and gallery inputs, ordered removable pages, upload
-limits) appears only when a vision model is available. Pending state, inline
-errors and the explicit unsaved review are required. Cookbook pages are not recipe
-cover images.
-
-- **Button:** primary (filled red), secondary (soft fill), ghost, destructive. Fixed geometry
-  in every state; press scales to 0.98.
-- **Today (`/plan`, the start screen):** the next meal as a card (photo when there
-  is one, title, meta, Kochen as the primary action, Gekocht, a more button), then
-  "Danach" with one-line queue rows (thumbnail, title, meta, drag handle). Tapping a
-  row opens the entry sheet: servings, view recipe, cooked, cook, skip, move up/down
-  (the non-drag path), note, date, remove. Below the queue a secondary button pushes
-  ingredients to the shopping list.
-- **Recipe detail:** photo (only when there is one), title, description, meta,
-  insights row, then ingredients and steps. A sticky bar at the bottom holds Kochen
-  (primary) and Einplanen. Everything else (add to list, share, edit, source,
-  delete) lives in the overflow menu opened from the top bar.
-- **Overflow menu / sheet:** native `<dialog>` (focus trap, Escape, focus
-  return): bottom sheet on phones, centered dialog from 768 px. Header shows the
-  object (title + meta) and a close button; destructive items are red.
-- **Cooking view header:** close, title with "Schritt 1 von 6 · 4 Portionen",
-  the wake-lock state as an icon with an accessible label (amber when the screen
-  can turn off), a progress bar below. Ingredients are tappable to mark them as
-  ready for this session; servings change in the all-ingredients sheet. Swiping
-  left or right changes the step.
-- **Empty state:** bold headline, one sentence, one primary next action.
-- **Skeleton:** shaped like the content it replaces; static under reduced motion.
-
-## 8. Cross-cutting states
-
-Offline (banner under the top bar: what works, what waits), sync pending (cloud
-icon + count), AI disabled (manual path first), empty, loading (skeleton), error
-(human cause + "Erneut versuchen"), no access / no household (route to switcher
-or onboarding), permission denied (camera, notifications, wake lock -> fallback).
-
-## 9. Accessibility
-
-WCAG 2.2 AA. Text contrast at least 4.5:1, control boundaries 3:1, focus ring
-2 px at 3 px offset. Every drag interaction has a non-drag alternative (menu
-items and arrow keys on the handle). Shell targets at least 44 px; shopping rows
-60 px. Row gestures (long-press, swipe) always have a keyboard and screen-reader
-button alternative; on touch the edit button stays visually hidden by choice.
-
-## 10. Changing the design line
+## 9. Changing the design line
 
 - Small refinements: change this file in the same commit as the code.
-- A change to a rule in section 2, the palette, the type families, the
-  breakpoints or the reference structure: new ADR, then update this file.
+- A change to a principle, the palette, the type families, the shell or the breakpoints: new ADR,
+  then update this file.
