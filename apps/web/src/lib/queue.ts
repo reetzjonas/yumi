@@ -27,6 +27,22 @@ export async function addQueueEntry(input: QueueEntryInput) {
   await ensureOk(await api.queue.$post({ json: input }));
 }
 
+/** Queues "leftovers of <meal>" as the next meal, ahead of everything planned. */
+export async function planLeftoverMeal(title: string) {
+  const created = await (
+    await ensureOk(
+      await api.queue.$post({
+        json: { title: title.slice(0, 200), servings: 1, plannedFor: null },
+      }),
+    )
+  ).json();
+  const queue = await (await ensureOk(await api.queue.$get())).json();
+  await reorderQueue([
+    created.id,
+    ...queue.map((entry) => entry.id).filter((id) => id !== created.id),
+  ]);
+}
+
 export async function updateQueueEntry(id: string, input: QueueEntryUpdate) {
   await ensureOk(await api.queue[":id"].$patch({ param: { id }, json: input }));
 }

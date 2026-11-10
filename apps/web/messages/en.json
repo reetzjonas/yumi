@@ -628,5 +628,9 @@
   "history.planned": "Planned.",
   "history.plan_again": "Plan {name} again",
   "history.empty_title": "Nothing cooked yet",
-  "history.empty_description": "Once you mark meals as cooked, you will see here what you had and when."
+  "history.empty_description": "Once you mark meals as cooked, you will see here what you had and when.",
+  "queue.plan_leftovers": "Plan leftovers",
+  "queue.plan_leftovers_next": "Something left over: plan leftovers next",
+  "queue.leftovers_planned": "Leftovers are planned",
+  "queue.leftover_meal": "Leftovers: {name}"
 }

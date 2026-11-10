@@ -2624,6 +2624,7 @@ body [data-sonner-toast][data-styled="true"].shopping-feedback [data-button] {
 .recipe-notes-form {
   display: grid;
   gap: 8px;
+  width: 100%;
   margin-top: 8px;
 }
 .cooking-notes {

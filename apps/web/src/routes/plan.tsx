@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { errorMessage } from "@/lib/api-error";
 import { leftoversKey } from "@/lib/leftovers";
 import {
+  planLeftoverMeal,
   type QueueEntryUpdate,
   queueKey,
   removeQueueEntry,
@@ -64,7 +65,23 @@ function MealQueue({
           await queryClient.invalidateQueries({
             queryKey: ["recipes", householdId],
           });
-        toast.success(linked ? m["queue.cooked_saved"]() : m["queue.saved"]());
+        const title = query.data?.find((entry) => entry.id === id)?.title;
+        toast.success(
+          linked ? m["queue.cooked_saved"]() : m["queue.saved"](),
+          linked && title
+            ? {
+                action: {
+                  label: m["queue.plan_leftovers"](),
+                  onClick: () =>
+                    void planLeftoverMeal(
+                      m["queue.leftover_meal"]({ name: title }),
+                    )
+                      .then(refresh)
+                      .catch((error) => toast.error(errorMessage(error))),
+                },
+              }
+            : undefined,
+        );
       } else if (input.status === "skipped")
         toast.success(m["queue.skipped_saved"]());
       else toast.success(m["queue.saved"]());

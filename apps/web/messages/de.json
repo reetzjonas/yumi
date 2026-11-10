@@ -628,5 +628,9 @@
   "history.planned": "Eingeplant.",
   "history.plan_again": "{name} wieder einplanen",
   "history.empty_title": "Noch nichts gekocht",
-  "history.empty_description": "Sobald ihr Gerichte als gekocht markiert, seht ihr hier, was es wann gab."
+  "history.empty_description": "Sobald ihr Gerichte als gekocht markiert, seht ihr hier, was es wann gab.",
+  "queue.plan_leftovers": "Reste einplanen",
+  "queue.plan_leftovers_next": "Es bleibt etwas übrig: Reste als Nächstes einplanen",
+  "queue.leftovers_planned": "Reste sind eingeplant",
+  "queue.leftover_meal": "Reste: {name}"
 }

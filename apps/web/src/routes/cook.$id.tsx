@@ -24,6 +24,7 @@ import { Sheet } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
 import { ensureOk, errorMessage } from "@/lib/api-error";
+import { planLeftoverMeal } from "@/lib/queue";
 import {
   formatScaledQuantity,
   groupBySection,
@@ -246,6 +247,7 @@ function CookingSteps({ recipe }: { recipe: RecipeDetail }) {
             <div className="import-card">
               <RecipeNotes recipe={recipe} startEditing />
             </div>
+            <LeftoverMeal title={recipe.title} />
             <Button asChild className="w-full">
               <Link
                 to="/recipes/$id"
@@ -470,6 +472,35 @@ function IngredientLines({
         );
       })}
     </ul>
+  );
+}
+
+function LeftoverMeal({ title }: { title: string }) {
+  const queryClient = useQueryClient();
+  const plan = useMutation({
+    mutationFn: () =>
+      planLeftoverMeal(m["queue.leftover_meal"]({ name: title })),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["queue"] }),
+  });
+  return (
+    <>
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full"
+        disabled={plan.isPending || plan.isSuccess}
+        onClick={() => plan.mutate()}
+      >
+        {plan.isSuccess
+          ? m["queue.leftovers_planned"]()
+          : m["queue.plan_leftovers_next"]()}
+      </Button>
+      {plan.isError && (
+        <p role="alert" className="form-error">
+          {errorMessage(plan.error)}
+        </p>
+      )}
+    </>
   );
 }
 
