@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ListChecks, Plus, Soup, Sparkles } from "lucide-react";
+import { ListChecks, Plus, Sparkles } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { EmptyState, PageHeader } from "@/components/page";
@@ -13,7 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { errorMessage } from "@/lib/api-error";
-import { leftoversKey } from "@/lib/leftovers";
+import { formatDate, getLocale } from "@/lib/i18n";
+import { leftoversKey, useLeftovers } from "@/lib/leftovers";
 import {
   planLeftoverMeal,
   type QueueEntryUpdate,
@@ -24,6 +25,7 @@ import {
   useQueue,
 } from "@/lib/queue";
 import { useMe } from "@/lib/session";
+import { useShoppingLists } from "@/lib/shopping";
 import { m } from "@/paraglide/messages";
 
 export const Route = createFileRoute("/plan")({ component: Plan });
@@ -40,10 +42,6 @@ function MealQueue({
 }) {
   const query = useQueue();
   const queryClient = useQueryClient();
-  const [drag, setDrag] = useState<{ id: string; targetId: string } | null>(
-    null,
-  );
-  const dragRef = useRef<typeof drag>(null);
   const [announcement, setAnnouncement] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const pickerSheet = useRef<HTMLDialogElement>(null);
@@ -106,6 +104,10 @@ function MealQueue({
     },
   });
   const entries = query.data ?? [];
+  const lists = useShoppingLists();
+  const leftovers = useLeftovers();
+  const openItems =
+    lists.data?.reduce((sum, list) => sum + list.openCount, 0) ?? 0;
   const recipeEntries = entries.filter((entry) => entry.recipe !== null);
   const selectedEntries = recipeEntries.filter((entry) =>
     selectedIds.includes(entry.id),
@@ -147,87 +149,34 @@ function MealQueue({
           ? errorMessage(update.error)
           : null
       }
-      dragging={drag?.id === entry.id}
-      dropPosition={
-        drag && drag.targetId === entry.id && drag.id !== entry.id
-          ? entries.findIndex((item) => item.id === drag.id) < index
-            ? "after"
-            : "before"
-          : undefined
-      }
       onMove={(offset) => {
         const target = entries[index + offset];
         if (target) move(entry.id, target.id);
       }}
       onUpdate={(input) => update.mutate({ id: entry.id, input })}
-      dragProps={{
-        onPointerDown: (event) => {
-          if (busy || !event.isPrimary || event.button !== 0) return;
-          event.currentTarget.setPointerCapture(event.pointerId);
-          dragRef.current = { id: entry.id, targetId: entry.id };
-          setDrag(dragRef.current);
-        },
-        onPointerMove: (event) => {
-          if (!dragRef.current) return;
-          const scroller =
-            event.currentTarget.closest<HTMLElement>(".app-main");
-          if (scroller) {
-            const bounds = scroller.getBoundingClientRect();
-            if (event.clientY < bounds.top + 72) scroller.scrollBy(0, -16);
-            else if (event.clientY > bounds.bottom - 96)
-              scroller.scrollBy(0, 16);
-          }
-          const targetId = document
-            .elementFromPoint(event.clientX, event.clientY)
-            ?.closest<HTMLElement>("[data-queue-id]")?.dataset.queueId;
-          if (targetId && targetId !== dragRef.current.targetId) {
-            dragRef.current = { id: entry.id, targetId };
-            setDrag(dragRef.current);
-          }
-        },
-        onPointerUp: (event) => {
-          const current = dragRef.current;
-          dragRef.current = null;
-          setDrag(null);
-          event.currentTarget.releasePointerCapture(event.pointerId);
-          if (current) move(current.id, current.targetId);
-        },
-        onLostPointerCapture: () => {
-          dragRef.current = null;
-          setDrag(null);
-        },
-        onKeyDown: (event) => {
-          if (event.key === "Escape") {
-            dragRef.current = null;
-            setDrag(null);
-          }
-        },
-      }}
     />
   );
 
   return (
     <>
       <PageHeader
-        title={m["queue.title"]()}
+        title={m["queue.stage_title"]()}
+        lift={entries.length > 0}
+        eyebrow={formatDate(new Date(), {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+        })}
         actions={
-          <>
-            <Button asChild variant="ghost" className="icon-action">
-              <Link to="/plan/suggestions" aria-label={m["queue.leftovers"]()}>
-                <Soup aria-hidden="true" size={22} />
-              </Link>
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="icon-action"
-              aria-label={m["queue.plan_recipe"]()}
-              aria-haspopup="dialog"
-              onClick={() => pickerSheet.current?.showModal()}
-            >
-              <Plus aria-hidden="true" size={22} />
-            </Button>
-          </>
+          <Button
+            type="button"
+            variant="ghost"
+            aria-label={m["queue.plan_recipe"]()}
+            aria-haspopup="dialog"
+            onClick={() => pickerSheet.current?.showModal()}
+          >
+            <Plus aria-hidden="true" size={22} />
+          </Button>
         }
       />
       <Sheet
@@ -310,44 +259,83 @@ function MealQueue({
               {errorMessage(reorder.error)}
             </p>
           )}
-          <div aria-busy={busy}>
+          <div className="today" aria-busy={busy}>
             {entries[0] && renderEntry(entries[0], 0)}
-            {entries.length > 1 && (
-              <>
-                <h2 className="section-label">{m["queue.up_next"]()}</h2>
-                <ol className="queue-list">
-                  {entries
-                    .slice(1)
-                    .map((entry, i) => renderEntry(entry, i + 1))}
-                </ol>
-              </>
+            <div className="today-tiles">
+              <Link to="/list" className="stat-tile is-lemon">
+                <span className="stat-tile-label">{m.nav_list()}</span>
+                <span className="stat-tile-value">
+                  {m["queue.open_items"]({ count: openItems })}
+                </span>
+                <span className="stat-tile-detail">
+                  {lists.data?.[0]?.name ?? m["shopping.title"]()} ›
+                </span>
+              </Link>
+              <Link to="/plan/suggestions" className="stat-tile is-basil">
+                <span className="stat-tile-label">
+                  {m["queue.leftovers"]()}
+                </span>
+                <span className="stat-tile-value">
+                  {leftovers.data?.length ?? 0}
+                </span>
+                <span className="stat-tile-detail">
+                  {leftovers.data?.length
+                    ? leftovers.data
+                        .map((item) =>
+                          getLocale() === "de" ? item.nameDe : item.nameEn,
+                        )
+                        .join(", ")
+                    : m["queue.leftovers_none"]()}
+                </span>
+              </Link>
+            </div>
+            <section className="today-next">
+              <h2 className="section-label">{m["queue.up_next"]()}</h2>
+              <ol className="plan-rail">
+                {entries.slice(1).map((entry, i) => renderEntry(entry, i + 1))}
+                <li className="plan-card">
+                  <button
+                    type="button"
+                    className="plan-card-button is-add"
+                    aria-haspopup="dialog"
+                    onClick={() => pickerSheet.current?.showModal()}
+                  >
+                    <span className="recipe-art">
+                      <Plus size={24} aria-hidden="true" />
+                    </span>
+                    <span className="plan-card-title">
+                      {m["queue.plan_recipe"]()}
+                    </span>
+                    <span className="meta">{m["queue.plan_hint"]()}</span>
+                  </button>
+                </li>
+              </ol>
+            </section>
+            {recipeEntries.length > 0 && (
+              <Button
+                type="button"
+                variant="outline"
+                className="queue-to-list"
+                aria-haspopup="dialog"
+                onClick={() => {
+                  // Entries already on a list stay unselected to avoid duplicates.
+                  const pending = recipeEntries.filter(
+                    (entry) => !entry.onList,
+                  );
+                  setSelectedIds(
+                    (pending.length ? pending : recipeEntries).map(
+                      (entry) => entry.id,
+                    ),
+                  );
+                  setShoppingAdded(null);
+                  shoppingSheet.current?.showModal();
+                }}
+              >
+                <ListChecks aria-hidden="true" size={20} />
+                {m["queue.to_list_action"]()}
+              </Button>
             )}
           </div>
-          <p id="queue-order-hint" className="sr-only">
-            {m["queue.order_hint"]()}
-          </p>
-          {recipeEntries.length > 0 && (
-            <Button
-              type="button"
-              variant="outline"
-              className="queue-to-list"
-              aria-haspopup="dialog"
-              onClick={() => {
-                // Entries already on a list stay unselected to avoid duplicates.
-                const pending = recipeEntries.filter((entry) => !entry.onList);
-                setSelectedIds(
-                  (pending.length ? pending : recipeEntries).map(
-                    (entry) => entry.id,
-                  ),
-                );
-                setShoppingAdded(null);
-                shoppingSheet.current?.showModal();
-              }}
-            >
-              <ListChecks aria-hidden="true" size={20} />
-              {m["queue.to_list_action"]()}
-            </Button>
-          )}
           <Sheet ref={shoppingSheet} title={m["queue.shopping_title"]()}>
             <fieldset className="picker-list" disabled={busy}>
               <legend className="field-label">

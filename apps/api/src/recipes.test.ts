@@ -212,6 +212,14 @@ describe("recipes", () => {
         ).json()) as Recipe[]
       ).map((r) => r.title);
     expect(await titles("zucchini")).toEqual(["Ofengemüse"]);
+    // The first ingredient with a pictogram illustrates the recipe.
+    const icons = z
+      .array(z.object({ title: z.string(), icon: z.string().nullable() }))
+      .parse(await (await c.request("/api/recipes")).json());
+    expect(icons.find((r) => r.title === "Herbstkuchen")?.icon).toEqual(
+      expect.any(String),
+    );
+    expect(icons.find((r) => r.title === "Pfannkuchen")?.icon).toBeNull();
     // Matches the linked catalog name in the other language too.
     expect(await titles("onion")).toEqual(["Herbstkuchen"]);
     expect(await titles("kuchen")).toEqual(

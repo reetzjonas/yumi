@@ -20,3 +20,22 @@ export function recipeInsights(householdId: string, userId: string) {
     }),
   };
 }
+
+/**
+ * Pictogram that illustrates a recipe without a photo: the icon of its first
+ * ingredient that has one (the ingredient's own icon, else its category's).
+ */
+export function recipeIcon() {
+  const recipeId = sql`${recipe}.${sql.identifier("id")}`;
+  // Aliased by hand: Drizzle drops table qualifiers inside single-table selects.
+  return sql<string | null>`(
+    select coalesce(i.icon, c.icon)
+    from recipe_ingredient ri
+    inner join ingredient i on i.id = ri.ingredient_id
+    left join ingredient_category c on c.id = i.category_id
+    where ri.recipe_id = ${recipeId}
+      and coalesce(i.icon, c.icon) is not null
+    order by ri.position
+    limit 1
+  )`;
+}

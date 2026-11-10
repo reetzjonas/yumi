@@ -20,6 +20,7 @@ import { ai } from "../ai";
 import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
 import { db } from "../db";
 import { consumeLeftovers } from "../leftovers";
+import { recipeIcon } from "../recipe-insights";
 import { suggestWeek } from "../week-suggestion";
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -67,6 +68,7 @@ export const queue = new Hono<HouseholdEnv>()
             title: recipe.title,
             servings: recipe.servings,
             imageKey: recipe.imageKey,
+            icon: recipeIcon(),
             prepMinutes: recipe.prepMinutes,
             cookMinutes: recipe.cookMinutes,
           },

@@ -2,20 +2,22 @@ import { Link } from "@tanstack/react-router";
 import {
   ArrowDown,
   ArrowUp,
+  Check,
+  Clock,
   Ellipsis,
   Flame,
-  GripVertical,
   Trash2,
   Utensils,
 } from "lucide-react";
-import { type ComponentProps, useId, useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { Field } from "@/components/auth-layout";
+import { RecipeArt } from "@/components/recipes/recipe-art";
 import { ServingsStepper } from "@/components/recipes/servings-selector";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import { formatDate } from "@/lib/i18n";
 import type { QueueEntry, QueueEntryUpdate } from "@/lib/queue";
-import { formatMinutes, recipeImageUrl, totalMinutes } from "@/lib/recipes";
+import { formatMinutes, totalMinutes } from "@/lib/recipes";
 import { m } from "@/paraglide/messages";
 
 export function MealQueueEntry({
@@ -27,9 +29,6 @@ export function MealQueueEntry({
   error,
   removeError,
   onRemove,
-  dragging,
-  dropPosition,
-  dragProps,
   onMove,
   onUpdate,
 }: {
@@ -42,9 +41,6 @@ export function MealQueueEntry({
   error: string | null;
   removeError: string | null;
   onRemove: (removeItems: boolean) => void;
-  dragging: boolean;
-  dropPosition: "before" | "after" | undefined;
-  dragProps: ComponentProps<"button">;
   onMove: (offset: number) => void;
   onUpdate: (input: QueueEntryUpdate) => void;
 }) {
@@ -58,43 +54,37 @@ export function MealQueueEntry({
   const recipe = entry.recipe;
   const minutes = recipe ? totalMinutes(recipe) : 0;
   const name = entry.title;
-  const meta = [
-    !recipe
-      ? m["queue.without_recipe"]()
-      : entry.servings === 1
-        ? m["queue.servings_one"]()
-        : m["queue.servings_count"]({ count: entry.servings }),
-    entry.plannedFor
-      ? formatDate(new Date(`${entry.plannedFor}T00:00:00`), {
-          weekday: "short",
-          day: "numeric",
-          month: "numeric",
-        })
-      : null,
-    minutes > 0 && formatMinutes(minutes),
-    entry.onList && m["queue.on_list"](),
-  ]
-    .filter(Boolean)
-    .join(" · ");
-
   const Entry = hero ? "article" : "li";
   const openSheet = () => sheet.current?.showModal();
-  const media = recipe?.imageKey
-    ? recipeImageUrl(recipe.id, recipe.imageKey, hero ? "full" : "thumb")
-    : null;
+  const day =
+    entry.plannedFor &&
+    formatDate(new Date(`${entry.plannedFor}T00:00:00`), {
+      weekday: "short",
+      day: "numeric",
+      month: "numeric",
+    });
+  const art = recipe ? (
+    <RecipeArt
+      recipe={recipe}
+      variant={hero ? "full" : "thumb"}
+      pictogramSize={hero ? 92 : 52}
+    />
+  ) : (
+    <span className="recipe-art is-illustration" data-tint="3">
+      <Utensils size={hero ? 44 : 28} aria-hidden="true" />
+    </span>
+  );
 
   return (
-    <Entry
-      className={hero ? "queue-hero" : "queue-entry"}
-      data-queue-id={entry.id}
-      data-dragging={dragging}
-      data-drop={dropPosition}
-    >
+    <Entry className={hero ? "today-hero" : "plan-card"}>
       {hero ? (
         <>
-          {media && <img className="queue-hero-media" src={media} alt="" />}
-          <div className="queue-hero-body">
-            <h2 className="queue-hero-title">
+          <div className="today-hero-art">
+            {art}
+            <span className="today-hero-tag">{m["queue.up_today"]()}</span>
+          </div>
+          <div className="today-hero-body">
+            <h2 className="today-hero-title">
               {recipe ? (
                 <Link to="/recipes/$id" params={{ id: recipe.id }}>
                   {name}
@@ -103,10 +93,31 @@ export function MealQueueEntry({
                 name
               )}
             </h2>
-            <p className="meta">{meta}</p>
-            {entry.note && <p className="meta queue-note">{entry.note}</p>}
-            <div className="queue-actions">
+            <div className="pill-row">
+              {minutes > 0 && (
+                <span className="pill">
+                  <Clock size={15} aria-hidden="true" />
+                  {formatMinutes(minutes)}
+                </span>
+              )}
               {recipe && (
+                <span className="pill">
+                  {entry.servings === 1
+                    ? m["queue.servings_one"]()
+                    : m["queue.servings_count"]({ count: entry.servings })}
+                </span>
+              )}
+              {day && <span className="pill">{day}</span>}
+              {entry.onList && (
+                <span className="pill pill-ok">
+                  <Check size={15} aria-hidden="true" />
+                  {m["queue.on_list"]()}
+                </span>
+              )}
+            </div>
+            {entry.note && <p className="meta queue-note">{entry.note}</p>}
+            <div className="today-hero-actions">
+              {recipe ? (
                 <Button asChild>
                   <Link
                     to="/cook/$id"
@@ -117,23 +128,30 @@ export function MealQueueEntry({
                     {m["recipes.cook_action"]()}
                   </Link>
                 </Button>
+              ) : (
+                <Button
+                  type="button"
+                  disabled={disabled}
+                  aria-label={m["queue.mark_done"]({ name })}
+                  onClick={() => onUpdate({ status: "cooked" })}
+                >
+                  {m["queue.done"]()}
+                </Button>
+              )}
+              {recipe && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={disabled}
+                  aria-label={m["queue.mark_cooked"]({ name })}
+                  onClick={() => onUpdate({ status: "cooked" })}
+                >
+                  {m["queue.cooked"]()}
+                </Button>
               )}
               <Button
                 type="button"
-                variant={recipe ? "outline" : "default"}
-                disabled={disabled}
-                aria-label={
-                  recipe
-                    ? m["queue.mark_cooked"]({ name })
-                    : m["queue.mark_done"]({ name })
-                }
-                onClick={() => onUpdate({ status: "cooked" })}
-              >
-                {recipe ? m["queue.cooked"]() : m["queue.done"]()}
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
+                variant="outline"
                 className="icon-action"
                 disabled={disabled}
                 aria-label={m["queue.edit_meal"]({ name })}
@@ -151,57 +169,21 @@ export function MealQueueEntry({
           </div>
         </>
       ) : (
-        <>
-          <button
-            type="button"
-            className="queue-row"
-            disabled={disabled}
-            aria-haspopup="dialog"
-            onClick={openSheet}
-          >
-            {media ? (
-              <img
-                className="queue-thumb"
-                src={media}
-                alt=""
-                width={48}
-                height={48}
-                loading="lazy"
-              />
-            ) : (
-              <span className="queue-thumb is-empty">
-                <Utensils size={20} aria-hidden="true" />
-              </span>
-            )}
-            <span className="queue-body">
-              <span className="queue-title">{name}</span>
-              <span className="meta">{meta}</span>
-              {entry.note && (
-                <span className="meta queue-note">{entry.note}</span>
-              )}
-            </span>
-          </button>
-          <button
-            type="button"
-            className="queue-handle"
-            aria-label={m["queue.drag"]({ name })}
-            aria-describedby="queue-order-hint"
-            disabled={disabled}
-            {...dragProps}
-            onKeyDown={(event) => {
-              if (event.key === "ArrowUp" && index > 0) {
-                event.preventDefault();
-                onMove(-1);
-              } else if (event.key === "ArrowDown" && index < count - 1) {
-                event.preventDefault();
-                onMove(1);
-              }
-              dragProps.onKeyDown?.(event);
-            }}
-          >
-            <GripVertical size={20} aria-hidden="true" />
-          </button>
-        </>
+        <button
+          type="button"
+          className="plan-card-button"
+          disabled={disabled}
+          aria-haspopup="dialog"
+          onClick={openSheet}
+        >
+          {art}
+          <span className="plan-card-title">{name}</span>
+          <span className="meta">
+            {[day, minutes > 0 && formatMinutes(minutes)]
+              .filter(Boolean)
+              .join(" · ") || (recipe ? null : m["queue.without_recipe"]())}
+          </span>
+        </button>
       )}
       <Sheet
         ref={sheet}

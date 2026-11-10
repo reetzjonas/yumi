@@ -651,5 +651,10 @@
   "push.trip_sent": "The household has been told.",
   "push.trip_nobody": "Nobody else has notifications turned on.",
   "shopping.list_remaining": "{open} of {total} to go",
-  "shopping.quick_input_placeholder": "Milk, eggs, 500 g flour …"
+  "shopping.quick_input_placeholder": "Milk, eggs, 500 g flour …",
+  "queue.stage_title": "What’s cooking today?",
+  "queue.up_today": "Up today",
+  "queue.open_items": "{count} open",
+  "queue.leftovers_none": "nothing left",
+  "queue.plan_hint": "Recipe or idea"
 }

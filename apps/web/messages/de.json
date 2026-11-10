@@ -651,5 +651,10 @@
   "push.trip_sent": "Der Haushalt weiß Bescheid.",
   "push.trip_nobody": "Niemand sonst hat Benachrichtigungen eingeschaltet.",
   "shopping.list_remaining": "Noch {open} von {total}",
-  "shopping.quick_input_placeholder": "Milch, Eier, 500 g Mehl …"
+  "shopping.quick_input_placeholder": "Milch, Eier, 500 g Mehl …",
+  "queue.stage_title": "Was gibt’s heute?",
+  "queue.up_today": "Heute dran",
+  "queue.open_items": "{count} offen",
+  "queue.leftovers_none": "nichts übrig",
+  "queue.plan_hint": "Rezept oder Idee"
 }

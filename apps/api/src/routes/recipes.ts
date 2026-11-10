@@ -37,7 +37,7 @@ import { z } from "zod";
 import { visibleTo } from "../catalog";
 import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
 import { db } from "../db";
-import { recipeInsights } from "../recipe-insights";
+import { recipeIcon, recipeInsights } from "../recipe-insights";
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 type ParsedRecipe = z.output<typeof recipeInputSchema>;
@@ -52,6 +52,7 @@ const summaryColumns = {
   prepMinutes: recipe.prepMinutes,
   cookMinutes: recipe.cookMinutes,
   imageKey: recipe.imageKey,
+  icon: recipeIcon(),
   updatedAt: recipe.updatedAt,
 };
 
@@ -199,6 +200,7 @@ async function loadRecipe(householdId: string, id: string, userId: string) {
     sourceUrl: row.sourceUrl,
     tags: row.tags,
     imageKey: row.imageKey,
+    icon: row.icon,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     myRating: row.myRating,
