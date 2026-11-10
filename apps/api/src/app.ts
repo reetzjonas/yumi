@@ -12,6 +12,7 @@ import { householdInvites, invites } from "./routes/invites";
 import { leftovers } from "./routes/leftovers";
 import { me } from "./routes/me";
 import { pantry } from "./routes/pantry";
+import { push } from "./routes/push";
 import { queue } from "./routes/queue";
 import { queueShopping } from "./routes/queue-shopping";
 import { recipeImport } from "./routes/recipe-import";
@@ -43,7 +44,8 @@ const api = new Hono<AppEnv>()
   .route("/shopping", shopping)
   .route("/shopping", listStore)
   .route("/shopping", recurring)
-  .route("/stores", stores);
+  .route("/stores", stores)
+  .route("/push", push);
 
 export const app = new Hono()
   .use(process.env.NODE_ENV === "test" ? (_c, next) => next() : logger())

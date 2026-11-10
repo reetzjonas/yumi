@@ -12,6 +12,10 @@ const envSchema = z.object({
   BETTER_AUTH_URL: z.string().url().default("http://localhost:5173"),
   PORT: z.coerce.number().default(3000),
   APP_VERSION: z.string().default("dev"),
+  // Web Push (optional): generate a pair with `bunx web-push generate-vapid-keys`.
+  VAPID_PUBLIC_KEY: z.string().min(1).optional(),
+  VAPID_PRIVATE_KEY: z.string().min(1).optional(),
+  VAPID_SUBJECT: z.string().min(1).optional(),
 });
 
 export const env = envSchema.parse(process.env);

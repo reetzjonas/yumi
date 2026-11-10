@@ -67,6 +67,9 @@ Use `extraEnv` for configuration and `extraEnvFrom` with a Kubernetes Secret for
 | `AI_INGREDIENT_PARSE_MODEL`    | `AI_MODEL`                  | Model override for batched ingredient parsing.                                                                         |
 | `AI_INGREDIENT_CREATE_MODEL`   | `AI_MODEL`                  | Model override for ingredient proposals.                                                                               |
 | `AI_MEAL_PLAN_MODEL`           | `AI_MODEL`                  | Model override for the week suggestion.                                                                                |
+| `VAPID_PUBLIC_KEY`             | unset                       | Web Push public key. Push notifications are off unless both VAPID keys are set (`bunx web-push generate-vapid-keys`).  |
+| `VAPID_PRIVATE_KEY`            | unset                       | Web Push private key; keep it in a Secret (`extraEnvFrom`).                                                            |
+| `VAPID_SUBJECT`                | `BETTER_AUTH_URL`           | Contact URL or `mailto:` address sent to the push services.                                                            |
 
 Set `AI_ENABLED=true`, a model, and the selected provider's key to enable a hosted
 provider. For local inference set `AI_PROVIDER=ollama`, choose an installed model

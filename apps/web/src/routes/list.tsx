@@ -1,6 +1,8 @@
+import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ShoppingBasket } from "lucide-react";
+import { Megaphone, ShoppingBasket } from "lucide-react";
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 import { EmptyState, PageHeader } from "@/components/page";
 import { RecipePicker } from "@/components/queue/recipe-picker";
 import { AddRecipeToList } from "@/components/shopping/add-recipe";
@@ -19,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { errorMessage } from "@/lib/api-error";
+import { announceShoppingTrip, usePushKey } from "@/lib/push";
 import { useMe } from "@/lib/session";
 import {
   useShoppingCategories,
@@ -56,6 +59,13 @@ function HouseholdLists() {
   const recipeSheet = useRef<HTMLDialogElement>(null);
   const session = useStoreSession(listId);
   const { add } = Route.useSearch();
+  const pushKey = usePushKey();
+  const trip = useMutation({
+    mutationFn: () => announceShoppingTrip(listId),
+    onSuccess: ({ sent }) =>
+      toast.success(sent > 0 ? m["push.trip_sent"]() : m["push.trip_nobody"]()),
+    onError: (error) => toast.error(errorMessage(error)),
+  });
   const tripStore = stores.data?.find((item) => item.id === session.storeId);
   const store =
     tripStore ??
@@ -153,6 +163,18 @@ function HouseholdLists() {
                 onQuickAdd={() => quickSheet.current?.showModal()}
               />
             )
+          )}
+          {pushKey.data && (
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={trip.isPending}
+              onClick={() => trip.mutate()}
+            >
+              <Megaphone size={20} aria-hidden="true" />
+              {m["push.going_shopping"]()}
+            </Button>
           )}
           <Button
             type="button"

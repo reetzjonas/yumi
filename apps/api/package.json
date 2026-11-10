@@ -22,10 +22,12 @@
     "better-auth": "^1.7.15",
     "drizzle-orm": "0.45.4",
     "hono": "^4.13.16",
+    "web-push": "^3",
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/bun": "^1.4.4",
+    "@types/web-push": "^3.6.4",
     "postgres": "4.0.0",
     "typescript": "^7.0.2"
   }

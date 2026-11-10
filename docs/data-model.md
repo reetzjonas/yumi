@@ -85,3 +85,7 @@ capabilities are excluded. See [household transfer](data-transfer.md).
   entries whose combined purchase produced the expected remainder). Confirmation
   uses deterministic IDs for idempotency. Cooking other entries consumes these
   estimates; users can adjust or dismiss them in planning.
+
+## Push
+
+- `push_subscription`: user_id, endpoint (unique), p256dh, auth, locale. See `docs/concepts/push.md`.

@@ -60,6 +60,7 @@ export const pwaOptions = {
   workbox: {
     globPatterns: ["**/*.{js,css,html,svg,png,ico,woff2}"],
     cleanupOutdatedCaches: true,
+    importScripts: ["/push-sw.js"],
     navigateFallback: "index.html",
     navigateFallbackDenylist: [/^\/api(?:\/|$)/],
     runtimeCaching: [

@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { LogOut } from "lucide-react";
 import { useSignOut } from "@/components/account-menu";
 import { BackLink, PageHeader } from "@/components/page";
+import { PushSettings } from "@/components/push-settings";
 import { type Theme, useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
@@ -98,6 +99,7 @@ function Settings() {
           </div>
         </section>
       )}
+      <PushSettings />
       <div className="settings-actions">
         <Button asChild variant="outline" className="w-full">
           <Link to="/more/about">{m["about.title"]()}</Link>

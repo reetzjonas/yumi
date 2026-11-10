@@ -639,5 +639,15 @@
   "queue.week_add": "Plan {count} meals",
   "queue.week_add_one": "Plan 1 meal",
   "queue.week_again": "Suggest again",
-  "queue.week_empty": "All recipes are planned already, or there are none yet."
+  "queue.week_empty": "All recipes are planned already, or there are none yet.",
+  "push.title": "Notifications",
+  "push.on": "On for this device",
+  "push.off": "Off for this device",
+  "push.text": "You are told when someone in the household goes shopping, so you can quickly add something to the list.",
+  "push.enable": "Turn on notifications",
+  "push.disable": "Turn off notifications",
+  "push.denied": "The browser does not allow notifications. Allow them in the site settings.",
+  "push.going_shopping": "Tell the household: I am going shopping",
+  "push.trip_sent": "The household has been told.",
+  "push.trip_nobody": "Nobody else has notifications turned on."
 }

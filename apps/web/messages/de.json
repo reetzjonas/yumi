@@ -639,5 +639,15 @@
   "queue.week_add": "{count} Gerichte einplanen",
   "queue.week_add_one": "1 Gericht einplanen",
   "queue.week_again": "Neu vorschlagen",
-  "queue.week_empty": "Alle Rezepte sind schon eingeplant, oder es gibt noch keine."
+  "queue.week_empty": "Alle Rezepte sind schon eingeplant, oder es gibt noch keine.",
+  "push.title": "Benachrichtigungen",
+  "push.on": "Auf diesem Gerät an",
+  "push.off": "Auf diesem Gerät aus",
+  "push.text": "Du bekommst Bescheid, wenn jemand aus dem Haushalt einkaufen geht, und kannst noch schnell etwas auf die Liste setzen.",
+  "push.enable": "Benachrichtigungen einschalten",
+  "push.disable": "Benachrichtigungen ausschalten",
+  "push.denied": "Der Browser erlaubt keine Benachrichtigungen. Erlaube sie in den Website-Einstellungen.",
+  "push.going_shopping": "Bescheid sagen: Ich gehe einkaufen",
+  "push.trip_sent": "Der Haushalt weiß Bescheid.",
+  "push.trip_nobody": "Niemand sonst hat Benachrichtigungen eingeschaltet."
 }
