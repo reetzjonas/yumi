@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="de">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>yumi – Gestaltungsrichtungen (PROTOTYP, Wegwerf)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font: 15px/1.45 system-ui, "Segoe UI", Roboto, sans-serif; background: #e9e9ec; color: #222; padding: 32px; }
+  h1 { font-size: 26px; margin-bottom: 4px; }
+  .lead { color: #555; max-width: 900px; margin-bottom: 28px; }
+  .dir { margin-bottom: 56px; }
+  .dir > h2 { font-size: 22px; }
+  .dir > p { color: #555; max-width: 900px; margin: 4px 0 6px; }
+  .swatches { display: flex; gap: 6px; margin: 10px 0 18px; }
+  .swatches i { width: 54px; height: 34px; border-radius: 8px; border: 1px solid #0002; font: 10px/34px ui-monospace, monospace; text-align: center; font-style: normal; }
+  .row { display: flex; gap: 28px; flex-wrap: wrap; }
+  figure { margin: 0; }
+  figcaption { font-weight: 600; margin-bottom: 8px; color: #444; }
+
+  /* phone */
+  .phone { width: 360px; height: 740px; border-radius: 34px; border: 8px solid #111; overflow: hidden; position: relative;
+    background: var(--bg); color: var(--fg); font-family: var(--font); display: flex; flex-direction: column; }
+  .top { display: flex; align-items: center; justify-content: space-between; padding: 18px 18px 10px; }
+  .top h3 { font: var(--display); letter-spacing: var(--track); }
+  .top .sub { color: var(--muted); font-size: 13px; }
+  .iconbtn { width: 40px; height: 40px; border-radius: var(--r-ctl); background: var(--soft); display: grid; place-items: center; font-size: 18px; color: var(--fg); }
+  .body { flex: 1; overflow: hidden; padding: 6px 18px 0; }
+  .nav { display: flex; background: var(--nav); border-top: 1px solid var(--line); padding: 8px 8px 14px; }
+  .nav div { flex: 1; text-align: center; font-size: 11px; font-weight: 600; color: var(--muted); }
+  .nav div b { display: block; font-size: 19px; font-weight: 400; margin: 0 auto 2px; width: 52px; border-radius: 99px; padding: 2px 0; }
+  .nav .on { color: var(--primary); }
+  .nav .on b { background: var(--primary-soft); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 46px; padding: 0 20px; border-radius: var(--r-ctl); font-weight: 700; font-size: 15px; background: var(--soft); color: var(--fg); }
+  .btn.pri { background: var(--primary); color: var(--on-primary); }
+  .card { background: var(--card); border-radius: var(--r-card); box-shadow: var(--shadow); border: var(--card-border); }
+  .over { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 18px 0 8px; }
+  .photo { background: var(--ph, linear-gradient(135deg, #e9a23b, #c8542b)); position: relative; }
+  .photo::after { content: attr(data-e); position: absolute; inset: 0; display: grid; place-items: center; font-size: var(--es, 64px); }
+
+  /* today */
+  .hero .photo { height: 170px; border-radius: var(--r-card) var(--r-card) 0 0; }
+  .hero .in { padding: 14px 16px 16px; }
+  .hero h4 { font: var(--title); letter-spacing: var(--track); }
+  .hero .meta { color: var(--muted); font-size: 13px; margin: 2px 0 12px; }
+  .hero .acts { display: flex; gap: 8px; }
+  .hero .acts .pri { flex: 1; }
+  .q { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .q:last-child { border: 0; }
+  .q .photo { width: 46px; height: 46px; border-radius: var(--r-ctl); --es: 22px; flex: none; }
+  .q b { display: block; font-size: 15px; }
+  .q span { color: var(--muted); font-size: 13px; }
+  .q i { margin-left: auto; color: var(--muted); font-style: normal; }
+  .strip { display: flex; align-items: center; gap: 12px; padding: 12px 14px; margin-top: 14px; background: var(--primary-soft); border-radius: var(--r-card); font-weight: 600; }
+  .strip span { margin-left: auto; color: var(--primary); }
+
+  /* list */
+  .add { display: flex; gap: 8px; }
+  .add .inp { flex: 1; height: 48px; border-radius: var(--r-ctl); background: var(--card); border: 1.5px solid var(--input); display: flex; align-items: center; padding: 0 14px; color: var(--muted); }
+  .chips { display: flex; gap: 8px; margin-top: 10px; }
+  .chip { height: 34px; padding: 0 12px; border-radius: var(--r-chip); background: var(--soft); font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+  .chip.on { background: var(--primary-soft); color: var(--primary); }
+  .li { display: flex; align-items: center; gap: 12px; height: 54px; border-bottom: 1px solid var(--line); }
+  .li .ck { width: 24px; height: 24px; border-radius: var(--r-check); border: 2px solid var(--input); flex: none; }
+  .li .e { font-size: 22px; }
+  .li b { font-weight: 600; }
+  .li small { color: var(--muted); font-size: 12px; margin-left: 6px; font-weight: 400; }
+  .li i { margin-left: auto; font-style: normal; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .li.done { opacity: .5; } .li.done b { text-decoration: line-through; } .li.done .ck { background: var(--primary); border-color: var(--primary); }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .tile { border-radius: var(--r-card); padding: 10px 6px 8px; text-align: center; background: var(--tc); font-weight: 700; font-size: 13px; line-height: 1.2; height: 92px; }
+  .tile .e { font-size: 30px; display: block; }
+  .tile small { display: block; font-weight: 500; font-size: 11px; opacity: .7; }
+  .tile.done { background: var(--soft); opacity: .55; }
+
+  /* recipe */
+  .rphoto { height: 220px; margin: 0 -18px; --es: 84px; }
+  .rtop { position: absolute; top: 14px; left: 14px; right: 14px; display: flex; justify-content: space-between; z-index: 2; }
+  .rtop .iconbtn { background: var(--card); box-shadow: 0 1px 4px #0003; }
+  .rt { font: var(--display); letter-spacing: var(--track); margin: 14px 0 4px; }
+  .rmeta { color: var(--muted); font-size: 13px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .tag { background: var(--primary-soft); color: var(--primary); font-weight: 600; font-size: 12px; padding: 3px 8px; border-radius: var(--r-chip); }
+  .ih { display: flex; justify-content: space-between; align-items: center; margin: 16px 0 4px; font-weight: 700; font-size: 17px; }
+  .step { display: inline-flex; align-items: center; gap: 14px; background: var(--soft); border-radius: var(--r-ctl); height: 36px; padding: 0 12px; font-size: 14px; font-weight: 600; }
+  .ing { display: flex; padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .ing b { width: 78px; font-variant-numeric: tabular-nums; }
+  .bar { display: flex; gap: 8px; padding: 10px 18px 16px; background: var(--nav); border-top: 1px solid var(--line); }
+  .bar .pri { flex: 2; } .bar .btn { flex: 1; }
+
+  /* A – Markt */
+  .A { --bg: #f4f6f1; --fg: #16211a; --muted: #5d6b62; --card: #fff; --soft: #e7ece4; --line: #e1e6dd; --input: #9aa79d; --nav: #fff;
+    --primary: #1f7a4a; --on-primary: #fff; --primary-soft: #dcefe2;
+    --font: system-ui, "Segoe UI", Roboto, sans-serif; --display: 700 24px/1.15 var(--font); --title: 700 20px/1.2 var(--font); --track: -0.01em;
+    --r-ctl: 12px; --r-card: 16px; --r-chip: 99px; --r-check: 8px; --shadow: 0 1px 2px #0000000d, 0 4px 14px #0000000a; --card-border: 0; }
+  /* B – Tomate */
+  .B { --bg: #fbf8f4; --fg: #1d1917; --muted: #6f6660; --card: #fff; --soft: #f0ebe5; --line: #ebe5de; --input: #a59a91; --nav: #fbf8f4;
+    --primary: #d93a26; --on-primary: #fff; --primary-soft: #fde6e1;
+    --font: "Inter", system-ui, "Segoe UI", Roboto, sans-serif; --display: 800 28px/1.05 var(--font); --title: 800 22px/1.1 var(--font); --track: -0.03em;
+    --r-ctl: 14px; --r-card: 22px; --r-chip: 10px; --r-check: 99px; --shadow: none; --card-border: 1px solid #ebe5de; }
+  /* C – Bunt */
+  .C { --bg: #fffdf8; --fg: #231c3a; --muted: #6c6682; --card: #fff; --soft: #f1eefb; --line: #ece9f5; --input: #a39cc0; --nav: #fff;
+    --primary: #5a3fe0; --on-primary: #fff; --primary-soft: #e8e3ff;
+    --font: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif; --display: 800 25px/1.15 var(--font); --title: 800 20px/1.2 var(--font); --track: 0;
+    --r-ctl: 16px; --r-card: 20px; --r-chip: 99px; --r-check: 8px; --shadow: none; --card-border: 0; }
+  .C .hero { background: #ffe58a; } .C .strip { background: #c9f2d6; } .C .strip span { color: #14653a; }
+  .dark.A { --bg: #121713; --fg: #eef3ec; --muted: #a3b0a6; --card: #1c231e; --soft: #262f28; --line: #2a332c; --input: #6f7d73; --nav: #171d18; --primary: #6fd39a; --on-primary: #0c2415; --primary-soft: #1d3a29; }
+  .dark.B { --bg: #171412; --fg: #f6f1ec; --muted: #b3a9a1; --card: #221e1b; --soft: #2d2824; --line: #322c28; --input: #7d726a; --nav: #171412; --primary: #ff7a66; --on-primary: #3a0d06; --primary-soft: #45201a; --card-border: 1px solid #322c28; }
+  .dark.C { --bg: #15122a; --fg: #f3f0ff; --muted: #aaa4c7; --card: #201c3a; --soft: #2a2548; --line: #2e2950; --input: #7b74a3; --nav: #1a1632; --primary: #a594ff; --on-primary: #1a0f55; --primary-soft: #332a6b; }
+  .dark.C .hero { background: #5b4a12; } .dark.C .strip { background: #17442b; } .dark.C .strip span { color: #9fe6bb; }
+  .dark .tile { color: #1c1c1c; }
+</style>
+<body>
+<h1>yumi – drei Gestaltungsrichtungen</h1>
+<p class="lead">Wegwerf-Prototyp. Alle drei zeigen denselben neuen Aufbau: Start „Heute" statt Rezepte, Tabs Heute · Rezepte · Liste · Mehr, kompakte Plan-Zeilen, einzeilige Listenzeilen, Rezept mit fester Aktionsleiste. Unterschied ist Farbe, Schrift, Formensprache – und bei C die Liste als Kacheln. Jeweils rechts: derselbe Start im Dunkelmodus.</p>
+<div id="board"></div>
+<script>
+const ph = { dal: "linear-gradient(135deg,#f0b24a,#c9582c)", curry: "linear-gradient(135deg,#f6d365,#e08a2e)", shak: "linear-gradient(135deg,#f0705a,#b5301f)", soup: "linear-gradient(135deg,#f7b267,#e3722b)", veg: "linear-gradient(135deg,#9bd27a,#3f8f4a)" };
+const nav = on => `<div class="nav">${[["☀️","Heute"],["📖","Rezepte"],["🛒","Liste"],["☰","Mehr"]].map(([i,l],k)=>`<div class="${k===on?"on":""}"><b>${i}</b>${l}</div>`).join("")}</div>`;
+const q = (e,p,t,m) => `<div class="q"><div class="photo" data-e="${e}" style="--ph:${p}"></div><div><b>${t}</b><span>${m}</span></div><i>⋮⋮</i></div>`;
+const today = () => `
+  <div class="top"><div><div class="sub">Dienstag, 10. November</div><h3>Heute</h3></div><div class="iconbtn">＋</div></div>
+  <div class="body">
+    <div class="card hero"><div class="photo" data-e="🍛" style="--ph:${ph.dal}"></div><div class="in">
+      <h4>Linsen-Dal mit Spinat</h4><div class="meta">3 Portionen · 40 Min. · alles eingekauft</div>
+      <div class="acts"><div class="btn pri">🔥 Kochen</div><div class="btn">Später</div></div></div></div>
+    <div class="over">Danach</div>
+    ${q("🥘",ph.shak,"Shakshuka","2 Portionen · 30 Min.")}${q("🎃",ph.soup,"Kürbissuppe mit Ingwer","Do · 4 Portionen · 50 Min.")}${q("🥗",ph.veg,"Ofengemüse mit Feta","2 Portionen · 4 Zutaten fehlen")}
+    <div class="strip">🛒 12 Artikel offen<span>Zur Liste ›</span></div>
+  </div>${nav(0)}`;
+const items = [["🧀","Feta","Ofengemüse","200 g","#fff1c2"],["🥚","Eier","Shakshuka, Pfannkuchen","8","#ffe9c7"],["🥛","Milch","","1 l","#dff0ff"],["🍅","Tomaten","Shakshuka","6","#ffd9d2"],["🥒","Zucchini","Ofengemüse","2","#d9f3cf"],["🧄","Knoblauch","","1","#f1e9dc"],["🥥","Kokosmilch","Dal","400 ml","#eadffc"],["🌾","Mehl","","1 kg","#f6ecd2"],["🧅","Zwiebeln","Dal","2","#fbe0ee"]];
+const listHead = `
+  <div class="top"><div><div class="sub">3 von 12 erledigt</div><h3>Wocheneinkauf</h3></div><div class="iconbtn">⋯</div></div>`;
+const listRows = () => `${listHead}
+  <div class="body"><div class="add"><div class="inp">Artikel hinzufügen …</div></div>
+    <div class="chips"><div class="chip on">🏪 Bei Rewe</div><div class="chip">Zuletzt</div><div class="chip">Aus Rezept</div></div>
+    <div class="over">Obst &amp; Gemüse</div>
+    ${[3,4,5,8].map(i=>items[i]).map(([e,n,s,m])=>`<div class="li"><div class="ck"></div><span class="e">${e}</span><b>${n}${s?`<small>${s}</small>`:""}</b><i>${m}</i></div>`).join("")}
+    <div class="over">Milchprodukte &amp; Eier</div>
+    ${[0,1,2].map(i=>items[i]).map(([e,n,s,m],k)=>`<div class="li ${k===2?"done":""}"><div class="ck"></div><span class="e">${e}</span><b>${n}${s?`<small>${s}</small>`:""}</b><i>${m}</i></div>`).join("")}
+  </div>${nav(2)}`;
+const listTiles = () => `${listHead}
+  <div class="body"><div class="add"><div class="inp">Artikel hinzufügen …</div></div>
+    <div class="chips"><div class="chip on">🏪 Bei Rewe</div><div class="chip">Zuletzt</div><div class="chip">Aus Rezept</div></div>
+    <div class="over">Noch 9</div>
+    <div class="tiles">${items.map(([e,n,s,m,c])=>`<div class="tile" style="--tc:${c}"><span class="e">${e}</span>${n}<small>${m}</small></div>`).join("")}</div>
+    <div class="over">Erledigt</div>
+    <div class="tiles"><div class="tile done"><span class="e">🎃</span>Hokkaido</div><div class="tile done"><span class="e">🫑</span>Paprika</div><div class="tile done"><span class="e">🧈</span>Butter</div></div>
+  </div>${nav(2)}`;
+const recipe = () => `
+  <div class="rtop"><div class="iconbtn">‹</div><div class="iconbtn">⋯</div></div>
+  <div class="body" style="padding-top:0"><div class="photo rphoto" data-e="🍛" style="--ph:${ph.dal}"></div>
+    <div class="rt">Linsen-Dal mit Spinat</div>
+    <div class="rmeta">⏱ 40 Min. · ★ 4,5 · vor 6 Tagen <span class="tag">vegetarisch</span><span class="tag">Eintopf</span></div>
+    <div class="ih">Zutaten <span class="step">− &nbsp;4 Portionen&nbsp; +</span></div>
+    ${[["200 g","rote Linsen"],["1","Zwiebel"],["2","Knoblauchzehen"],["400 ml","Kokosmilch"],["200 g","Spinat"]].map(([m,n])=>`<div class="ing"><b>${m}</b>${n}</div>`).join("")}
+    <div class="ih">Schritte</div><div class="ing"><b style="width:28px;color:var(--primary)">1</b>Zwiebel fein hacken.</div>
+  </div><div class="bar"><div class="btn pri">🔥 Kochen</div><div class="btn">Einplanen</div></div>`;
+const dirs = [
+  ["A", "A · Markt", "Frisch und ruhig: kühles Hellgrau-Grün, weißes Kartenweiß, ein sattes Grün als einzige Aktionsfarbe. Nur Systemschrift, keine Serifen. Karten ohne Rahmen mit leichtem Schatten, Zweitbuttons als weiche Flächen statt Umrandung, runde Chips.", ["#f4f6f1","#ffffff","#16211a","#1f7a4a","#dcefe2"], listRows],
+  ["B", "B · Tomate", "Warm, aber modern: fast weißes Papier, fast schwarzer Text, ein kräftiges Tomatenrot. Große, enge Grotesk-Überschriften tragen den Charakter, große Fotos, sehr runde Karten mit feiner Linie, sonst keine Rahmen.", ["#fbf8f4","#ffffff","#1d1917","#d93a26","#fde6e1"], listRows],
+  ["C", "C · Bunt", "Verspielt, nah an Bring: runde Schrift, Violett als Aktionsfarbe, Flächen in Pastellfarben. Die Einkaufsliste besteht aus Kacheln in Kategoriefarbe (antippen = erledigt) statt Zeilen; der „Heute“-Block ist eine farbige Karte.", ["#fffdf8","#ffe58a","#231c3a","#5a3fe0","#c9f2d6"], listTiles],
+];
+document.getElementById("board").innerHTML = dirs.map(([k,name,desc,sw,list]) => `
+  <section class="dir"><h2>${name}</h2><p>${desc}</p>
+  <div class="swatches">${sw.map(c=>`<i style="background:${c};color:${/^#(f|e|d|c)/.test(c)?"#333":"#fff"}">${c}</i>`).join("")}</div>
+  <div class="row">
+    <figure><figcaption>Heute (neuer Start)</figcaption><div class="phone ${k}">${today()}</div></figure>
+    <figure><figcaption>Einkaufsliste</figcaption><div class="phone ${k}">${list()}</div></figure>
+    <figure><figcaption>Rezept</figcaption><div class="phone ${k}">${recipe()}</div></figure>
+    <figure><figcaption>Heute, dunkel</figcaption><div class="phone ${k} dark">${today()}</div></figure>
+  </div></section>`).join("");
+</script>
+</body>
+</html>
