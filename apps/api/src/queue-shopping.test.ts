@@ -94,6 +94,10 @@ test("queue preview scales and merges ingredients while separating pantry staple
   ]);
   expect(result.staples).toEqual([{ label: "Salt" }]);
   expect(await list(f.c, f.listId)).toEqual([]);
+  const entries = z
+    .array(z.object({ onList: z.boolean() }))
+    .parse(await (await f.c.request("/api/queue")).json());
+  expect(entries.map((entry) => entry.onList)).toEqual([false, false]);
 });
 
 test("confirmed queue additions retain sources and replay without duplicate items", async () => {
@@ -120,6 +124,11 @@ test("confirmed queue additions retain sources and replay without duplicate item
       ),
     ),
   ).toEqual(expect.arrayContaining([2, 0]));
+  const onList = async () =>
+    z
+      .array(z.object({ id: z.string(), onList: z.boolean() }))
+      .parse(await (await f.c.request("/api/queue")).json());
+  expect((await onList()).every((entry) => entry.onList)).toBe(true);
   const items = await list(f.c, f.listId);
   expect(items).toHaveLength(2);
   expect(mergeShoppingItems(items)[0]?.amounts).toEqual([

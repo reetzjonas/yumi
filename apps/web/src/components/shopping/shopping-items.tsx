@@ -27,7 +27,7 @@ import { Pictogram } from "@/components/ui/pictogram";
 import { Sheet } from "@/components/ui/sheet";
 import { errorMessage } from "@/lib/api-error";
 import { readPreference, writePreference } from "@/lib/preferences";
-import { formatQuantity, ingredientName } from "@/lib/recipes";
+import { formatShoppingQuantity, ingredientName } from "@/lib/recipes";
 import {
   addItemEvent,
   type Category,
@@ -62,7 +62,7 @@ function sourceTitles(
 
 const amountText = (row: MergedItem) =>
   row.amounts
-    .map((amount) => formatQuantity(amount.quantity, amount.unit))
+    .map((amount) => formatShoppingQuantity(amount.quantity, amount.unit))
     .join(" + ");
 
 function RecipeSources({

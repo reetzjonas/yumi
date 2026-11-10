@@ -72,6 +72,7 @@ export function MealQueueEntry({
         })
       : null,
     minutes > 0 && formatMinutes(minutes),
+    entry.onList && m["queue.on_list"](),
   ]
     .filter(Boolean)
     .join(" · ");

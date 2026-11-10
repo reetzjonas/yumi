@@ -4,6 +4,7 @@ import {
   type MergeableItem,
   mergeShoppingItems,
   quickAddFields,
+  shoppingDisplayQuantity,
   splitQuickAdd,
 } from "./shopping";
 
@@ -142,5 +143,17 @@ describe("splitQuickAdd", () => {
       "0,5 l Milch",
     ]);
     expect(splitQuickAdd("  ")).toEqual([]);
+  });
+});
+
+describe("shoppingDisplayQuantity", () => {
+  test("rounds countable amounts up to whole items", () => {
+    expect(shoppingDisplayQuantity(0.75, "pcs")).toBe(1);
+    expect(shoppingDisplayQuantity(1.5, "pcs")).toBe(2);
+    expect(shoppingDisplayQuantity(2, null)).toBe(2);
+    expect(shoppingDisplayQuantity(2.0000001, "pcs")).toBe(2);
+  });
+  test("keeps weights and volumes exact", () => {
+    expect(shoppingDisplayQuantity(150.5, "g")).toBe(150.5);
   });
 });

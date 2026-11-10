@@ -611,5 +611,6 @@
   "shopping.view_label": "View",
   "shopping.view_rows": "Rows",
   "shopping.view_tiles": "Tiles",
-  "shopping.gesture_hint_tiles": "Tap to check, long-press to edit."
+  "shopping.gesture_hint_tiles": "Tap to check, long-press to edit.",
+  "queue.on_list": "on the list"
 }

@@ -2,6 +2,7 @@ import {
   humanizeQuantity,
   recipeInputSchema,
   scaleRecipeQuantity,
+  shoppingDisplayQuantity,
   type Unit,
 } from "@yumi/shared";
 import type { InferRequestType, InferResponseType } from "hono/client";
@@ -75,6 +76,11 @@ export function formatScaledQuantity(
 }
 
 /** Display form of a stored quantity: "1,25 kg", "2 EL", "3". */
+/** Quantity as shown on a shopping list: countable amounts are whole items. */
+export function formatShoppingQuantity(quantity: number, unit: Unit | null) {
+  return formatQuantity(shoppingDisplayQuantity(quantity, unit), unit);
+}
+
 export function formatQuantity(
   quantity: number,
   unit: Unit | null,

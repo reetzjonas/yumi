@@ -175,6 +175,17 @@ export interface QuickAddMatch {
 }
 
 /**
+ * Amount to show on a shopping list. Scaled recipes produce "0.75 pcs" of an onion;
+ * countable amounts (pieces or no unit) are rounded up to whole items for buying.
+ * Stored quantities stay exact, so merging and leftovers keep working.
+ */
+export function shoppingDisplayQuantity(quantity: number, unit: Unit | null) {
+  return unit === null || unit === "pcs"
+    ? Math.max(1, Math.ceil(quantity - 1e-6))
+    : quantity;
+}
+
+/**
  * Splits quick-add input into several entries: "Milch, Eier; Butter" gives three.
  * A comma directly before a digit is a decimal comma ("1,5 kg Mehl") and does not split.
  */

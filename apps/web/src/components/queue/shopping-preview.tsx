@@ -12,7 +12,7 @@ import {
   type QueueEntry,
   type QueueShoppingInput,
 } from "@/lib/queue";
-import { formatQuantity } from "@/lib/recipes";
+import { formatShoppingQuantity } from "@/lib/recipes";
 import { useMe } from "@/lib/session";
 import { useShoppingLists } from "@/lib/shopping";
 import { m } from "@/paraglide/messages";
@@ -30,7 +30,9 @@ function PreviewItems({
         <li key={item.key}>
           <span className="row-title">
             {item.amounts
-              .map((amount) => formatQuantity(amount.quantity, amount.unit))
+              .map((amount) =>
+                formatShoppingQuantity(amount.quantity, amount.unit),
+              )
               .join(" + ")}{" "}
             {item.label}
           </span>

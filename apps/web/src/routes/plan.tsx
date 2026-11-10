@@ -307,7 +307,13 @@ function MealQueue({
               className="queue-to-list"
               aria-haspopup="dialog"
               onClick={() => {
-                setSelectedIds(recipeEntries.map((entry) => entry.id));
+                // Entries already on a list stay unselected to avoid duplicates.
+                const pending = recipeEntries.filter((entry) => !entry.onList);
+                setSelectedIds(
+                  (pending.length ? pending : recipeEntries).map(
+                    (entry) => entry.id,
+                  ),
+                );
                 setShoppingAdded(null);
                 shoppingSheet.current?.showModal();
               }}
@@ -340,6 +346,7 @@ function MealQueue({
                     <span className="picker-row-title">{entry.title}</span>
                     <span className="meta">
                       {m["queue.servings_count"]({ count: entry.servings })}
+                      {entry.onList && ` · ${m["queue.on_list"]()}`}
                     </span>
                   </span>
                 </label>

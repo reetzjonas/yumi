@@ -1,4 +1,11 @@
-import { cookLog, mealQueueEntry, organization, recipe } from "@yumi/db/schema";
+import {
+  cookLog,
+  mealQueueEntry,
+  organization,
+  recipe,
+  shoppingList,
+  shoppingListItem,
+} from "@yumi/db/schema";
 import {
   queueEntryInputSchema,
   queueEntryUpdateSchema,
@@ -44,6 +51,15 @@ export const queue = new Hono<HouseholdEnv>()
           position: mealQueueEntry.position,
           plannedFor: mealQueueEntry.plannedFor,
           status: mealQueueEntry.status,
+          // Ingredients of this entry were pushed to a shopping list.
+          onList: sql<boolean>`exists (
+            select 1 from ${shoppingListItem}
+            inner join ${shoppingList}
+              on ${shoppingList.id} = ${shoppingListItem.listId}
+            where ${shoppingList.householdId} = ${mealQueueEntry.householdId}
+              and ${shoppingListItem.sources} @> jsonb_build_array(
+                jsonb_build_object('kind', 'queue', 'id', ${mealQueueEntry.id}::text))
+          )`,
           recipe: {
             id: recipe.id,
             title: recipe.title,

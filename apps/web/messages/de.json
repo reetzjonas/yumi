@@ -611,5 +611,6 @@
   "shopping.view_label": "Ansicht",
   "shopping.view_rows": "Zeilen",
   "shopping.view_tiles": "Kacheln",
-  "shopping.gesture_hint_tiles": "Tippen hakt ab, lange drücken bearbeitet."
+  "shopping.gesture_hint_tiles": "Tippen hakt ab, lange drücken bearbeitet.",
+  "queue.on_list": "auf der Liste"
 }
