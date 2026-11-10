@@ -22,6 +22,20 @@ export const pwaOptions = {
       enctype: "application/x-www-form-urlencoded",
       params: { url: "url", text: "text", title: "title" },
     },
+    shortcuts: [
+      {
+        name: "Artikel hinzufügen",
+        short_name: "Artikel",
+        url: "/list?add=1",
+        icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }],
+      },
+      {
+        name: "Heute kochen",
+        short_name: "Heute",
+        url: "/plan",
+        icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }],
+      },
+    ],
     icons: [
       {
         src: "/icons/icon-192.png",

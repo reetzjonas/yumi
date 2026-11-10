@@ -41,7 +41,7 @@ capabilities are excluded. See [household transfer](data-transfer.md).
 
 ## Recipes
 
-- `recipe`: title, description, servings, prep_min, cook_min, source_url, image, language, tags[].
+- `recipe`: title, description, cooking_notes (household note for the next time), servings, prep_min, cook_min, source_url, image, language, tags[].
 - `recipe_ingredient`: recipe_id, section, position, ingredient_id?, raw_text, quantity?, unit?, note, optional, exclude_from_nutrition (boolean, default false; keeps the line out of nutrition coverage, e.g. seasoning to taste).
 - `recipe_step`: recipe_id, position, text, ingredient refs (`recipe_ingredient.id` UUIDs), ingredient_refs_manual (boolean, default false), detected timers (jsonb).
 - Recipe step input uses zero-based `ingredientPositions`: omitted or `null` matches German/English catalog names and parsed raw ingredient names when saving; an array overrides matching, including `[]` for no references. Positions must belong to the submitted recipe. Recipe edits recreate ingredient rows and bind step references to their new IDs.

@@ -27,9 +27,11 @@ import { m } from "@/paraglide/messages";
 export function QuickAdd({
   listId,
   onTiles,
+  autoFocus = false,
 }: {
   listId: string;
   onTiles: () => void;
+  autoFocus?: boolean;
 }) {
   const id = useId();
   const householdId = useMe()?.activeHouseholdId;
@@ -119,6 +121,8 @@ export function QuickAdd({
           className="quick-add-input"
           value={text}
           autoComplete="off"
+          // biome-ignore lint/a11y/noAutofocus: the "add item" app shortcut asks for this field
+          autoFocus={autoFocus}
           enterKeyHint="send"
           maxLength={200}
           placeholder={m["shopping.quick_placeholder"]()}

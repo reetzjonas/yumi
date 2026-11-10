@@ -30,7 +30,12 @@ import { useShoppingRealtime } from "@/lib/shopping-sync";
 import { useStoreOrder, useStores } from "@/lib/stores";
 import { m } from "@/paraglide/messages";
 
-export const Route = createFileRoute("/list")({ component: List });
+export const Route = createFileRoute("/list")({
+  // `?add=1` (PWA shortcut) focuses the quick-add field.
+  validateSearch: (search: Record<string, unknown>): { add?: boolean } =>
+    search.add ? { add: true } : {},
+  component: List,
+});
 
 function List() {
   const householdId = useMe()?.activeHouseholdId;
@@ -50,6 +55,7 @@ function HouseholdLists() {
   const quickSheet = useRef<HTMLDialogElement>(null);
   const recipeSheet = useRef<HTMLDialogElement>(null);
   const session = useStoreSession(listId);
+  const { add } = Route.useSearch();
   const tripStore = stores.data?.find((item) => item.id === session.storeId);
   const store =
     tripStore ??
@@ -98,6 +104,7 @@ function HouseholdLists() {
           </ListManager>
           <QuickAdd
             key={`add-${listId}`}
+            autoFocus={add}
             listId={listId}
             onTiles={() => quickSheet.current?.showModal()}
           />

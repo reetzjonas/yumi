@@ -11,7 +11,7 @@ function Suggestions() {
   return (
     <>
       <PageHeader
-        title={m["queue.suggestions"]()}
+        title={m["queue.leftovers"]()}
         back={<BackLink to="/plan" label={m["queue.title"]()} />}
       />
       <LeftoversPanel />

@@ -619,5 +619,7 @@
   "recipes.notes_edit": "Ändern",
   "recipes.notes_save": "Notiz speichern",
   "recipes.notes_saved": "Gespeichert.",
-  "recipes.notes_placeholder": "z. B. weniger Salz, 5 Minuten länger im Ofen"
+  "recipes.notes_placeholder": "z. B. weniger Salz, 5 Minuten länger im Ofen",
+  "queue.filter_leftovers": "Passt zu Resten",
+  "queue.leftovers": "Reste"
 }

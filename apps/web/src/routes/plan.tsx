@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ListChecks, Plus, Sparkles } from "lucide-react";
+import { ListChecks, Plus, Soup } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { EmptyState, PageHeader } from "@/components/page";
@@ -195,11 +195,8 @@ function MealQueue({
         actions={
           <>
             <Button asChild variant="ghost" className="icon-action">
-              <Link
-                to="/plan/suggestions"
-                aria-label={m["queue.suggestions"]()}
-              >
-                <Sparkles aria-hidden="true" size={22} />
+              <Link to="/plan/suggestions" aria-label={m["queue.leftovers"]()}>
+                <Soup aria-hidden="true" size={22} />
               </Link>
             </Button>
             <Button
@@ -239,7 +236,7 @@ function MealQueue({
           </Button>
         </div>
         {addKind === "recipe" ? (
-          <RecipePicker />
+          <RecipePicker suggestions />
         ) : (
           <AddFreeMeal onAdded={() => pickerSheet.current?.close()} />
         )}

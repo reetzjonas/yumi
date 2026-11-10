@@ -125,16 +125,13 @@ Layout: Step ingredient assignments - associate automatic/manual choices with
 their step -> stack inside the existing recipe editor; scroll owner: `.app-main`;
 avoid nested scrollers and fixed-width checkbox labels.
 
-Layout: Expected leftovers and reuse suggestions - live on the Vorschläge page
-(`/plan/suggestions`) reached from Als Nächstes; scroll owner: `.app-main`. Keep the shopping preview
-and active list in their existing places. Reading priorities are planned meals,
-shopping, expected leftovers, then recipes that use them. Leftover rows show
-localized ingredient names and amounts, with secondary edit and dismiss actions.
-Editing expands one compact quantity/unit form beneath its row; failures stay
-beside the affected row. Suggestions use compact recipe rows with secondary add
-actions and the recipe's original servings. A checkbox expands suggestions to
-recipes sharing ingredients with queued meals. Avoid extra primary buttons,
-recipe-card grids, and adding controls inside the dense queue rows.
+Layout: Suggestions and leftovers - recipe suggestions live in the add-to-plan
+sheet as one chip strip above the recipe list (all, fits leftovers, not cooked in
+a while, quick, favorites). Expected leftovers have their own page
+(`/plan/suggestions`, "Reste", reached from the top bar of Heute); scroll owner:
+`.app-main`. Leftover rows show localized ingredient names and amounts, with
+secondary edit and dismiss actions; editing expands one compact quantity/unit form
+beneath its row and failures stay beside the affected row.
 
 Layout: Free-text meals - share the ordered planning list with recipe entries;
 scroll owner: `.app-main`. The existing add sheet offers a recipe picker or a
