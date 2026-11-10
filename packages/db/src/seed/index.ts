@@ -3,17 +3,41 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type * as schema from "../schema";
 import { ingredient, ingredientCategory } from "../schema";
 import { CATEGORY_KEYS, SEED_CATEGORIES } from "./categories";
+import {
+  NUTRITION_ESTIMATE_SOURCE,
+  SEED_CONVERSION_ESTIMATES,
+  SEED_NUTRITION_ESTIMATES,
+} from "./estimates";
 import { SEED_INGREDIENTS } from "./ingredients";
 import { NUTRITION_SOURCE, SEED_NUTRITION } from "./nutrition";
 
 function nutritionFor(key: string) {
   const entry = SEED_NUTRITION[key];
+  const estimate = SEED_NUTRITION_ESTIMATES[key];
+  if (!entry && estimate)
+    return {
+      nutritionPer100g: estimate,
+      nutritionSource: NUTRITION_ESTIMATE_SOURCE,
+    };
   if (!entry) return { nutritionPer100g: null, nutritionSource: null };
   return {
     nutritionPer100g: entry.values,
     nutritionSource:
       entry.source ??
       (entry.fdcId ? `${NUTRITION_SOURCE}, FDC ${entry.fdcId}` : null),
+  };
+}
+
+/** The entry's own factors win; estimates only fill what it leaves open. */
+export function conversionFor(i: (typeof SEED_INGREDIENTS)[number]) {
+  const estimate = SEED_CONVERSION_ESTIMATES[i.key];
+  return {
+    densityGPerMl: i.densityGPerMl ?? estimate?.density ?? null,
+    pieceWeightG: i.pieceWeightG ?? estimate?.piece ?? null,
+    packSizes: (i.packs ?? estimate?.packs ?? []).map(([quantity, unit]) => ({
+      quantity,
+      unit,
+    })),
   };
 }
 
@@ -53,12 +77,7 @@ export async function seedCatalog(db: PostgresJsDatabase<typeof schema>) {
           synonyms: i.synonyms ?? [],
           categoryId: categoryIds.get(i.category),
           defaultUnit: i.unit,
-          densityGPerMl: i.densityGPerMl ?? null,
-          pieceWeightG: i.pieceWeightG ?? null,
-          packSizes: (i.packs ?? []).map(([quantity, unit]) => ({
-            quantity,
-            unit,
-          })),
+          ...conversionFor(i),
           icon: i.icon ?? null,
           ...nutritionFor(i.key),
         })),

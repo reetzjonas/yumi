@@ -25,8 +25,10 @@ capabilities are excluded. See [household transfer](data-transfer.md).
   null), nutrition_source? (seed provenance only; household edits that change the values clear it).
 - Seed nutrition comes from USDA FoodData Central SR Legacy 2018 (public domain), generated into
   `packages/db/src/seed/nutrition.ts`: carbs are available carbohydrate (by difference minus fibre),
-  salt is sodium x 2.5. Ingredients without a matching complete profile, and non-food items, stay
-  null instead of getting a guessed value. Where USDA has no combined entry (e.g. German mixed minced
+  salt is sodium x 2.5. Entries without a matching complete profile get a hand-maintained estimate
+  from `packages/db/src/seed/estimates.ts`, marked by its own `nutrition_source` (ADR 0017); the
+  same file fills missing densities, piece weights and pack sizes. Non-food items and things nobody
+  eats as bought (coffee beans, tea) stay null. Where USDA has no combined entry (e.g. German mixed minced
   meat), the seed documents a computed average in its `source`. Household ingredients created during
   import can carry an AI-estimated profile with `nutrition_source = "AI estimate"`.
 - Recipe detail returns `nutrition` per serving of the base recipe, or null when no line counts.

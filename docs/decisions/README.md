@@ -20,3 +20,4 @@ Alpha: every decision may be revisited. Superseded ADRs stay, marked `Superseded
 | [0014](0014-shopping-in-one-view.md)    | Shopping in the list view, no separate shopping mode   | Accepted           |
 | [0015](0015-ux-rework.md)               | UX rework: "Tomate" visual direction, leaner screens   | Superseded by 0016 |
 | [0016](0016-farbwelten.md)              | "Farbwelten" UI concept built from scratch             | Accepted           |
+| [0017](0017-estimated-nutrition.md)     | Estimated nutrition and weights instead of gaps        | Accepted           |

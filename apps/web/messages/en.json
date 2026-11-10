@@ -499,7 +499,7 @@
   "recipes.nutrition_portion": "serving",
   "recipes.nutrition_portions": "servings",
   "recipes.nutrition_coverage": "Approximate values: {included} of {total} ingredients counted.",
-  "recipes.nutrition_source": "Reference values from USDA FoodData Central, your own ingredient data and AI estimates. Ingredients without a quantity, gram conversion or nutrition data are left out of the total.",
+  "recipes.nutrition_source": "Reference values from USDA FoodData Central, your own ingredient data and estimates (typical label values, AI). Ingredients without a quantity, gram conversion or nutrition data are left out of the total.",
   "recipes.nutrition_ignored": "{count} left out to taste.",
   "nutrition.energy": "Energy",
   "nutrition.protein": "Protein",
