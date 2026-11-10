@@ -55,3 +55,11 @@ as untrusted source material and must describe one recipe.
 Vision extraction uses the same recipe schema and household catalog linking as
 URL import, then opens the same unsaved review editor. Cookbook pages are neither
 stored nor used as recipe cover images; only an explicit save creates the recipe.
+
+## Pasted text
+
+`POST /api/recipes/import/text` turns pasted text into the same unsaved draft. Rules first
+(`recipe-import/text.ts`): the first line is the title, "Zutaten" / "Zubereitung" style headings
+split the rest; without headings, short lines that start with an amount are ingredients and the
+others are steps. Only when the rules find no recipe and the AI is available, the AI extracts it.
+The web import field sends a lone `http(s)` URL to the link import and anything else here.

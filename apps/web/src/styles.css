@@ -1684,7 +1684,8 @@ select:focus-visible {
   height: 20px;
 }
 .recipe-form textarea,
-.recipe-notes-form textarea {
+.recipe-notes-form textarea,
+.import-source textarea {
   width: 100%;
   min-height: 100px;
   padding: 12px;
@@ -2631,4 +2632,11 @@ body [data-sonner-toast][data-styled="true"].shopping-feedback [data-button] {
   border-radius: var(--radius-control);
   background: var(--warning);
   color: var(--warning-foreground);
+}
+.import-source {
+  display: grid;
+  gap: 12px;
+}
+.import-source .field-hint {
+  margin-top: 0;
 }

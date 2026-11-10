@@ -300,16 +300,14 @@ function Recipe() {
                 {recipe.steps.length === 0 ? (
                   <p>{m["recipes.no_steps"]()}</p>
                 ) : (
-                  <>
-                    <ol className="step-rows">
-                      {recipe.steps.map((step, index) => (
-                        <li key={step.id}>
-                          <span className="step-number">{index + 1}</span>
-                          <span className="recipe-step-text">{step.text}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </>
+                  <ol className="step-rows">
+                    {recipe.steps.map((step, index) => (
+                      <li key={step.id}>
+                        <span className="step-number">{index + 1}</span>
+                        <span className="recipe-step-text">{step.text}</span>
+                      </li>
+                    ))}
+                  </ol>
                 )}
                 {recipe.nutrition && (
                   <RecipeNutrition

@@ -202,14 +202,13 @@ under the last-cooked date and names the cooking household member. The library
 offers one suggestion selector for neglected recipes, personal favorites and
 recipes with known preparation plus cooking time of at most 30 minutes.
 
-Layout: Photo import - choose a link or ordered cookbook pages, then review the
-draft in the existing recipe editor -> stack inside the import section; scroll
-owner: `.app-main`; avoid nested scrolling and fixed-width file names.
-The primary action loads the selected source; manual entry stays beside the
-import controls and becomes primary when photo AI is unavailable. Reading
-priorities are source, upload limits and page order, then extraction. File and
-camera inputs, ordered removable pages, pending state, inline errors and the
-explicit unsaved review are required. Cookbook pages are not recipe cover images.
+Layout: Recipe import - one field takes a recipe link or pasted recipe text, then
+the draft is reviewed in the existing recipe editor; scroll owner: `.app-main`.
+The primary action loads the source; manual entry is the secondary action below.
+The photo section (camera and gallery inputs, ordered removable pages, upload
+limits) appears only when a vision model is available. Pending state, inline
+errors and the explicit unsaved review are required. Cookbook pages are not recipe
+cover images.
 
 - **Button:** primary (filled red), secondary (soft fill), ghost, destructive. Fixed geometry
   in every state; press scales to 0.98.

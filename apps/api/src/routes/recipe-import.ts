@@ -19,6 +19,7 @@ import {
   type RecipeImportErrorCode,
 } from "../recipe-import";
 import { importPhotoRecipe } from "../recipe-import/photos";
+import { importRecipeText } from "../recipe-import/text";
 import type { RecipeHttpTransport } from "../recipe-import/transport";
 
 const importInputSchema = z.object({
@@ -192,6 +193,31 @@ export const recipeImport = new Hono<HouseholdEnv>()
       return c.json({
         draft: await linkDraftIngredients(c.get("householdId"), draft, ai),
         method: "photos" as const,
+        image: null,
+        warnings: [],
+      });
+    },
+  )
+  .post(
+    "/import/text",
+    validator("json", (value) =>
+      z.object({ text: z.string().trim().min(1).max(20_000) }).parse(value),
+    ),
+    async (c) => {
+      let imported: Awaited<ReturnType<typeof importRecipeText>>;
+      try {
+        imported = await importRecipeText(c.req.valid("json").text, ai);
+      } catch (error) {
+        if (error instanceof RecipeImportError) throw apiError(error.code);
+        throw error;
+      }
+      return c.json({
+        draft: await linkDraftIngredients(
+          c.get("householdId"),
+          imported.draft,
+          ai,
+        ),
+        method: imported.method,
         image: null,
         warnings: [],
       });
