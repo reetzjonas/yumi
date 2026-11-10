@@ -619,5 +619,14 @@
   "queue.leftovers": "Reste",
   "recipes.import_source": "Link oder Rezepttext",
   "recipes.import_source_hint": "Link einer Rezeptseite oder kopierter Text mit Zutaten und Zubereitung. Du prüfst den Entwurf vor dem Speichern. Mit installierter App geht auch „Teilen → yumi“.",
-  "recipes.import_text_source": "Eingefügter Text"
+  "recipes.import_text_source": "Eingefügter Text",
+  "history.title": "Rückblick",
+  "history.detail": "Was es in den letzten Wochen gab",
+  "history.this_week": "Diese Woche",
+  "history.last_week": "Letzte Woche",
+  "history.week_of": "Woche ab {date}",
+  "history.planned": "Eingeplant.",
+  "history.plan_again": "{name} wieder einplanen",
+  "history.empty_title": "Noch nichts gekocht",
+  "history.empty_description": "Sobald ihr Gerichte als gekocht markiert, seht ihr hier, was es wann gab."
 }

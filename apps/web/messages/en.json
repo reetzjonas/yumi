@@ -619,5 +619,14 @@
   "queue.leftovers": "Leftovers",
   "recipes.import_source": "Link or recipe text",
   "recipes.import_source_hint": "A recipe page link or copied text with ingredients and steps. You review the draft before saving. With the app installed, “Share → yumi” works too.",
-  "recipes.import_text_source": "Pasted text"
+  "recipes.import_text_source": "Pasted text",
+  "history.title": "History",
+  "history.detail": "What you ate in the last weeks",
+  "history.this_week": "This week",
+  "history.last_week": "Last week",
+  "history.week_of": "Week of {date}",
+  "history.planned": "Planned.",
+  "history.plan_again": "Plan {name} again",
+  "history.empty_title": "Nothing cooked yet",
+  "history.empty_description": "Once you mark meals as cooked, you will see here what you had and when."
 }

@@ -1,6 +1,7 @@
 import {
   cookLog,
   ingredient,
+  mealQueueEntry,
   recipe,
   recipeImage,
   recipeIngredient,
@@ -25,6 +26,7 @@ import {
   gte,
   ilike,
   inArray,
+  isNull,
   or,
   sql,
 } from "drizzle-orm";
@@ -316,6 +318,59 @@ export const recipes = new Hono<HouseholdEnv>()
       return c.json(rows);
     },
   )
+  .get("/history", async (c) => {
+    // What the household ate: cooked recipes plus finished meals without a recipe.
+    const householdId = c.get("householdId");
+    const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+    const [cooked, meals] = await Promise.all([
+      db
+        .select({
+          id: cookLog.id,
+          recipeId: recipe.id,
+          title: recipe.title,
+          servings: recipe.servings,
+          at: cookLog.cookedAt,
+          by: user.name,
+        })
+        .from(cookLog)
+        .innerJoin(recipe, eq(recipe.id, cookLog.recipeId))
+        .leftJoin(user, eq(user.id, cookLog.userId))
+        .where(
+          and(
+            eq(cookLog.householdId, householdId),
+            gte(cookLog.cookedAt, since),
+          ),
+        ),
+      db
+        .select({
+          id: mealQueueEntry.id,
+          title: mealQueueEntry.title,
+          at: mealQueueEntry.updatedAt,
+        })
+        .from(mealQueueEntry)
+        .where(
+          and(
+            eq(mealQueueEntry.householdId, householdId),
+            eq(mealQueueEntry.status, "cooked"),
+            isNull(mealQueueEntry.recipeId),
+            gte(mealQueueEntry.updatedAt, since),
+          ),
+        ),
+    ]);
+    return c.json(
+      [
+        ...cooked,
+        ...meals.map((meal) => ({
+          id: meal.id,
+          recipeId: null,
+          title: meal.title ?? "",
+          servings: null,
+          at: meal.at,
+          by: null,
+        })),
+      ].sort((a, b) => b.at.getTime() - a.at.getTime()),
+    );
+  })
   .get("/tags", async (c) => {
     const rows = await db.execute<{ tag: string }>(
       sql`select distinct unnest(${recipe.tags}) as tag from ${recipe}

@@ -2640,3 +2640,10 @@ body [data-sonner-toast][data-styled="true"].shopping-feedback [data-button] {
 .import-source .field-hint {
   margin-top: 0;
 }
+.history-day {
+  flex-shrink: 0;
+  width: 72px;
+  color: var(--muted-foreground);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}

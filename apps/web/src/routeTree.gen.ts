@@ -21,6 +21,7 @@ import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as MoreIndexRouteImport } from './routes/more.index'
 import { Route as MoreAboutRouteImport } from './routes/more.about'
 import { Route as MoreDataRouteImport } from './routes/more.data'
+import { Route as MoreHistoryRouteImport } from './routes/more.history'
 import { Route as MoreHouseholdRouteImport } from './routes/more.household'
 import { Route as MorePantryRouteImport } from './routes/more.pantry'
 import { Route as MoreRecurringRouteImport } from './routes/more.recurring'
@@ -93,6 +94,11 @@ const MoreDataRoute = MoreDataRouteImport.update({
   path: '/more/data',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MoreHistoryRoute = MoreHistoryRouteImport.update({
+  id: '/more/history',
+  path: '/more/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MoreHouseholdRoute = MoreHouseholdRouteImport.update({
   id: '/more/household',
   path: '/more/household',
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/invite/$token': typeof InviteTokenRoute
   '/more/about': typeof MoreAboutRoute
   '/more/data': typeof MoreDataRoute
+  '/more/history': typeof MoreHistoryRoute
   '/more/household': typeof MoreHouseholdRoute
   '/more/pantry': typeof MorePantryRoute
   '/more/recurring': typeof MoreRecurringRoute
@@ -186,6 +193,7 @@ export interface FileRoutesByTo {
   '/invite/$token': typeof InviteTokenRoute
   '/more/about': typeof MoreAboutRoute
   '/more/data': typeof MoreDataRoute
+  '/more/history': typeof MoreHistoryRoute
   '/more/household': typeof MoreHouseholdRoute
   '/more/pantry': typeof MorePantryRoute
   '/more/recurring': typeof MoreRecurringRoute
@@ -212,6 +220,7 @@ export interface FileRoutesById {
   '/invite/$token': typeof InviteTokenRoute
   '/more/about': typeof MoreAboutRoute
   '/more/data': typeof MoreDataRoute
+  '/more/history': typeof MoreHistoryRoute
   '/more/household': typeof MoreHouseholdRoute
   '/more/pantry': typeof MorePantryRoute
   '/more/recurring': typeof MoreRecurringRoute
@@ -239,6 +248,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/more/about'
     | '/more/data'
+    | '/more/history'
     | '/more/household'
     | '/more/pantry'
     | '/more/recurring'
@@ -264,6 +274,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/more/about'
     | '/more/data'
+    | '/more/history'
     | '/more/household'
     | '/more/pantry'
     | '/more/recurring'
@@ -289,6 +300,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/more/about'
     | '/more/data'
+    | '/more/history'
     | '/more/household'
     | '/more/pantry'
     | '/more/recurring'
@@ -315,6 +327,7 @@ export interface RootRouteChildren {
   InviteTokenRoute: typeof InviteTokenRoute
   MoreAboutRoute: typeof MoreAboutRoute
   MoreDataRoute: typeof MoreDataRoute
+  MoreHistoryRoute: typeof MoreHistoryRoute
   MoreHouseholdRoute: typeof MoreHouseholdRoute
   MorePantryRoute: typeof MorePantryRoute
   MoreRecurringRoute: typeof MoreRecurringRoute
@@ -415,6 +428,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MoreDataRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/more/history': {
+      id: '/more/history'
+      path: '/more/history'
+      fullPath: '/more/history'
+      preLoaderRoute: typeof MoreHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/more/household': {
       id: '/more/household'
       path: '/more/household'
@@ -507,6 +527,7 @@ const rootRouteChildren: RootRouteChildren = {
   InviteTokenRoute: InviteTokenRoute,
   MoreAboutRoute: MoreAboutRoute,
   MoreDataRoute: MoreDataRoute,
+  MoreHistoryRoute: MoreHistoryRoute,
   MoreHouseholdRoute: MoreHouseholdRoute,
   MorePantryRoute: MorePantryRoute,
   MoreRecurringRoute: MoreRecurringRoute,

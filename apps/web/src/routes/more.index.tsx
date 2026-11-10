@@ -3,6 +3,7 @@ import {
   Archive,
   ChevronRight,
   Database,
+  History,
   type LucideIcon,
   Repeat,
   Settings,
@@ -26,6 +27,7 @@ function MoreRow({
 }: {
   to:
     | "/more/household"
+    | "/more/history"
     | "/more/stores"
     | "/more/pantry"
     | "/more/recurring"
@@ -63,6 +65,12 @@ function More() {
           icon={Users}
           title={m["household.title"]()}
           detail={household?.name ?? ""}
+        />
+        <MoreRow
+          to="/more/history"
+          icon={History}
+          title={m["history.title"]()}
+          detail={m["history.detail"]()}
         />
         <MoreRow
           to="/more/stores"

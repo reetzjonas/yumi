@@ -151,6 +151,47 @@ describe("recipes", () => {
     expect(await notes()).toBeNull();
   });
 
+  test("history lists cooked recipes and finished meals without a recipe", async () => {
+    const c = await householdMember("history");
+    const outsider = await householdMember("history-outsider");
+    const recipe = await createRecipe(c, { title: "Dal", servings: 3 });
+    expect(
+      (
+        await c.request(`/api/recipes/${recipe.id}/cooked`, {
+          method: "POST",
+          body: JSON.stringify({ requestId: crypto.randomUUID() }),
+        })
+      ).status,
+    ).toBeLessThan(300);
+    const queued = await c.request("/api/queue", {
+      method: "POST",
+      body: JSON.stringify({ title: "Pizza bestellen", servings: 2 }),
+    });
+    const { id } = z.object({ id: z.uuid() }).parse(await queued.json());
+    await c.request(`/api/queue/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: "cooked" }),
+    });
+    const history = async (client: Client) =>
+      z
+        .array(
+          z.object({
+            title: z.string(),
+            recipeId: z.uuid().nullable(),
+            servings: z.number().nullable(),
+          }),
+        )
+        .parse(await (await client.request("/api/recipes/history")).json());
+    expect(await history(c)).toEqual(
+      expect.arrayContaining([
+        { title: "Dal", recipeId: recipe.id, servings: 3 },
+        { title: "Pizza bestellen", recipeId: null, servings: null },
+      ]),
+    );
+    expect(await history(c)).toHaveLength(2);
+    expect(await history(outsider)).toEqual([]);
+  });
+
   test("list search also matches ingredient names", async () => {
     const c = await householdMember("ingredient-search");
     const onion = await onionId(c);
