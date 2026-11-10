@@ -97,7 +97,7 @@ function HouseholdLists() {
             />
           </ListManager>
           <QuickAdd
-            key={listId}
+            key={`add-${listId}`}
             listId={listId}
             onTiles={() => quickSheet.current?.showModal()}
           />
