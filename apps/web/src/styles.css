@@ -33,9 +33,9 @@
   /* Color worlds: one per section, set by [data-world] on the shell. */
   --basil: #1f5c45;
   --basil-tint: #d7eedd;
-  --lemon: #ffd23f;
+  --lemon: #f6cf57;
   --lemon-tint: #fff1bd;
-  --paprika: #ff6a4d;
+  --paprika: #f47a61;
   --paprika-tint: #ffe0d6;
   --plum: #cfd3ff;
   --plum-tint: #e9ebff;
@@ -73,7 +73,10 @@
   --success: #74d6a6;
   --basil: #1f6a4e;
   --basil-tint: #1c3a2e;
+  /* Lemon and paprika glare on the dark ground, so they step down. */
+  --lemon: #d3ad45;
   --lemon-tint: #3d3414;
+  --paprika: #d7684f;
   --paprika-tint: #47231b;
   --plum-tint: #2b2c4d;
 }

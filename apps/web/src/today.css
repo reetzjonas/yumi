@@ -58,6 +58,10 @@
   position: relative;
   height: 140px;
 }
+.today-hero-art > a {
+  display: block;
+  height: 100%;
+}
 .today-hero-tag {
   position: absolute;
   top: 14px;
@@ -69,6 +73,7 @@
   font-size: 0.8125rem;
   font-weight: 600;
   line-height: 1.2;
+  pointer-events: none;
 }
 .today-hero-body {
   display: grid;

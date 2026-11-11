@@ -314,6 +314,10 @@
     bottom: 24px;
     left: calc(50% + 46px);
   }
+  /* Keep the end of the recipe readable above the floating dock. */
+  .recipe-detail {
+    padding-bottom: 60px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .recipe-card-art {

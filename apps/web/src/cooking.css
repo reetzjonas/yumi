@@ -299,9 +299,12 @@
   --accent-foreground: #f6f2e8;
   --border: #77738a;
   --line: #2c2938;
+  /* Always dark, so it takes the dark steps of the world colors. */
+  --lemon: #d3ad45;
+  --paprika: #d7684f;
   --primary: var(--lemon);
   --primary-foreground: var(--ink);
-  --primary-hover: #ffe07a;
+  --primary-hover: #e0bf63;
   --ring: var(--lemon);
   --success: #74d6a6;
   --destructive: #ff9a85;

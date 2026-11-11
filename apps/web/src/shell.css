@@ -4,10 +4,12 @@
 .app-shell {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   height: 100dvh;
   isolation: isolate;
 }
 .app-main {
+  grid-row: 1;
   min-width: 0;
   overflow: hidden auto;
   overscroll-behavior-y: contain;
@@ -102,12 +104,21 @@
   padding: calc(20px + env(safe-area-inset-top))
     max(20px, env(safe-area-inset-right)) 22px
     max(20px, env(safe-area-inset-left));
+  --stage-height: 168px;
   border-radius: 0 0 34px 34px;
   background: var(--world);
   color: var(--on-world);
 }
+/* Top-level stages share one visible height, so the band does not jump
+   between sections; a lifted stage adds what the first card covers. */
+.stage:not([data-compact]) {
+  min-height: calc(var(--stage-height) + env(safe-area-inset-top));
+}
 .stage[data-lift] {
   padding-bottom: 62px;
+}
+.stage[data-lift]:not([data-compact]) {
+  min-height: calc(var(--stage-height) + 44px + env(safe-area-inset-top));
 }
 .stage-inner {
   width: min(100%, 680px);
@@ -261,6 +272,7 @@
   .app-navigation,
   [data-immersive] > .app-navigation {
     position: static;
+    grid-row: 1;
     grid-column: 1;
     display: flex;
     flex-direction: column;
@@ -308,6 +320,7 @@
     padding: 24px 32px 64px;
   }
   .stage {
+    --stage-height: 184px;
     padding: 26px 34px;
     border-radius: 0;
   }

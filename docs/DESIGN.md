@@ -39,15 +39,17 @@ is a historical snapshot and not a reference.
 
 Worlds (`data-world` on the shell sets `--world`, `--on-world`, `--world-tint`):
 
-| World   | world   | on-world | tint (light / dark) |
-| ------- | ------- | -------- | ------------------- |
-| heute   | #1f5c45 | #f4f1e2  | #d7eedd / #1c3a2e   |
-| liste   | #ffd23f | #17141f  | #fff1bd / #3d3414   |
-| rezepte | #ff6a4d | #17141f  | #ffe0d6 / #47231b   |
-| mehr    | #cfd3ff | #17141f  | #e9ebff / #2b2c4d   |
+| World   | world (light / dark) | on-world | tint (light / dark) |
+| ------- | -------------------- | -------- | ------------------- |
+| heute   | #1f5c45 / #1f6a4e    | #f4f1e2  | #d7eedd / #1c3a2e   |
+| liste   | #f6cf57 / #d3ad45    | #17141f  | #fff1bd / #3d3414   |
+| rezepte | #f47a61 / #d7684f    | #17141f  | #ffe0d6 / #47231b   |
+| mehr    | #cfd3ff              | #17141f  | #e9ebff / #2b2c4d   |
 
-Text on a world color always uses `--on-world`, never `--foreground`, because worlds keep their
-color in dark mode. Status is never color alone: it carries an icon or a word.
+Text on a world color always uses `--on-world`, never `--foreground`, because worlds stay colored
+surfaces in dark mode. Lemon and paprika step down there so they do not glare on the dark ground;
+the always-dark cooking view uses those dark steps in both themes. Status is never color alone: it
+carries an icon or a word.
 
 ## 3. Type
 
@@ -84,7 +86,9 @@ Quantities and timers use `tabular-nums`. Inputs never go below 16 px.
 
 - **Stage** (`PageHeader`): every page starts with it. Eyebrow, title, optional status line,
   round action buttons on the right, optional content inside (search, progress). `lift` lets the
-  first card overlap the stage. Sub-pages pass a back button and get a compact stage.
+  first card overlap the stage. The four top-level stages share one visible height (168 px, 184 px
+  from 1200 px) so the band does not jump between sections. Sub-pages pass a back button and get a
+  compact stage.
 - **Navigation:** Heute, Rezepte, Liste, Mehr. The active item shows its label on the world color.
   Recipe detail is immersive on phones: the navigation hides and the action dock takes its place.
 - The content column owns its scroll (`.app-main`); there is no horizontal page scroll down to

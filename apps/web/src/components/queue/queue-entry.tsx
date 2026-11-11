@@ -80,7 +80,19 @@ export function MealQueueEntry({
       {hero ? (
         <>
           <div className="today-hero-art">
-            {art}
+            {recipe ? (
+              // The title below is the named link; this one is for the pointer.
+              <Link
+                to="/recipes/$id"
+                params={{ id: recipe.id }}
+                tabIndex={-1}
+                aria-hidden="true"
+              >
+                {art}
+              </Link>
+            ) : (
+              art
+            )}
             <span className="today-hero-tag">{m["queue.up_today"]()}</span>
           </div>
           <div className="today-hero-body">
