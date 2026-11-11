@@ -5,7 +5,7 @@ import {
   splitQuickAdd,
 } from "@yumi/shared";
 import { Plus } from "lucide-react";
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   type CreatedIngredient,
@@ -37,6 +37,12 @@ export function QuickAdd({
   const categories = useShoppingCategories();
   const [text, setText] = useState("");
   const [created, setCreated] = useState<CreatedIngredient | null>(null);
+  const input = useRef<HTMLInputElement>(null);
+  // React focuses `autoFocus` on mount only, while the sheet is still closed.
+  // `showModal()` moves focus to the element carrying the real attribute.
+  useEffect(() => {
+    input.current?.toggleAttribute("autofocus", autoFocus);
+  }, [autoFocus]);
   const parts = splitQuickAdd(text);
   const several = parts.length > 1;
   const parsed = parseIngredientLine(text);
@@ -57,6 +63,7 @@ export function QuickAdd({
       onSuccess: () => {
         setText("");
         setCreated(null);
+        input.current?.focus();
       },
     });
   const knownName = suggestions.data?.some(
@@ -115,12 +122,11 @@ export function QuickAdd({
       </label>
       <div className="quick-add-row">
         <input
+          ref={input}
           id={id}
           className="quick-add-input"
           value={text}
           autoComplete="off"
-          // biome-ignore lint/a11y/noAutofocus: the add sheet exists to type into this field
-          autoFocus={autoFocus}
           enterKeyHint="send"
           maxLength={200}
           placeholder={m["shopping.quick_input_placeholder"]()}
