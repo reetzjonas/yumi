@@ -324,8 +324,14 @@
     padding: 26px 34px;
     border-radius: 0;
   }
+  /* The cards are narrower than the band here, so its lower edge shows
+     beside them: a lifted stage keeps the shared height and the first card
+     overlaps it instead of making it taller. */
   .stage[data-lift] {
-    padding-bottom: 70px;
+    padding-bottom: 42px;
+  }
+  .stage[data-lift]:not([data-compact]) {
+    min-height: calc(var(--stage-height) + env(safe-area-inset-top));
   }
   .stage-inner {
     width: min(100%, 1000px);

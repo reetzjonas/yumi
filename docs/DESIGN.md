@@ -87,8 +87,9 @@ Quantities and timers use `tabular-nums`. Inputs never go below 16 px.
 - **Stage** (`PageHeader`): every page starts with it. Eyebrow, title, optional status line,
   round action buttons on the right, optional content inside (search, progress). `lift` lets the
   first card overlap the stage. The four top-level stages share one visible height (168 px, 184 px
-  from 1200 px) so the band does not jump between sections. Sub-pages pass a back button and get a
-  compact stage.
+  from 1200 px) so the band does not jump between sections. From 1200 px the cards are narrower
+  than the band, so a lifted stage keeps that height and the card overlaps it. Sub-pages pass a
+  back button and get a compact stage.
 - **Navigation:** Heute, Rezepte, Liste, Mehr. The active item shows its label on the world color.
   Recipe detail is immersive on phones: the navigation hides and the action dock takes its place.
 - The content column owns its scroll (`.app-main`); there is no horizontal page scroll down to
