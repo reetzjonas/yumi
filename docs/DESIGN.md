@@ -84,12 +84,15 @@ Quantities and timers use `tabular-nums`. Inputs never go below 16 px.
 | < 1200  | Floating dark pill at the bottom, max 400 px wide | One column, max 720 px      |
 | >= 1200 | Dark rail on the left, 92 px, icons with labels   | Up to 1064 px, multi-column |
 
-- **Stage** (`PageHeader`): every page starts with it. Eyebrow, title, optional status line,
-  round action buttons on the right, optional content inside (search, progress). `lift` lets the
-  first card overlap the stage. The four top-level stages share one visible height (168 px, 184 px
-  from 1200 px) so the band does not jump between sections. From 1200 px the cards are narrower
-  than the band, so a lifted stage keeps that height and the card overlaps it. Sub-pages pass a
-  back button and get a compact stage.
+- **Stage** (`PageHeader`): every page starts with it, and it is built the same everywhere: one
+  small line, the title, round action buttons on the right. Nothing else goes into the stage
+  (search, progress and status sit at the top of the content), and the content starts below the
+  band, never on top of it. The small line is the eyebrow on a top-level page and the back link
+  naming the parent page on a sub-page; it keeps its height when empty. So the band has one height
+  and the title one position on every page; only a title that wraps makes it taller.
+- **Sub-pages** (anything with a back link) are forms and settings: from 1200 px their content is
+  one 640 px column under the title. Section headings use `.section-label`, explanations
+  `.section-description`; the first heading starts where every page's content starts.
 - **Navigation:** Heute, Rezepte, Liste, Mehr. The active item shows its label on the world color.
   Recipe detail is immersive on phones: the navigation hides and the action dock takes its place.
 - The content column owns its scroll (`.app-main`); there is no horizontal page scroll down to
@@ -104,16 +107,16 @@ Quantities and timers use `tabular-nums`. Inputs never go below 16 px.
   horizontal rail of meal cards ending in an add card. Tapping a card opens the entry sheet
   (servings, view recipe, cooked, cook, skip, move earlier/later, note, date, remove). A soft button
   pushes ingredients to the list. From 1200 px the card sits left and tiles and rail right.
-- **Liste (`/list`):** stage with the trip store as eyebrow, the list name, "Noch x von y" and a
-  progress bar; the round button opens the list menu (switch, create, rename, default store,
-  rows or tiles, delete). Aisles are cards with icon, name and count. A row has the check circle,
+- **Liste (`/list`):** stage with the trip store as eyebrow and the list name; the round button
+  opens the list menu (switch, create, rename, default store, rows or tiles, delete). "Noch x von
+  y" and a progress bar head the content. Aisles are cards with icon, name and count. A row has the check circle,
   pictogram, name with source recipes below, and the quantity as a pill. Tapping checks,
   long-press edits, swipe left removes with undo; with a fine pointer an edit button shows on
   hover. Checked items collapse into the "Im Wagen" tray. Tiles are the alternative view. The add
   dock floats above the navigation and opens the add sheet: field first, matches as large tiles,
   recents and the catalog below; "Milch, Eier" adds several. Rows keep the learned route order
   (ADR 0014); only consecutive rows of one category share a card.
-- **Rezepte (`/recipes`):** stage with the count, title and search; one chip strip (all, not
+- **Rezepte (`/recipes`):** stage with the count and title; the search field, then one chip strip (all, not
   lately, quick, favorites, then tags); a grid of art tiles 2/3/4 per row with a "last cooked"
   badge; a floating add button; import is the round stage action.
 - **Rezept (`/recipes/$id`):** cover (photo or illustration) with round back and more buttons; the
@@ -127,8 +130,8 @@ Quantities and timers use `tabular-nums`. Inputs never go below 16 px.
   servings stepper. Footer: round back button and a large lemon next button that becomes "mark
   cooked" on the last step. Swiping changes the step. The finish screen offers rating, the note for
   next time and planning leftovers. Scroll owner: `.cooking-body`.
-- **Mehr (`/more`):** plum stage, one card list (household, history, stores, pantry, recurring,
-  data, settings), then the install hint. Sub-pages use the compact stage.
+- **Mehr (`/more`):** plum stage with the household name as eyebrow, one card list (household, history, stores, pantry, recurring,
+  data, settings), then the install hint.
 - **Import (`/recipes/import`):** one field for a link or pasted text, the primary action, manual
   entry below; the photo section only with a vision model. The draft is reviewed in the editor.
 - **Sheets:** native `<dialog>`; a bottom sheet with a grab handle on phones, a centered dialog
@@ -138,7 +141,7 @@ Quantities and timers use `tabular-nums`. Inputs never go below 16 px.
 
 ## 7. Cross-cutting states
 
-Offline (notice under the stage: what works, what waits), sync pending (count in the stage of the
+Offline (notice under the stage: what works, what waits), sync pending (count next to the progress of the
 list), AI disabled (manual path only), empty (bold headline, one sentence, one primary action),
 loading (skeleton shaped like the content), error (human cause plus retry), no household (route to
 onboarding), permission denied (camera, notifications, wake lock: fallback and explanation).

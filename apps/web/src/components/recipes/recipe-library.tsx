@@ -110,18 +110,17 @@ export function RecipeLibrary() {
           </span>
         }
         actions={importAction}
-      >
-        <label className="stage-search">
-          <Search aria-hidden="true" size={20} />
-          <input
-            type="search"
-            value={search}
-            placeholder={m["recipes.search_placeholder"]()}
-            aria-label={m["recipes.search"]()}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </label>
-      </PageHeader>
+      />
+      <label className="search-field">
+        <Search aria-hidden="true" size={20} />
+        <input
+          type="search"
+          value={search}
+          placeholder={m["recipes.search_placeholder"]()}
+          aria-label={m["recipes.search"]()}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </label>
       <fieldset className="recipe-tags" aria-label={m["recipes.filter_tags"]()}>
         <button
           type="button"

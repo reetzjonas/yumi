@@ -20,9 +20,9 @@ function BackAnchor({
   label: string;
 }) {
   return (
-    <a ref={ref} {...props} className="stage-round">
-      <ChevronLeft aria-hidden="true" size={24} strokeWidth={2} />
-      <span className="sr-only">{label}</span>
+    <a ref={ref} {...props} className="stage-chip">
+      <ChevronLeft aria-hidden="true" size={16} strokeWidth={2.4} />
+      <span>{label}</span>
     </a>
   );
 }
@@ -31,10 +31,11 @@ export const BackLink = createLink(BackAnchor);
 
 /**
  * The stage: a section's colored header with the page title. Inside the app
- * shell it renders above the content column. `back` is a `BackLink` and makes
- * the stage compact; `eyebrow` and `sub` are one-line status texts around the
- * title; `actions` are the page's own controls; children sit inside the stage
- * (search, progress). `lift` lets the first content card overlap the stage.
+ * shell it renders above the content column. The line above the title holds
+ * `back` (a `BackLink` naming the parent page) on a sub-page, else `eyebrow`,
+ * a one-line status text; the line stays free when empty, so every stage has
+ * the same height and the title sits at the same place. `actions` are the
+ * page's own controls.
  * `heading={false}` keeps the title out of the outline when the content has
  * its own h1.
  */
@@ -43,39 +44,26 @@ export function PageHeader({
   back,
   heading = true,
   eyebrow,
-  sub,
   actions,
-  lift = false,
-  children,
 }: {
   title: ReactNode;
   back?: ReactNode;
   heading?: boolean;
   eyebrow?: ReactNode;
-  sub?: ReactNode;
   actions?: ReactNode;
-  lift?: boolean;
-  children?: ReactNode;
 }) {
   const slot = useContext(StageSlotContext);
   const Title = heading ? "h1" : "p";
   const content = (
-    <header
-      className="stage"
-      data-compact={back ? true : undefined}
-      data-lift={lift || undefined}
-    >
+    <header className="stage" data-sub={back ? true : undefined}>
       <div className="stage-inner">
         <div className="stage-top">
-          {back}
           <div className="stage-titles">
-            {eyebrow && <div className="stage-eyebrow">{eyebrow}</div>}
+            <div className="stage-eyebrow">{back ?? eyebrow}</div>
             <Title className="stage-title">{title}</Title>
           </div>
           {actions && <div className="stage-actions">{actions}</div>}
         </div>
-        {sub && <div className="stage-sub">{sub}</div>}
-        {children}
       </div>
     </header>
   );

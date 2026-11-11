@@ -88,7 +88,6 @@ function HouseholdLists() {
     <>
       <PageHeader
         title={listName ?? m["shopping.title"]()}
-        lift={!!listId}
         eyebrow={
           listId && (
             <StoreSessionChip
@@ -96,14 +95,6 @@ function HouseholdLists() {
               stores={stores.data ?? []}
               onChoose={session.choose}
             />
-          )
-        }
-        sub={
-          total > 0 && (
-            <>
-              {m["shopping.list_remaining"]({ open, total })}
-              <ShoppingSyncStatus listId={listId} />
-            </>
           )
         }
         actions={
@@ -123,16 +114,7 @@ function HouseholdLists() {
             />
           )
         }
-      >
-        {total > 0 && (
-          <progress
-            className="stage-progress"
-            max={total}
-            value={total - open}
-            aria-label={m["shopping.progress_label"]()}
-          />
-        )}
-      </PageHeader>
+      />
       {lists.isPending ? (
         <Skeleton className="h-32 w-full" />
       ) : lists.isError ? (
@@ -149,7 +131,21 @@ function HouseholdLists() {
         </EmptyState>
       ) : (
         <div className="shopping-page">
-          {total === 0 && <ShoppingSyncStatus listId={listId} />}
+          {total === 0 ? (
+            <ShoppingSyncStatus listId={listId} />
+          ) : (
+            <div className="list-progress">
+              <div className="list-progress-text">
+                {m["shopping.list_remaining"]({ open, total })}
+                <ShoppingSyncStatus listId={listId} />
+              </div>
+              <progress
+                max={total}
+                value={total - open}
+                aria-label={m["shopping.progress_label"]()}
+              />
+            </div>
+          )}
           {learned.isError && (
             <p className="form-error" role="alert">
               {errorMessage(learned.error)}

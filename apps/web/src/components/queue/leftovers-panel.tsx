@@ -248,7 +248,9 @@ export function LeftoversPanel() {
 
   return (
     <section className="queue-shopping" aria-labelledby={`${id}-title`}>
-      <h2 id={`${id}-title`}>{m["leftovers.title"]()}</h2>
+      <h2 id={`${id}-title`} className="section-label">
+        {m["leftovers.title"]()}
+      </h2>
       <p className="row-detail">{m["leftovers.hint"]()}</p>
       {leftovers.isPending ? (
         <p role="status">{m["shopping.loading"]()}</p>

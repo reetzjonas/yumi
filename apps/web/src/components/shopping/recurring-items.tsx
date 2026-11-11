@@ -157,7 +157,7 @@ export function RecurringItems({ listId }: { listId: string }) {
           if (label.trim()) create.mutate(quantity);
         }}
       >
-        <h3>{m["recurring.add"]()}</h3>
+        <h3 className="section-label">{m["recurring.add"]()}</h3>
         <fieldset className="shopping-item-fields" disabled={create.isPending}>
           <Field
             id={`${id}-label`}

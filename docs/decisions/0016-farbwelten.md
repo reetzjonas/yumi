@@ -15,8 +15,8 @@ concept was prototyped as a static board (`tmp/ui-concept.html`, branch
 - **Color worlds.** Each section owns a color used as a surface: Heute basil green, Liste lemon,
   Rezepte paprika, Mehr plum. The shell sets `data-world`; `--world`, `--on-world` and
   `--world-tint` follow.
-- **Stage instead of a top bar.** Every page starts with a colored stage carrying eyebrow, a large
-  title, a status line and the page's round action buttons. Cards may overlap it.
+- **Stage instead of a top bar.** Every page starts with a colored stage carrying one small line
+  (eyebrow or back link), a large title and the page's round action buttons.
 - **Thumb zone.** Navigation is a floating dark pill at the bottom (a dark rail from 1200 px).
   Adding, cooking and stepping live at the bottom too; the top is for reading.
 - **Ink is the action.** The one primary action is a black pill (cream in dark mode). Color means

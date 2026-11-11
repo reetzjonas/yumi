@@ -161,7 +161,6 @@ function MealQueue({
     <>
       <PageHeader
         title={m["queue.stage_title"]()}
-        lift={entries.length > 0}
         eyebrow={formatDate(new Date(), {
           weekday: "long",
           day: "numeric",

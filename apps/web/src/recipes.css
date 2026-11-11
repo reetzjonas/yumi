@@ -1,14 +1,9 @@
 /* Recipe library and recipe detail (Farbwelten). */
 
-.stage-search,
 .search-field {
   position: relative;
   display: block;
 }
-.stage-search {
-  margin-top: 16px;
-}
-.stage-search svg,
 .search-field svg {
   position: absolute;
   top: 16px;
@@ -16,20 +11,15 @@
   color: var(--muted-foreground);
   pointer-events: none;
 }
-.stage-search input,
 .search-field input {
   width: 100%;
   min-height: 52px;
   padding-left: 48px;
   border-radius: 26px;
 }
-.stage-search input {
+.recipe-library > .search-field input {
   border: 0;
-  background: #ffffff;
-  color: var(--ink);
-}
-.stage-search input:focus-visible {
-  outline-color: var(--on-world);
+  background: var(--card);
 }
 
 .recipe-library {

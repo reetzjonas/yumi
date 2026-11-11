@@ -70,8 +70,8 @@ export function HouseholdTransferPanel({
     <>
       <p className="meta">{m["transfer.household"]({ name: householdName })}</p>
       <section className="section">
-        <h2>{m["transfer.export_title"]()}</h2>
-        <p>{m["transfer.export_hint"]()}</p>
+        <h2 className="section-label">{m["transfer.export_title"]()}</h2>
+        <p className="section-description">{m["transfer.export_hint"]()}</p>
         <Button
           variant="outline"
           disabled={download.isPending}
@@ -97,8 +97,8 @@ export function HouseholdTransferPanel({
         )}
       </section>
       <section className="section">
-        <h2>{m["transfer.import_title"]()}</h2>
-        <p>{m["transfer.import_hint"]()}</p>
+        <h2 className="section-label">{m["transfer.import_title"]()}</h2>
+        <p className="section-description">{m["transfer.import_hint"]()}</p>
         <div className="field w-full min-w-0">
           <label htmlFor={fileId}>{m["transfer.file"]()}</label>
           <input

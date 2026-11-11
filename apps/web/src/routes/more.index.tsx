@@ -58,7 +58,7 @@ function More() {
   const household = me?.households.find((h) => h.id === me.activeHouseholdId);
   return (
     <>
-      <PageHeader title={m.nav_more()} />
+      <PageHeader title={m.nav_more()} eyebrow={household?.name} />
       <ul className="card-list">
         <MoreRow
           to="/more/household"
