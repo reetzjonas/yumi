@@ -576,23 +576,30 @@ export function ShoppingItems({
 
   return (
     <div className="shopping-items">
-      {runs.map((run) => (
-        <section key={run.rows[0]?.key} className="aisle">
-          <h2 className="aisle-heading">
-            <span className="aisle-icon">
-              <Pictogram
-                icon={
-                  categories.find((item) => item.id === run.categoryId)?.icon
-                }
-                size={22}
-              />
-            </span>
-            <span className="aisle-name">{categoryName(run.categoryId)}</span>
-            <span className="aisle-count">{run.rows.length}</span>
-          </h2>
-          <ul className={itemsClass}>{run.rows.map(renderRow)}</ul>
-        </section>
-      ))}
+      {!!runs.length && (
+        <div className="aisles">
+          {runs.map((run) => (
+            <section key={run.rows[0]?.key} className="aisle">
+              <h2 className="aisle-heading">
+                <span className="aisle-icon">
+                  <Pictogram
+                    icon={
+                      categories.find((item) => item.id === run.categoryId)
+                        ?.icon
+                    }
+                    size={22}
+                  />
+                </span>
+                <span className="aisle-name">
+                  {categoryName(run.categoryId)}
+                </span>
+                <span className="aisle-count">{run.rows.length}</span>
+              </h2>
+              <ul className={itemsClass}>{run.rows.map(renderRow)}</ul>
+            </section>
+          ))}
+        </div>
+      )}
       <GestureHint tiles={tiles} />
       {!!done.length && (
         <details className="cart-tray">

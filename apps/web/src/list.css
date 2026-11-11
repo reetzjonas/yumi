@@ -37,7 +37,8 @@
 }
 
 .shopping-page,
-.shopping-items {
+.shopping-items,
+.aisles {
   display: grid;
   gap: 12px;
   min-width: 0;
@@ -402,13 +403,21 @@ input.quick-add-input:focus-visible {
     bottom: 24px;
     left: calc(50% + 46px);
   }
-  .shopping-items {
+  /* Only the aisles flow into columns; the cart tray stays below them. */
+  .aisles {
     display: block;
     columns: 2;
     column-gap: 16px;
   }
-  .shopping-items > * {
+  .aisles > * {
     margin-bottom: 12px;
+    break-inside: avoid;
+  }
+  .cart-tray > .list-items {
+    columns: 2;
+    column-gap: 16px;
+  }
+  .cart-tray > .list-items > * {
     break-inside: avoid;
   }
   [data-world="liste"] .page-content {
