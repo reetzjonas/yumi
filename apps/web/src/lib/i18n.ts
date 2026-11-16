@@ -77,6 +77,10 @@ export function translateApiError(
       return m["errors.optimize_failed"]({}, options);
     case "optimize_unavailable":
       return m["errors.optimize_unavailable"]({}, options);
+    case "generate_failed":
+      return m["errors.generate_failed"]({}, options);
+    case "generate_unavailable":
+      return m["errors.generate_unavailable"]({}, options);
     case "internal_error":
       return m["errors.internal_error"]({}, options);
     default:

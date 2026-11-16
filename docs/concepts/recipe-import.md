@@ -70,3 +70,13 @@ stored nor used as recipe cover images; only an explicit save creates the recipe
 split the rest; without headings, short lines that start with an amount are ingredients and the
 others are steps. Only when the rules find no recipe and the AI is available, the AI extracts it.
 The web import field sends a lone `http(s)` URL to the link import and anything else here.
+
+## Written by the AI
+
+`POST /api/recipes/import/generate` with `{ prompt }` (at most 1000 characters, `recipe-import/generate.ts`)
+lets the `recipe-generate` feature write a recipe for a short description such as "Flammkuchen mit Feta,
+Zwiebeln, Speck und Roter Bete". It uses the extraction schema, writes in the prompt's language, keeps every
+named ingredient and writes ingredient lines as amount, unit, name so the parser and catalog linking work as
+for any import. No image is generated. A prompt that describes nothing to cook is `422 generate_failed`;
+unavailable AI is `503 generate_unavailable`, and the web hides the "Create with AI" card then (`generate`
+in `GET /api/recipes/import/capabilities`).

@@ -669,5 +669,14 @@
   "recipes.optimize_review": "Der Vorschlag der KI steht unten im Editor. Prüfe ihn und speichere ihn, oder verwirf ihn.",
   "recipes.optimize_discard": "Vorschlag verwerfen",
   "errors.optimize_failed": "Die KI hat keinen brauchbaren Vorschlag geliefert. Das Rezept bleibt unverändert; versuch es noch einmal.",
-  "errors.optimize_unavailable": "Die KI-Optimierung ist nicht eingerichtet."
+  "errors.optimize_unavailable": "Die KI-Optimierung ist nicht eingerichtet.",
+  "recipes.generate_title": "Mit KI erstellen",
+  "recipes.generate_hint": "Beschreib das Gericht in ein paar Worten. Die KI schreibt Zutaten und Schritte, du prüfst den Entwurf vor dem Speichern.",
+  "recipes.generate_prompt": "Was möchtest du kochen?",
+  "recipes.generate_placeholder": "Flammkuchen mit Feta, Zwiebeln, Speck und Roter Bete",
+  "recipes.generate_submit": "Rezept erstellen",
+  "recipes.generating": "KI schreibt das Rezept…",
+  "recipes.generate_source": "KI-Vorschlag",
+  "errors.generate_failed": "Die KI hat kein brauchbares Rezept geliefert. Formulier die Beschreibung etwas genauer und versuch es noch einmal.",
+  "errors.generate_unavailable": "Die KI-Rezepterstellung ist nicht eingerichtet."
 }

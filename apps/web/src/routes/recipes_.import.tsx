@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PHOTO_IMPORT_MIME_TYPES, photoImportUploadError } from "@yumi/shared";
-import { Camera } from "lucide-react";
+import { Camera, Sparkles } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { FormError } from "@/components/auth-layout";
 import { BackLink, PageHeader } from "@/components/page";
@@ -49,6 +49,7 @@ function ImportRecipe({ sharedUrl }: { sharedUrl?: string }) {
       input:
         | { kind: "url"; url: string }
         | { kind: "text"; text: string }
+        | { kind: "generate"; prompt: string }
         | { kind: "photos"; files: File[] },
     ) => {
       const response =
@@ -58,9 +59,13 @@ function ImportRecipe({ sharedUrl }: { sharedUrl?: string }) {
             ? await api.recipes.import.text.$post({
                 json: { text: input.text },
               })
-            : await api.recipes.import.photos.$post({
-                form: { "photos[]": input.files },
-              });
+            : input.kind === "generate"
+              ? await api.recipes.import.generate.$post({
+                  json: { prompt: input.prompt },
+                })
+              : await api.recipes.import.photos.$post({
+                  form: { "photos[]": input.files },
+                });
       const result = await (await ensureOk(response)).json();
       return {
         ...result,
@@ -107,12 +112,14 @@ function ImportRecipe({ sharedUrl }: { sharedUrl?: string }) {
                 ? new URL(load.variables.url).hostname.replace(/^www\./, "")
                 : load.variables?.kind === "text"
                   ? m["recipes.import_text_source"]()
-                  : m["recipes.import_pages_count"]({
-                      count:
-                        load.variables?.kind === "photos"
-                          ? load.variables.files.length
-                          : 0,
-                    })}
+                  : load.variables?.kind === "generate"
+                    ? m["recipes.generate_source"]()
+                    : m["recipes.import_pages_count"]({
+                        count:
+                          load.variables?.kind === "photos"
+                            ? load.variables.files.length
+                            : 0,
+                      })}
             </h2>
             <p role="status" className="import-card-text">
               {m["recipes.import_review"]()}
@@ -175,18 +182,78 @@ function ImportRecipe({ sharedUrl }: { sharedUrl?: string }) {
               </p>
             </div>
             <Button type="submit" disabled={load.isPending || !householdId}>
-              {load.isPending && pending !== "photos"
+              {load.isPending && (pending === "url" || pending === "text")
                 ? m["recipes.importing"]()
                 : m["recipes.import_submit"]()}
             </Button>
             <FormError
               message={
-                load.isError && pending !== "photos"
+                load.isError && (pending === "url" || pending === "text")
                   ? errorMessage(load.error)
                   : null
               }
             />
           </form>
+          {capabilities.data?.generate && (
+            <section className="import-card" aria-labelledby={`${id}-generate`}>
+              <div className="import-card-head">
+                <span className="import-card-icon">
+                  <Sparkles aria-hidden="true" size={20} />
+                </span>
+                <div>
+                  <h2 id={`${id}-generate`} className="import-card-title">
+                    {m["recipes.generate_title"]()}
+                  </h2>
+                  <p id={`${id}-generate-hint`} className="import-card-text">
+                    {m["recipes.generate_hint"]()}
+                  </p>
+                </div>
+              </div>
+              <form
+                className="import-card-form"
+                aria-busy={load.isPending}
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  const prompt = String(
+                    new FormData(event.currentTarget).get("prompt") ?? "",
+                  ).trim();
+                  if (prompt) load.mutate({ kind: "generate", prompt });
+                }}
+              >
+                <div className="field">
+                  <label htmlFor={`${id}-prompt`}>
+                    {m["recipes.generate_prompt"]()}
+                  </label>
+                  <input
+                    id={`${id}-prompt`}
+                    name="prompt"
+                    maxLength={1000}
+                    required
+                    placeholder={m["recipes.generate_placeholder"]()}
+                    aria-describedby={`${id}-generate-hint`}
+                    disabled={load.isPending}
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  variant="outline"
+                  className="w-full"
+                  disabled={load.isPending || !householdId}
+                >
+                  {load.isPending && pending === "generate"
+                    ? m["recipes.generating"]()
+                    : m["recipes.generate_submit"]()}
+                </Button>
+                <FormError
+                  message={
+                    load.isError && pending === "generate"
+                      ? errorMessage(load.error)
+                      : null
+                  }
+                />
+              </form>
+            </section>
+          )}
           {capabilities.data?.photos && (
             <section className="import-card" aria-labelledby={`${id}-photos`}>
               <div className="import-card-head">

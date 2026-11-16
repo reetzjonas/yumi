@@ -669,5 +669,14 @@
   "recipes.optimize_review": "The AI's suggestion is in the editor below. Review it and save it, or discard it.",
   "recipes.optimize_discard": "Discard suggestion",
   "errors.optimize_failed": "The AI did not return a usable suggestion. The recipe is unchanged; please try again.",
-  "errors.optimize_unavailable": "AI optimization is not set up."
+  "errors.optimize_unavailable": "AI optimization is not set up.",
+  "recipes.generate_title": "Create with AI",
+  "recipes.generate_hint": "Describe the dish in a few words. The AI writes ingredients and steps; you review the draft before saving.",
+  "recipes.generate_prompt": "What would you like to cook?",
+  "recipes.generate_placeholder": "Tarte flambée with feta, onions, bacon and beetroot",
+  "recipes.generate_submit": "Create recipe",
+  "recipes.generating": "AI is writing the recipe…",
+  "recipes.generate_source": "AI suggestion",
+  "errors.generate_failed": "The AI did not return a usable recipe. Describe the dish a little more precisely and try again.",
+  "errors.generate_unavailable": "AI recipe creation is not set up."
 }

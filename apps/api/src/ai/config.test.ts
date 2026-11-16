@@ -105,6 +105,7 @@ describe("AI availability", () => {
         AI_MODEL: "shared-model",
         AI_RECIPE_IMPORT_MODEL: "vision-model",
         AI_INGREDIENT_PARSE_MODEL: "batch-model",
+        AI_RECIPE_GENERATE_MODEL: "writer-model",
       }),
       (event) => server.events.push(event),
     );
@@ -126,6 +127,7 @@ describe("AI availability", () => {
         "shared-model",
         "shared-model",
         "shared-model",
+        "writer-model",
       ].map((name) => ({
         status: "success",
         value: { name },

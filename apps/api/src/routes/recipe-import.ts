@@ -23,6 +23,10 @@ import {
   RecipeImportError,
   type RecipeImportErrorCode,
 } from "../recipe-import";
+import {
+  GENERATE_PROMPT_MAX_LENGTH,
+  generateRecipe,
+} from "../recipe-import/generate";
 import { importPhotoRecipe } from "../recipe-import/photos";
 import { importRecipeText } from "../recipe-import/text";
 import type { RecipeHttpTransport } from "../recipe-import/transport";
@@ -264,6 +268,7 @@ export const recipeImport = new Hono<HouseholdEnv>()
     c.json({
       photos: ai.capability("recipe-import").available,
       optimize: ai.capability("recipe-optimize").available,
+      generate: ai.capability("recipe-generate").available,
     }),
   )
   .post(
@@ -313,6 +318,33 @@ export const recipeImport = new Hono<HouseholdEnv>()
           ai,
         ),
         method: imported.method,
+        image: null,
+        warnings: [],
+      });
+    },
+  )
+  .post(
+    "/import/generate",
+    validator("json", (value) =>
+      z
+        .object({
+          prompt: z.string().trim().min(1).max(GENERATE_PROMPT_MAX_LENGTH),
+        })
+        .parse(value),
+    ),
+    async (c) => {
+      const result = await generateRecipe(c.req.valid("json").prompt, ai);
+      if (result.status === "unavailable")
+        throw new HTTPException(503, { message: "generate_unavailable" });
+      if (result.status === "failed")
+        throw new HTTPException(422, { message: "generate_failed" });
+      return c.json({
+        draft: await linkDraftIngredients(
+          c.get("householdId"),
+          result.draft,
+          ai,
+        ),
+        method: "generated" as const,
         image: null,
         warnings: [],
       });
