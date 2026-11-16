@@ -25,13 +25,15 @@ capabilities are excluded. See [household transfer](data-transfer.md).
   null), nutrition_source? (seed provenance only; household edits that change the values clear it).
 - Seed nutrition comes first from the German nutrient database BLS 4.0 (Max Rubner-Institut, CC BY 4.0,
   ADR 0018): `packages/db/src/seed/bls-codes.ts` maps catalog keys to BLS codes, and
-  `bun run nutrition:bls` generates `bls-nutrition.ts` (carbs = available carbohydrate, salt = NaCl).
+  `bun run nutrition:bls` generates `packages/db/src/bls/bls-4.0.json` with all BLS foods
+  (carbs = available carbohydrate, salt = NaCl).
   Entries without a fitting BLS food get a hand-maintained estimate from
   `packages/db/src/seed/estimates.ts` (ADR 0017), then the USDA FoodData Central SR Legacy 2018 profile
   in `nutrition.ts` (mainly dried spices and Asian sauces). Each source writes its own
   `nutrition_source`. `estimates.ts` also fills missing densities, piece weights and pack sizes.
   Non-food items and things nobody eats as bought (coffee beans, tea) stay null. Household
-  ingredients created during import can carry an AI-estimated profile with
+  ingredients created or completed during import take the values of the BLS food the AI picks
+  from name-matched candidates (BLS source), else an AI-estimated profile with
   `nutrition_source = "AI estimate"`.
 - Recipe detail returns `nutrition` per serving of the base recipe, or null when no line counts.
   Lines without quantity, linked nutrition or a gram conversion (density, piece weight; can, pack and

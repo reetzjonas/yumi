@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import { blsFood } from "@yumi/db/bls";
 import { ingredient, ingredientCategory } from "@yumi/db/schema";
 import { ingredientInputSchema } from "@yumi/shared";
 import { eq } from "drizzle-orm";
@@ -29,6 +30,7 @@ const suggestion = {
   nutritionPer100g: nutrition,
   packSizes: [{ quantity: 100, unit: "ml" }],
   icon: "🍋",
+  blsCode: null,
 };
 
 test("AI ingredient proposals map categories and never save before confirmation", async () => {
@@ -48,16 +50,56 @@ test("AI ingredient proposals map categories and never save before confirmation"
 
   const result = await suggestIngredient("Yuzu juice", server.client);
 
+  const { blsCode: _, ...fields } = suggestion;
   expect(result).toEqual({
     method: "ai",
     draft: ingredientInputSchema.parse({
-      ...suggestion,
+      ...fields,
       categoryId: category.id,
     }),
+    nutritionSource: "AI estimate",
   });
   expect(await db.select({ id: ingredient.id }).from(ingredient)).toEqual(
     before,
   );
+});
+
+test("the AI picks a German nutrient database food and its values replace the estimate", async () => {
+  let offered = "";
+  const server = aiServer("ollama", ({ model, body }) => {
+    offered = JSON.stringify(body);
+    return completion(
+      "ollama",
+      model,
+      JSON.stringify({ ...suggestion, nameDe: "Lauch", blsCode: "G470100" }),
+    );
+  });
+
+  const result = await suggestIngredient("Lauchstangen", server.client);
+
+  // The prompt is JSON inside JSON, hence the escaped quotes.
+  expect(offered).toContain('\\"code\\":\\"G470100\\"');
+  expect(result.draft.nutritionPer100g).toEqual(
+    blsFood("G470100")?.values ?? null,
+  );
+  expect(result.nutritionSource).toBe(
+    "BLS 4.0 (Max Rubner-Institut, CC BY 4.0), G470100 Porree/Lauch, roh",
+  );
+});
+
+test("a BLS code that was not offered keeps the AI estimate", async () => {
+  const server = aiServer("ollama", ({ model }) =>
+    completion(
+      "ollama",
+      model,
+      JSON.stringify({ ...suggestion, blsCode: "D072000" }),
+    ),
+  );
+
+  const result = await suggestIngredient("Yuzu juice", server.client);
+
+  expect(result.draft.nutritionPer100g).toEqual(nutrition);
+  expect(result.nutritionSource).toBe("AI estimate");
 });
 
 test("AI cannot assign an invented category identifier", async () => {
@@ -101,6 +143,7 @@ test.each(["disabled", "invalid-output", "provider-error"])(
         nameEn: "Yuzu",
         icon: null,
       }),
+      nutritionSource: null,
     });
     if (mode === "disabled") expect(server.requests()).toBe(0);
   },

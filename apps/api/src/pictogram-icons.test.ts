@@ -61,6 +61,7 @@ test.each(["ai", "disabled", "failed", "invalid-output"] as const)(
               nutritionPer100g: null,
               packSizes: [],
               icon: mode === "invalid-output" ? "😀" : "🍎",
+              blsCode: null,
             }),
           ),
     );

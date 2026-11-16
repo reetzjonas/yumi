@@ -84,7 +84,6 @@ type ParsedImportLine = Awaited<
 /** AI proposals per import: new ingredients plus incomplete ones to fill in. */
 const MAX_INGREDIENT_PROPOSALS = 20;
 const PROPOSAL_CONCURRENCY = 4;
-const AI_NUTRITION_SOURCE = "AI estimate";
 
 type Suggestion = Awaited<ReturnType<typeof suggestIngredient>>;
 
@@ -113,10 +112,7 @@ async function createMissingIngredient(
     .values({
       ...suggestion.draft,
       householdId,
-      nutritionSource:
-        suggestion.method === "ai" && suggestion.draft.nutritionPer100g
-          ? AI_NUTRITION_SOURCE
-          : null,
+      nutritionSource: suggestion.nutritionSource,
     })
     .returning({ id: ingredient.id, categoryId: ingredient.categoryId });
   return created ?? null;
@@ -150,7 +146,7 @@ async function completeIngredient(
     .set({
       nutritionPer100g: row.nutritionPer100g ?? draft.nutritionPer100g,
       nutritionSource: fillNutrition
-        ? AI_NUTRITION_SOURCE
+        ? suggestion.nutritionSource
         : row.nutritionSource,
       densityGPerMl: row.densityGPerMl ?? draft.densityGPerMl,
       pieceWeightG: row.pieceWeightG ?? draft.pieceWeightG,

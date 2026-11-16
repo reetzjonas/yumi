@@ -132,6 +132,7 @@ test("an import uses AI suggestions for newly created ingredients", async () => 
         nutritionPer100g: nutrition,
         packSizes: [],
         icon: "🍋",
+        blsCode: null,
       }),
     ),
   );
@@ -273,6 +274,7 @@ test("an import completes an incomplete household ingredient and keeps its own v
         nutritionPer100g: nutrition,
         packSizes: [{ quantity: 50, unit: "g" }],
         icon: null,
+        blsCode: null,
       }),
     ),
   );

@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { nutritionValuesSchema, pictogramFile } from "@yumi/shared";
+import { blsFood } from "../bls";
 import { BLS_CODES } from "./bls-codes";
-import { BLS_NUTRITION } from "./bls-nutrition";
 import { SEED_CATEGORIES } from "./categories";
 import {
   SEED_CONVERSION_ESTIMATES,
@@ -47,14 +47,14 @@ test("seed nutrition belongs to catalog keys and holds complete profiles", () =>
 test("BLS codes belong to catalog keys and resolve to a generated profile", () => {
   const keys = new Set(SEED_INGREDIENTS.map((i) => i.key));
   const invalid = Object.entries(BLS_CODES)
-    .filter(([key, code]) => !keys.has(key) || !(code in BLS_NUTRITION))
+    .filter(([key, code]) => !keys.has(key) || !blsFood(code))
     .map(([key]) => key);
   expect(invalid).toEqual([]);
 });
 
 test("BLS profiles win over estimates and USDA", () => {
   const pastry = nutritionFor("puff-pastry");
-  expect(pastry.nutritionPer100g).toBe(BLS_NUTRITION.D072000?.values ?? null);
+  expect(pastry.nutritionPer100g).toBe(blsFood("D072000")?.values ?? null);
   expect(pastry.nutritionSource).toBe(
     "BLS 4.0 (Max Rubner-Institut, CC BY 4.0), D072000 Blätterteig eifrei, roh",
   );

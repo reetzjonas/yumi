@@ -13,7 +13,8 @@
       "!**/migrations",
       "!apps/web/public/pictograms",
       "!deploy/helm/**/templates",
-      "!docs/design"
+      "!docs/design",
+      "!packages/db/src/bls/bls-4.0.json"
     ]
   },
   "formatter": {

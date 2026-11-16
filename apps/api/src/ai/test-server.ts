@@ -39,6 +39,8 @@ type RequestContext = {
   readonly request: Request;
   readonly model: string;
   readonly attempt: number;
+  /** The parsed request body, since the request stream is already read. */
+  readonly body: unknown;
 };
 
 export function aiServer(
@@ -50,12 +52,11 @@ export function aiServer(
     hostname: "127.0.0.1",
     port: 0,
     async fetch(request) {
-      const { model } = z
-        .object({ model: z.string() })
-        .parse(await request.json());
+      const body: unknown = await request.json();
+      const { model } = z.object({ model: z.string() }).parse(body);
       requests += 1;
       return respond
-        ? respond({ request, model, attempt: requests })
+        ? respond({ request, model, attempt: requests, body })
         : completion(provider, model);
     },
   });

@@ -18,8 +18,9 @@ data under CC BY 4.0: 7,140 foods with up to 138 components, every value with it
 
 - Each catalog entry maps to the BLS code of the food as bought (`packages/db/src/seed/bls-codes.ts`),
   e.g. "Blätterteig eifrei, roh", "Speisequark Halbfettstufe", "Schwein Kochschinken".
-- `bun run nutrition:bls <BLS_4_0_Daten_2025_DE.xlsx>` generates `bls-nutrition.ts` with our seven
-  values: ENERCC, PROT625, FAT, CHO (available carbohydrate, without fibre), SUGAR, FIBT, NACL.
+- `bun run nutrition:bls <BLS_4_0_Daten_2025_DE.xlsx>` writes all 7,140 BLS foods with our seven
+  values to `packages/db/src/bls/bls-4.0.json` (about 850 kB, read by `@yumi/db/bls`): ENERCC,
+  PROT625, FAT, CHO (available carbohydrate, without fibre), SUGAR, FIBT, NACL.
   Protein, fat and fibre the BLS leaves empty count as 0 (fibre in cheese, fat in wine); any other gap
   fails the script. The 14 MB source file is not committed.
 - Source order in the seed: BLS, then the hand-made estimate (ADR 0017), then USDA. USDA stays for
@@ -27,7 +28,13 @@ data under CC BY 4.0: 7,140 foods with up to 138 components, every value with it
 - `nutrition_source` names the BLS code and food; the recipe view credits the Max Rubner-Institut as
   CC BY 4.0 requires.
 - The catalog stays curated. The full BLS is not imported as ingredients: it contains dishes,
-  preparation variants and technical names. Using it as a lookup for imported ingredients is #113.
+  preparation variants and technical names.
+- Ingredients the AI proposes (recipe import, create dialog) look up the BLS too: `searchBls`
+  finds up to 12 foods by German or English name (compounds match their parts, raw before prepared
+  before dishes), the model picks one in the same request or none. A picked food supplies the
+  values and the BLS source; otherwise the model's own estimate stays, marked "AI estimate". The
+  lookup lives in memory, not in a database table: the data is static and small. In the create
+  dialog the user saves the values themselves, so no source is stored (clients cannot set one).
 
 ## Consequences
 

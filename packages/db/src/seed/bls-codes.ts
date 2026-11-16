@@ -1,5 +1,5 @@
 // Catalog key -> Bundeslebensmittelschlüssel (BLS 4.0) code of the food as bought.
-// `bun run nutrition:bls <BLS_4_0_Daten_2025_DE.xlsx>` regenerates bls-nutrition.ts from it.
+// `bun run nutrition:bls <BLS_4_0_Daten_2025_DE.xlsx>` regenerates src/bls/bls-4.0.json.
 // Entries without a fitting BLS food are left out and fall back to estimates.ts (ADR 0018).
 export const BLS_CODES: Record<string, string> = {
   // produce: vegetables
