@@ -914,6 +914,12 @@ select:focus-visible {
   gap: 12px 24px;
   margin: 0;
 }
+.nutrition-basis {
+  min-width: 0;
+  max-width: 320px;
+  margin: 0;
+  border: 0;
+}
 .nutrition-portions {
   display: flex;
   align-items: center;

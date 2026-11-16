@@ -5,6 +5,7 @@ import {
   ingredientWeightG,
   type NutritionValues,
   nutritionForPortions,
+  nutritionPer100g,
   nutritionValuesSchema,
   type RecipeNutritionLine,
 } from "./nutrition";
@@ -78,6 +79,18 @@ describe("nutritionForPortions", () => {
   });
 });
 
+describe("nutritionPer100g", () => {
+  test("scales per-serving values to 100 g of the counted raw weight", () => {
+    expect(nutritionPer100g(profile, 400)).toEqual(
+      nutritionForPortions(profile, 0.25),
+    );
+  });
+
+  test("has no value without a weight", () => {
+    expect(nutritionPer100g(profile, 0)).toBeNull();
+  });
+});
+
 describe("calculateRecipeNutrition", () => {
   test.each([
     ["g", 33, 33],
@@ -107,6 +120,7 @@ describe("calculateRecipeNutrition", () => {
           fiberG: (6 * grams) / 100 / 3,
           saltG: (0.25 * grams) / 100 / 3,
         },
+        weightPerServingG: grams / 3,
         includedIngredients: 1,
         totalIngredients: 1,
         ignoredIngredients: 0,
@@ -147,6 +161,7 @@ describe("calculateRecipeNutrition", () => {
         fiberG: 4.5,
         saltG: 0.1875,
       },
+      weightPerServingG: 75,
       includedIngredients: 2,
       totalIngredients: 7,
       ignoredIngredients: 0,
@@ -180,6 +195,7 @@ describe("calculateRecipeNutrition", () => {
         fiberG: 3,
         saltG: 0.125,
       },
+      weightPerServingG: 50,
       includedIngredients: 1,
       totalIngredients: 2,
       ignoredIngredients: 1,
@@ -237,6 +253,7 @@ describe("calculateRecipeNutrition", () => {
 
     expect(result).toEqual({
       perServing: zeroProfile,
+      weightPerServingG: 50,
       includedIngredients: 2,
       totalIngredients: 2,
       ignoredIngredients: 0,

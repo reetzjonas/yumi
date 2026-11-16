@@ -341,6 +341,7 @@ function Recipe() {
                     <RecipeNutrition
                       key={`${recipe.id}-nutrition`}
                       nutrition={recipe.nutrition}
+                      servings={recipe.servings}
                     />
                   )}
                 </section>

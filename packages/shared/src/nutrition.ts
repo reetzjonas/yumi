@@ -33,6 +33,18 @@ export function nutritionForPortions(
   };
 }
 
+/**
+ * Values per 100 g of the counted ingredients' raw weight; cooking losses are unknown.
+ * Null when nothing with a weight counted.
+ */
+export function nutritionPer100g(
+  perServing: NutritionValues,
+  weightPerServingG: number,
+): NutritionValues | null {
+  if (!(weightPerServingG > 0)) return null;
+  return nutritionForPortions(perServing, 100 / weightPerServingG);
+}
+
 export type RecipeNutritionLine = {
   readonly quantity: number | null;
   readonly unit: Unit | null;
@@ -52,6 +64,8 @@ export type RecipeNutritionLine = {
 
 export type RecipeNutrition = {
   readonly perServing: NutritionValues;
+  /** Raw weight of the counted lines per serving, for values per 100 g. */
+  readonly weightPerServingG: number;
   readonly includedIngredients: number;
   readonly totalIngredients: number;
   readonly ignoredIngredients: number;
@@ -113,6 +127,7 @@ export function calculateRecipeNutrition(
   }[] = [];
   let includedIngredients = 0;
   let ignoredIngredients = 0;
+  let weightG = 0;
 
   for (const [position, line] of lines.entries()) {
     if (line.excludeFromNutrition) {
@@ -141,12 +156,14 @@ export function calculateRecipeNutrition(
     for (const nutrient of nutrientKeys) {
       perServing[nutrient] += (profile[nutrient] * weight) / 100 / servings;
     }
+    weightG += weight;
     includedIngredients += 1;
   }
 
   if (includedIngredients === 0) return null;
   return {
     perServing,
+    weightPerServingG: weightG / servings,
     includedIngredients,
     totalIngredients: lines.length - ignoredIngredients,
     ignoredIngredients,
