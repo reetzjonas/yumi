@@ -103,7 +103,8 @@ export type IngredientRow = NonNullable<
 
 /**
  * Links a parsed line to a catalog ingredient. A measure word joins the name
- * first ("3 Zehen Knoblauch" -> "Knoblauchzehen"), so counted parts match their own entry.
+ * first ("3 Zehen Knoblauch" -> "Knoblauchzehen"), so counted parts match their own entry;
+ * a trailing qualifier joins next ("Käse, geriebener" -> "geriebener Käse").
  */
 export async function matchParsedLine(
   householdId: string,
@@ -133,6 +134,23 @@ export async function matchParsedLine(
           confidentMatch: true,
         };
       }
+    }
+  }
+  // Chefkoch puts the qualifier after a comma ("Käse, geriebener"); together
+  // they may name a more specific entry ("geriebener Käse" -> Reibekäse).
+  if (parsed.note) {
+    for (const candidate of [
+      `${parsed.note} ${parsed.name}`,
+      `${parsed.name} ${parsed.note}`,
+    ]) {
+      const match = await bestMatch(householdId, candidate, true);
+      if (match)
+        return {
+          ...parsed,
+          note: null,
+          ingredient: match.row,
+          confidentMatch: true,
+        };
     }
   }
   // No counted part matched, so a measure word may still name a unit ("Becher").

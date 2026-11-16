@@ -172,17 +172,23 @@ describe("ingredient catalog", () => {
           "Currypulver",
           "200 g Schlagsahne",
           "125 ml Brühe",
+          "150 g Käse, geriebener",
         ],
       }),
     });
     expect(res.status).toBe(200);
     const rows = (await res.json()) as Array<{
+      note: string | null;
       ingredient: { key: string | null } | null;
     }>;
     expect(rows[1]?.ingredient?.key).toBe("pasta");
     expect(rows[5]?.ingredient?.key).toBe("vegetable-oil");
     expect(rows[6]?.ingredient?.key).toBe("mixed-mince");
     expect(rows[9]?.ingredient?.key).toBe("vegetable-stock");
+    expect(rows[10]).toMatchObject({
+      note: null,
+      ingredient: { key: "grated-cheese" },
+    });
   });
 
   test("parse keeps Chefkoch parenthesised names off unrelated catalog entries", async () => {
