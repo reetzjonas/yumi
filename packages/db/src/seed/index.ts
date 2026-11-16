@@ -2,6 +2,8 @@ import { sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type * as schema from "../schema";
 import { ingredient, ingredientCategory } from "../schema";
+import { BLS_CODES } from "./bls-codes";
+import { BLS_NUTRITION, BLS_SOURCE } from "./bls-nutrition";
 import { CATEGORY_KEYS, SEED_CATEGORIES } from "./categories";
 import {
   NUTRITION_ESTIMATE_SOURCE,
@@ -11,7 +13,15 @@ import {
 import { SEED_INGREDIENTS } from "./ingredients";
 import { NUTRITION_SOURCE, SEED_NUTRITION } from "./nutrition";
 
-function nutritionFor(key: string) {
+/** BLS 4.0 first, then the hand-made estimate, then USDA (ADR 0018). */
+export function nutritionFor(key: string) {
+  const code = BLS_CODES[key];
+  const bls = code ? BLS_NUTRITION[code] : undefined;
+  if (code && bls)
+    return {
+      nutritionPer100g: bls.values,
+      nutritionSource: `${BLS_SOURCE}, ${code} ${bls.name}`,
+    };
   const entry = SEED_NUTRITION[key];
   const estimate = SEED_NUTRITION_ESTIMATES[key];
   if (!entry && estimate)

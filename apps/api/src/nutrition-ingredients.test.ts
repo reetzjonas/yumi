@@ -124,7 +124,7 @@ describe("ingredient nutrition persistence", () => {
       .from(ingredient)
       .where(eq(ingredient.key, "onion"));
     expect(onion?.nutritionSource).toBe(
-      "USDA FoodData Central SR Legacy 2018, FDC 170000",
+      "BLS 4.0 (Max Rubner-Institut, CC BY 4.0), G480100 Speisezwiebel roh",
     );
     const created = await c.request("/api/recipes", {
       method: "POST",

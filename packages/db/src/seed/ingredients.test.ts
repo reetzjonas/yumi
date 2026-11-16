@@ -1,11 +1,13 @@
 import { expect, test } from "bun:test";
 import { nutritionValuesSchema, pictogramFile } from "@yumi/shared";
+import { BLS_CODES } from "./bls-codes";
+import { BLS_NUTRITION } from "./bls-nutrition";
 import { SEED_CATEGORIES } from "./categories";
 import {
   SEED_CONVERSION_ESTIMATES,
   SEED_NUTRITION_ESTIMATES,
 } from "./estimates";
-import { conversionFor } from "./index";
+import { conversionFor, nutritionFor } from "./index";
 import { SEED_INGREDIENTS } from "./ingredients";
 import { SEED_NUTRITION } from "./nutrition";
 
@@ -40,6 +42,23 @@ test("seed nutrition belongs to catalog keys and holds complete profiles", () =>
     )
     .map(([key]) => key);
   expect(invalid).toEqual([]);
+});
+
+test("BLS codes belong to catalog keys and resolve to a generated profile", () => {
+  const keys = new Set(SEED_INGREDIENTS.map((i) => i.key));
+  const invalid = Object.entries(BLS_CODES)
+    .filter(([key, code]) => !keys.has(key) || !(code in BLS_NUTRITION))
+    .map(([key]) => key);
+  expect(invalid).toEqual([]);
+});
+
+test("BLS profiles win over estimates and USDA", () => {
+  const pastry = nutritionFor("puff-pastry");
+  expect(pastry.nutritionPer100g).toBe(BLS_NUTRITION.D072000?.values ?? null);
+  expect(pastry.nutritionSource).toBe(
+    "BLS 4.0 (Max Rubner-Institut, CC BY 4.0), D072000 Blätterteig eifrei, roh",
+  );
+  expect(nutritionFor("quark").nutritionSource).toStartWith("BLS 4.0");
 });
 
 test("conversion factors are positive", () => {
@@ -94,8 +113,7 @@ test("estimated macronutrients fit into 100 g and roughly explain the energy", (
 
 test("food with nutrition in a counted default unit can be weighed", () => {
   const unweighable = SEED_INGREDIENTS.filter((i) => {
-    if (!(i.key in SEED_NUTRITION) && !(i.key in SEED_NUTRITION_ESTIMATES))
-      return false;
+    if (nutritionFor(i.key).nutritionPer100g === null) return false;
     const factors = conversionFor(i);
     if (i.unit === "pcs") return factors.pieceWeightG === null;
     if (i.unit === "bunch" || i.unit === "can" || i.unit === "pack")

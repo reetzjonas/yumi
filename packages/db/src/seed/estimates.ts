@@ -1,5 +1,5 @@
-// Hand-maintained estimates for catalog entries the generated USDA table does not
-// cover (regional dairy, sausages, spice blends, ready-made products), plus the
+// Hand-maintained estimates for catalog entries without a BLS profile (ADR 0018) and not
+// covered by the USDA table (spice blends, Asian staples, ready-made products), plus the
 // conversion factors typical recipe amounts need. See ADR 0017.
 import type { NutritionValues, Unit } from "@yumi/shared";
 

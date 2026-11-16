@@ -1,6 +1,6 @@
 # 0017: Estimated nutrition and weights instead of gaps
 
-- Status: Accepted (alpha)
+- Status: Accepted (alpha); source order superseded by 0018 (BLS first, then estimates, then USDA)
 - Date: 2026-11-11
 
 ## Context
