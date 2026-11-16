@@ -233,6 +233,7 @@ function HouseholdLists() {
                   key={recipe.id}
                   recipeId={recipe.id}
                   servings={recipe.servings}
+                  onAdded={() => recipeSheet.current?.close()}
                 />
               )}
             />

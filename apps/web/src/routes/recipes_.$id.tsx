@@ -210,6 +210,7 @@ function Recipe() {
                   key={`${householdId}-${id}-${currentServings}`}
                   recipeId={id}
                   servings={currentServings}
+                  onAdded={() => listSheet.current?.close()}
                 />
               </Sheet>
               <div className="segmented recipe-tabs">

@@ -24,9 +24,11 @@ import { m } from "@/paraglide/messages";
 export function AddRecipeToList({
   recipeId,
   servings: defaultServings,
+  onAdded,
 }: {
   recipeId: string;
   servings: number;
+  onAdded: () => void;
 }) {
   const id = useId();
   const householdId = useMe()?.activeHouseholdId;
@@ -94,6 +96,8 @@ export function AddRecipeToList({
         queryKey: ["shopping", householdId],
       });
       toast.success(m["shopping.recipe_added"]({ count: added }));
+      checklist.reset();
+      onAdded();
     },
     onError: (error) => toast.error(errorMessage(error)),
   });
