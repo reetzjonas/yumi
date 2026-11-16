@@ -655,5 +655,15 @@
   "queue.plan_hint": "Rezept oder Idee",
   "recipes.mode_neglected": "Lange nicht",
   "recipes.mode_quick": "Schnell",
-  "recipes.mode_favorites": "Favoriten"
+  "recipes.mode_favorites": "Favoriten",
+  "recipes.optimize": "Mit KI optimieren",
+  "recipes.optimize_hint": "Die KI sortiert die Zutaten, gliedert sie in Abschnitte, teilt die Schritte sinnvoll auf und verknüpft sie mit den Zutaten. Zutatenzeilen und Mengen bleiben, wie sie sind. Gespeichert wird erst mit „Rezept speichern“.",
+  "recipes.optimize_texts": "Auch Texte verbessern (Titel, Beschreibung, Schritte)",
+  "recipes.optimize_submit": "Optimieren",
+  "recipes.optimize_again": "Neuen Vorschlag holen",
+  "recipes.optimizing": "KI überarbeitet das Rezept…",
+  "recipes.optimize_review": "Der Vorschlag der KI steht unten im Editor. Prüfe ihn und speichere ihn, oder verwirf ihn.",
+  "recipes.optimize_discard": "Vorschlag verwerfen",
+  "errors.optimize_failed": "Die KI hat keinen brauchbaren Vorschlag geliefert. Das Rezept bleibt unverändert; versuch es noch einmal.",
+  "errors.optimize_unavailable": "Die KI-Optimierung ist nicht eingerichtet."
 }

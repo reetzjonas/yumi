@@ -265,7 +265,10 @@ async function linkDraftIngredients(
 export const recipeImport = new Hono<HouseholdEnv>()
   .use(requireAuth, requireHousehold)
   .get("/import/capabilities", (c) =>
-    c.json({ photos: ai.capability("recipe-import").available }),
+    c.json({
+      photos: ai.capability("recipe-import").available,
+      optimize: ai.capability("recipe-optimize").available,
+    }),
   )
   .post(
     "/import/photos",

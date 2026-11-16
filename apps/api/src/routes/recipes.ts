@@ -38,6 +38,7 @@ import { visibleTo } from "../catalog";
 import { type HouseholdEnv, requireAuth, requireHousehold } from "../context";
 import { db } from "../db";
 import { recipeIcon, recipeInsights } from "../recipe-insights";
+import { optimizeRecipe } from "../recipe-optimize";
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 type ParsedRecipe = z.output<typeof recipeInputSchema>;
@@ -430,6 +431,25 @@ export const recipes = new Hono<HouseholdEnv>()
     });
     return c.json(await loadRecipe(householdId, id, c.get("user").id));
   })
+  .post(
+    `${ID}/optimize`,
+    validator("json", (value) =>
+      z.object({ texts: z.boolean().default(false) }).parse(value),
+    ),
+    async (c) => {
+      const recipe = await loadRecipe(
+        c.get("householdId"),
+        z.uuid().parse(c.req.param("id")),
+        c.get("user").id,
+      );
+      const result = await optimizeRecipe(recipe, c.req.valid("json"));
+      if (result.status === "unavailable")
+        throw new HTTPException(503, { message: "optimize_unavailable" });
+      if (result.status === "failed")
+        throw new HTTPException(422, { message: "optimize_failed" });
+      return c.json({ draft: result.draft });
+    },
+  )
   .put(
     `${ID}/notes`,
     validator("json", (value) =>

@@ -9,6 +9,7 @@ import {
   Link as LinkIcon,
   Pencil,
   ShoppingBasket,
+  Sparkles,
   Trash2,
 } from "lucide-react";
 import { useRef, useState } from "react";
@@ -18,6 +19,7 @@ import { RecipeArt } from "@/components/recipes/recipe-art";
 import { RecipeInsights } from "@/components/recipes/recipe-insights";
 import { RecipeNotes } from "@/components/recipes/recipe-notes";
 import { RecipeNutrition } from "@/components/recipes/recipe-nutrition";
+import { useRecipeOptimizeAvailable } from "@/components/recipes/recipe-optimize";
 import { RecipeSharing } from "@/components/recipes/recipe-sharing";
 import { ServingsStepper } from "@/components/recipes/servings-selector";
 import { AddRecipeToList } from "@/components/shopping/add-recipe";
@@ -74,6 +76,7 @@ function Recipe() {
     },
     onError: (e) => toast.error(errorMessage(e)),
   });
+  const canOptimize = useRecipeOptimizeAvailable(householdId);
   const recipe = query.data;
   const currentServings = servings ?? recipe?.servings ?? 1;
   return (
@@ -158,6 +161,14 @@ function Recipe() {
                       {m["recipes.edit"]()}
                     </Link>
                   </Button>
+                  {canOptimize && (
+                    <Button asChild variant="ghost">
+                      <Link to="/recipes/$id/edit" params={{ id }}>
+                        <Sparkles size={20} aria-hidden="true" />
+                        {m["recipes.optimize"]()}
+                      </Link>
+                    </Button>
+                  )}
                   {recipe.sourceUrl && (
                     <Button asChild variant="ghost">
                       <a

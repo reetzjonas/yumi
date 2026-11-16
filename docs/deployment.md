@@ -63,10 +63,12 @@ Use `extraEnv` for configuration and `extraEnvFrom` with a Kubernetes Secret for
 | `AI_INGREDIENT_PARSE_ENABLED`  | `true`                      | Enable `ingredient-parse` when AI is globally enabled.                                                                 |
 | `AI_INGREDIENT_CREATE_ENABLED` | `true`                      | Enable `ingredient-create` when AI is globally enabled.                                                                |
 | `AI_MEAL_PLAN_ENABLED`         | `true`                      | Enable `meal-plan` (week suggestion) when AI is globally enabled.                                                      |
+| `AI_RECIPE_OPTIMIZE_ENABLED`   | `true`                      | Enable `recipe-optimize` (rework an existing recipe) when AI is globally enabled.                                      |
 | `AI_RECIPE_IMPORT_MODEL`       | `AI_MODEL`                  | Model override for recipe extraction; select a vision-capable model for photos.                                        |
 | `AI_INGREDIENT_PARSE_MODEL`    | `AI_MODEL`                  | Model override for batched ingredient parsing.                                                                         |
 | `AI_INGREDIENT_CREATE_MODEL`   | `AI_MODEL`                  | Model override for ingredient proposals.                                                                               |
 | `AI_MEAL_PLAN_MODEL`           | `AI_MODEL`                  | Model override for the week suggestion.                                                                                |
+| `AI_RECIPE_OPTIMIZE_MODEL`     | `AI_MODEL`                  | Model override for recipe optimization.                                                                                |
 | `VAPID_PUBLIC_KEY`             | unset                       | Web Push public key. Push notifications are off unless both VAPID keys are set (`bunx web-push generate-vapid-keys`).  |
 | `VAPID_PRIVATE_KEY`            | unset                       | Web Push private key; keep it in a Secret (`extraEnvFrom`).                                                            |
 | `VAPID_SUBJECT`                | `BETTER_AUTH_URL`           | Contact URL or `mailto:` address sent to the push services.                                                            |

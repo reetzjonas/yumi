@@ -38,7 +38,7 @@ export function RecipeEditor({
   initialImage?: File;
   householdId: string;
 }) {
-  const source = recipe ?? draft;
+  const source = draft ?? recipe;
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const savedId = useRef(recipe?.id);

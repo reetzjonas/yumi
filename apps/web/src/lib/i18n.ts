@@ -73,6 +73,10 @@ export function translateApiError(
       return m["errors.photo_import_failed"]({}, options);
     case "photo_import_no_recipe":
       return m["errors.photo_import_no_recipe"]({}, options);
+    case "optimize_failed":
+      return m["errors.optimize_failed"]({}, options);
+    case "optimize_unavailable":
+      return m["errors.optimize_unavailable"]({}, options);
     case "internal_error":
       return m["errors.internal_error"]({}, options);
     default:

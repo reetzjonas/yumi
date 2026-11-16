@@ -1,8 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { FormError } from "@/components/auth-layout";
 import { BackLink, PageHeader } from "@/components/page";
 import { RecipeEditor } from "@/components/recipes/recipe-editor";
+import {
+  type OptimizedDraft,
+  RecipeOptimize,
+} from "@/components/recipes/recipe-optimize";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
@@ -24,6 +29,10 @@ function EditRecipe() {
       (await ensureOk(await api.recipes[":id"].$get({ param: { id } }))).json(),
     enabled: Boolean(householdId),
   });
+  const [suggestion, setSuggestion] = useState<{
+    key: string;
+    draft: OptimizedDraft;
+  } | null>(null);
   return (
     <>
       <PageHeader
@@ -39,11 +48,23 @@ function EditRecipe() {
       {recipe.isPending && <Skeleton className="recipe-image" />}
       {recipe.isError && <FormError message={errorMessage(recipe.error)} />}
       {recipe.data && (
-        <RecipeEditor
-          key={`${householdId}:${id}`}
-          recipe={recipe.data}
-          householdId={householdId}
-        />
+        <>
+          <RecipeOptimize
+            recipeId={id}
+            householdId={householdId}
+            suggested={suggestion !== null}
+            onDraft={(draft) =>
+              setSuggestion({ key: crypto.randomUUID(), draft })
+            }
+            onDiscard={() => setSuggestion(null)}
+          />
+          <RecipeEditor
+            key={`${householdId}:${id}:${suggestion?.key ?? "saved"}`}
+            recipe={recipe.data}
+            draft={suggestion?.draft}
+            householdId={householdId}
+          />
+        </>
       )}
       {!recipe.data && (
         <Button variant="ghost" asChild>
