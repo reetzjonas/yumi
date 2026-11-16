@@ -146,7 +146,8 @@ export const BLS_CODES: Record<string, string> = {
   ricotta: "M741600",
   mascarpone: "M7A6800",
   "raclette-cheese": "M307700",
-  "grated-cheese": "M400600", // Schnittkäse mind. 45 % Fett i. Tr.
+  cheese: "M400600", // Schnittkäse mind. 45 % Fett i. Tr.
+  "grated-cheese": "M400600",
   "sliced-cheese": "M400600",
   "processed-cheese": "M810600",
   tofu: "H861000",

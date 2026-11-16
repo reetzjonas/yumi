@@ -1539,6 +1539,15 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
     packs: [[400, "g"]],
   },
   {
+    key: "cheese",
+    icon: "🧀",
+    de: "Käse",
+    en: "Cheese",
+    category: "dairy",
+    unit: "g",
+    packs: [[200, "g"]],
+  },
+  {
     key: "grated-cheese",
     icon: "🧀",
     de: "Reibekäse",

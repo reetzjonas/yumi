@@ -173,6 +173,7 @@ describe("ingredient catalog", () => {
           "200 g Schlagsahne",
           "125 ml Brühe",
           "150 g Käse, geriebener",
+          "100 g Käse",
         ],
       }),
     });
@@ -189,6 +190,7 @@ describe("ingredient catalog", () => {
       note: null,
       ingredient: { key: "grated-cheese" },
     });
+    expect(rows[11]?.ingredient?.key).toBe("cheese");
   });
 
   test("parse keeps Chefkoch parenthesised names off unrelated catalog entries", async () => {
