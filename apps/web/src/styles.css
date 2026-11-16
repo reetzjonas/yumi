@@ -1383,6 +1383,16 @@ select:focus-visible {
 }
 .picker-row-title {
   font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.picker-row-amount {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+.picker-list > .meta {
+  margin-bottom: 4px;
 }
 .recipe-picker {
   display: grid;
@@ -1607,7 +1617,6 @@ select:focus-visible {
   display: grid;
   gap: 4px;
 }
-.queue-preview-staples,
 .queue-remove-panel {
   padding: 16px;
   border: 1px solid var(--border);
@@ -1751,19 +1760,6 @@ select:focus-visible {
   font-weight: 600;
   overflow-wrap: anywhere;
   hyphens: auto;
-}
-
-.staple-check {
-  display: grid;
-  gap: 12px;
-  width: 100%;
-  min-width: 0;
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-}
-.staple-check h3 {
-  font-weight: 600;
 }
 
 .recurring-items {

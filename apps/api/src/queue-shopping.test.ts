@@ -143,7 +143,7 @@ test("confirmed queue additions retain sources and replay without duplicate item
   ).toEqual([f.first, f.second].sort());
 });
 
-test("the confirmation can explicitly include separated pantry staples", async () => {
+test("the confirmation adds exactly the chosen preview rows, staples included", async () => {
   const f = await fixture("queue-staples");
   const { version } = await preview(f.c, [f.first]);
   const response = await f.c.request("/api/queue/shopping", {
@@ -154,12 +154,11 @@ test("the confirmation can explicitly include separated pantry staples", async (
       version,
       listId: f.listId,
       requestId: crypto.randomUUID(),
-      includeStaples: true,
+      keys: [f.salt],
     }),
   });
   expect(response.status).toBe(201);
-  expect((await list(f.c, f.listId)).map((item) => item.label).sort()).toEqual([
-    "Flour",
+  expect((await list(f.c, f.listId)).map((item) => item.label)).toEqual([
     "Salt",
   ]);
 });

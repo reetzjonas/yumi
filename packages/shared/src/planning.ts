@@ -42,7 +42,8 @@ export const queueShoppingInputSchema = queueShoppingPreviewSchema.extend({
   listId: z.uuid(),
   version: z.string().regex(/^[0-9a-f]{64}$/),
   requestId: z.uuid(),
-  includeStaples: z.boolean().default(false),
+  /** keys of the preview rows to add; without it every row that is not a pantry staple */
+  keys: z.array(z.string().min(1).max(210)).max(2000).optional(),
 });
 
 export const queueRemovalSchema = z.object({

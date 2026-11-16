@@ -8,6 +8,7 @@ import {
   queueShoppingInputSchema,
   queueShoppingPreviewSchema,
   shoppingEventSchema,
+  shoppingItemIdentity,
 } from "@yumi/shared";
 import { and, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
@@ -65,24 +66,26 @@ export const queueShopping = new Hono<HouseholdEnv>()
         if (preview.version !== input.version)
           throw new HTTPException(409, { message: "invalid_input" });
         const clientTs = new Date().toISOString();
-        const events = preview.lines
-          .filter((line) => !line.staple || input.includeStaples)
-          .map(
-            ({
-              id,
-              factors: _factors,
-              checked: _checked,
-              staple: _staple,
-              ...payload
-            }) =>
-              shoppingEventSchema.parse({
-                id: queueShoppingEventId(input.requestId, id),
-                itemId: queueShoppingEventId(input.requestId, `item:${id}`),
-                type: "item_added",
-                clientTs,
-                payload,
-              }),
-          );
+        const keys = input.keys && new Set(input.keys);
+        const chosen = preview.lines.filter((line) =>
+          keys ? keys.has(shoppingItemIdentity(line)) : !line.staple,
+        );
+        const events = chosen.map(
+          ({
+            id,
+            factors: _factors,
+            checked: _checked,
+            staple: _staple,
+            ...payload
+          }) =>
+            shoppingEventSchema.parse({
+              id: queueShoppingEventId(input.requestId, id),
+              itemId: queueShoppingEventId(input.requestId, `item:${id}`),
+              type: "item_added",
+              clientTs,
+              payload,
+            }),
+        );
         const applied = await applyShoppingEventsInTransaction(
           tx,
           { householdId, listId: list.id, userId: c.get("user").id },
@@ -93,9 +96,7 @@ export const queueShopping = new Hono<HouseholdEnv>()
             tx,
             householdId,
             input.requestId,
-            preview.lines.filter(
-              (line) => !line.staple || input.includeStaples,
-            ),
+            chosen,
           );
         }
         return applied.length;

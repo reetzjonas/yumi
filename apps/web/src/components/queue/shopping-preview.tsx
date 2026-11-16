@@ -2,6 +2,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import type { MergedItem } from "@yumi/shared";
 import { useId, useRef, useState } from "react";
+import {
+  IngredientChecklist,
+  useChecklist,
+} from "@/components/shopping/ingredient-checklist";
 import { Button } from "@/components/ui/button";
 import { ApiError, errorMessage } from "@/lib/api-error";
 import { getLocale } from "@/lib/i18n";
@@ -17,42 +21,30 @@ import { useMe } from "@/lib/session";
 import { useShoppingLists } from "@/lib/shopping";
 import { m } from "@/paraglide/messages";
 
-function PreviewItems({
-  items,
-  entries,
-}: {
-  items: MergedItem[];
-  entries: QueueEntry[];
-}) {
-  return (
-    <ul className="queue-preview-items">
-      {items.map((item) => (
-        <li key={item.key}>
-          <span className="row-title">
-            {item.amounts
-              .map((amount) =>
-                formatShoppingQuantity(amount.quantity, amount.unit),
-              )
-              .join(" + ")}{" "}
-            {item.label}
-          </span>
-          <span className="row-detail">
-            {entries
-              .filter((entry) =>
-                item.sources.some(
-                  (source) =>
-                    (source.kind === "queue" && source.id === entry.id) ||
-                    (source.kind === "recipe" && source.id === entry.recipeId),
-                ),
-              )
-              .map((entry) => entry.title)
-              .filter((title, index, titles) => titles.indexOf(title) === index)
-              .join(" · ")}
-          </span>
-        </li>
-      ))}
-    </ul>
-  );
+function checklistRows(
+  items: MergedItem[],
+  entries: QueueEntry[],
+  staple: boolean,
+) {
+  return items.map((item) => ({
+    key: item.key,
+    label: item.label,
+    amount: item.amounts
+      .map((amount) => formatShoppingQuantity(amount.quantity, amount.unit))
+      .join(" + "),
+    detail: entries
+      .filter((entry) =>
+        item.sources.some(
+          (source) =>
+            (source.kind === "queue" && source.id === entry.id) ||
+            (source.kind === "recipe" && source.id === entry.recipeId),
+        ),
+      )
+      .map((entry) => entry.title)
+      .filter((title, index, titles) => titles.indexOf(title) === index)
+      .join(" · "),
+    staple,
+  }));
 }
 
 export function QueueShoppingPreview({
@@ -71,7 +63,6 @@ export function QueueShoppingPreview({
   const queryClient = useQueryClient();
   const lists = useShoppingLists();
   const [selectedList, setSelectedList] = useState("");
-  const [includeStaples, setIncludeStaples] = useState(false);
   const request = useRef<{
     fingerprint: string;
     input: QueueShoppingInput;
@@ -104,14 +95,19 @@ export function QueueShoppingPreview({
     add.error.code === "invalid_input";
   const data = preview.data;
   const busy = disabled || preview.isPending || add.isPending;
-  const itemCount =
-    (data?.items.length ?? 0) +
-    (includeStaples ? (data?.staples.length ?? 0) : 0);
+  const rows = data
+    ? [
+        ...checklistRows(data.items, entries, false),
+        ...checklistRows(data.staples, entries, true),
+      ]
+    : [];
+  const checklist = useChecklist(rows);
+  const itemCount = checklist.selected.length;
 
   function loadPreview() {
     if (!entries.length) return;
     add.reset();
-    setIncludeStaples(false);
+    checklist.reset();
     request.current = null;
     preview.mutate({
       ids: entries.map((entry) => entry.id),
@@ -160,29 +156,14 @@ export function QueueShoppingPreview({
       )}
       {data && !preview.isPending && (
         <div className="queue-shopping-preview" aria-busy={add.isPending}>
-          <section className="queue-preview-group">
-            <h3>{m["queue.preview_needed"]()}</h3>
-            {data.items.length ? (
-              <PreviewItems items={data.items} entries={entries} />
-            ) : (
-              <p>{m["queue.preview_empty"]()}</p>
-            )}
-          </section>
-          {data.staples.length > 0 && (
-            <section className="queue-preview-group queue-preview-staples">
-              <h3>{m["pantry.check_title"]()}</h3>
-              <p>{m["queue.staples_hint"]()}</p>
-              <PreviewItems items={data.staples} entries={entries} />
-              <label className="queue-checkbox">
-                <input
-                  type="checkbox"
-                  checked={includeStaples}
-                  disabled={busy}
-                  onChange={(event) => setIncludeStaples(event.target.checked)}
-                />
-                <span>{m["queue.include_staples"]()}</span>
-              </label>
-            </section>
+          {rows.length ? (
+            <IngredientChecklist
+              rows={rows}
+              checklist={checklist}
+              disabled={busy}
+            />
+          ) : (
+            <p>{m["queue.preview_empty"]()}</p>
           )}
           {lists.isPending ? (
             <p role="status">{m["shopping.loading"]()}</p>
@@ -219,7 +200,7 @@ export function QueueShoppingPreview({
                   locale: getLocale(),
                   listId,
                   version: data.version,
-                  includeStaples,
+                  keys: checklist.selected,
                 };
                 const fingerprint = JSON.stringify(payload);
                 if (request.current?.fingerprint !== fingerprint) {
@@ -254,7 +235,9 @@ export function QueueShoppingPreview({
               >
                 {add.isPending
                   ? m["queue.shopping_adding"]()
-                  : m["queue.confirm_shopping"]()}
+                  : itemCount === 1
+                    ? m["shopping.add_selected_one"]()
+                    : m["shopping.add_selected"]({ count: itemCount })}
               </Button>
             </form>
           )}

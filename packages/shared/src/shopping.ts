@@ -121,6 +121,13 @@ function addAmount(
   amounts.push({ quantity, unit });
 }
 
+/** What makes two unchecked items the same row: the catalog ingredient, else the label. */
+export function shoppingItemIdentity(
+  item: Pick<MergeableItem, "ingredientId" | "label">,
+) {
+  return item.ingredientId ?? `label:${item.label.trim().toLowerCase()}`;
+}
+
 /**
  * Groups duplicates for display: unchecked items with the same catalog ingredient
  * (or the same free-text label) become one row with summed, unit-converted amounts.
@@ -129,9 +136,9 @@ function addAmount(
 export function mergeShoppingItems(items: MergeableItem[]): MergedItem[] {
   const groups = new Map<string, MergedItem>();
   for (const item of items) {
-    const identity =
-      item.ingredientId ?? `label:${item.label.trim().toLowerCase()}`;
-    const key = item.checked ? `checked:${item.id}` : identity;
+    const key = item.checked
+      ? `checked:${item.id}`
+      : shoppingItemIdentity(item);
     let group = groups.get(key);
     if (!group) {
       group = {
@@ -165,6 +172,8 @@ export const addRecipeToListSchema = z.object({
   recipeId: z.uuid(),
   servings: z.number().int().min(1).max(100).optional(),
   locale: z.enum(["de", "en"]).default("de"),
+  /** recipe ingredient lines to add; without it every line that is not a pantry staple */
+  lineIds: z.array(z.uuid()).max(500).optional(),
 });
 
 export interface QuickAddMatch {

@@ -100,6 +100,63 @@ async function recentItems(householdId: string) {
 const scale = (quantity: number | null, factor: number) =>
   quantity === null ? null : Math.round(quantity * factor * 1000) / 1000;
 
+/** A recipe's non-optional ingredients as scaled shopping items, staples flagged. */
+async function recipeShoppingLines(
+  householdId: string,
+  input: z.infer<typeof addRecipeToListSchema>,
+) {
+  const [source] = await db
+    .select({ id: recipe.id, servings: recipe.servings })
+    .from(recipe)
+    .where(
+      and(eq(recipe.id, input.recipeId), eq(recipe.householdId, householdId)),
+    )
+    .limit(1);
+  if (!source) throw new HTTPException(404, { message: "not_found" });
+  const lines = await db
+    .select({
+      id: recipeIngredient.id,
+      rawText: recipeIngredient.rawText,
+      quantity: recipeIngredient.quantity,
+      unit: recipeIngredient.unit,
+      ingredientId: recipeIngredient.ingredientId,
+      nameDe: ingredient.nameDe,
+      nameEn: ingredient.nameEn,
+    })
+    .from(recipeIngredient)
+    .leftJoin(ingredient, eq(ingredient.id, recipeIngredient.ingredientId))
+    .where(
+      and(
+        eq(recipeIngredient.recipeId, source.id),
+        eq(recipeIngredient.optional, false),
+      ),
+    )
+    .orderBy(asc(recipeIngredient.position));
+  const staples = new Set(
+    (
+      await db
+        .select({ ingredientId: pantryItem.ingredientId })
+        .from(pantryItem)
+        .where(eq(pantryItem.householdId, householdId))
+    ).map((row) => row.ingredientId),
+  );
+  const factor = (input.servings ?? source.servings) / source.servings;
+  return lines.map((line) => ({
+    id: line.id,
+    staple: !!line.ingredientId && staples.has(line.ingredientId),
+    payload: shoppingItemFieldsSchema.parse({
+      label: (
+        (input.locale === "en" ? line.nameEn : line.nameDe) ??
+        (parseIngredientLine(line.rawText).name || line.rawText)
+      ).slice(0, 200),
+      ingredientId: line.ingredientId,
+      quantity: scale(line.quantity, factor),
+      unit: unitSchema.safeParse(line.unit).data ?? null,
+      sources: [{ kind: "recipe", id: source.id }],
+    }),
+  }));
+}
+
 export const shopping = new Hono<HouseholdEnv>()
   .use(requireAuth, requireHousehold)
   .get("/lists", async (c) => {
@@ -212,6 +269,16 @@ export const shopping = new Hono<HouseholdEnv>()
     },
   )
   .post(
+    "/recipe-preview",
+    validator("json", (value) => addRecipeToListSchema.parse(value)),
+    async (c) =>
+      c.json({
+        lines: (
+          await recipeShoppingLines(c.get("householdId"), c.req.valid("json"))
+        ).map(({ payload, ...line }) => ({ ...line, ...payload })),
+      }),
+  )
+  .post(
     `${LIST}/recipes`,
     validator("json", (value) => addRecipeToListSchema.parse(value)),
     async (c) => {
@@ -219,77 +286,25 @@ export const shopping = new Hono<HouseholdEnv>()
       const listId = z.uuid().parse(c.req.param("id"));
       await assertListOwned(householdId, listId);
       const input = c.req.valid("json");
-      const [source] = await db
-        .select({ id: recipe.id, servings: recipe.servings })
-        .from(recipe)
-        .where(
-          and(
-            eq(recipe.id, input.recipeId),
-            eq(recipe.householdId, householdId),
-          ),
-        )
-        .limit(1);
-      if (!source) throw new HTTPException(404, { message: "not_found" });
-      const lines = await db
-        .select({
-          rawText: recipeIngredient.rawText,
-          quantity: recipeIngredient.quantity,
-          unit: recipeIngredient.unit,
-          ingredientId: recipeIngredient.ingredientId,
-          nameDe: ingredient.nameDe,
-          nameEn: ingredient.nameEn,
-        })
-        .from(recipeIngredient)
-        .leftJoin(ingredient, eq(ingredient.id, recipeIngredient.ingredientId))
-        .where(
-          and(
-            eq(recipeIngredient.recipeId, source.id),
-            eq(recipeIngredient.optional, false),
-          ),
-        )
-        .orderBy(asc(recipeIngredient.position));
-      const factor = (input.servings ?? source.servings) / source.servings;
+      const lineIds = input.lineIds && new Set(input.lineIds);
       const clientTs = new Date().toISOString();
-      const events: ShoppingEvent[] = lines.map((line) => ({
-        id: crypto.randomUUID(),
-        itemId: crypto.randomUUID(),
-        clientTs,
-        type: "item_added",
-        payload: {
-          label:
-            (input.locale === "en" ? line.nameEn : line.nameDe) ??
-            (parseIngredientLine(line.rawText).name || line.rawText),
-          ingredientId: line.ingredientId,
-          quantity: scale(line.quantity, factor),
-          unit: unitSchema.safeParse(line.unit).data ?? null,
-          sources: [{ kind: "recipe", id: source.id }],
-        },
-      }));
-      const staples = new Set(
-        (
-          await db
-            .select({ ingredientId: pantryItem.ingredientId })
-            .from(pantryItem)
-            .where(eq(pantryItem.householdId, householdId))
-        ).map((row) => row.ingredientId),
-      );
-      const isStaple = (event: ShoppingEvent) =>
-        event.type === "item_added" &&
-        !!event.payload.ingredientId &&
-        staples.has(event.payload.ingredientId);
-      const parsed = events
-        .filter((e) => !isStaple(e))
-        .map((e) => shoppingEventSchema.parse(e));
-      const applied = parsed.length
+      const events = (await recipeShoppingLines(householdId, input))
+        .filter((line) => (lineIds ? lineIds.has(line.id) : !line.staple))
+        .map(({ payload }) =>
+          shoppingEventSchema.parse({
+            id: crypto.randomUUID(),
+            itemId: crypto.randomUUID(),
+            clientTs,
+            type: "item_added",
+            payload,
+          } satisfies ShoppingEvent),
+        );
+      const applied = events.length
         ? await applyShoppingEvents(
             { listId, householdId, userId: c.get("user").id },
-            parsed,
+            events,
           )
         : [];
-      // offered as "check if you still have" so the client can add them anyway
-      const skipped = events.flatMap((e) =>
-        e.type === "item_added" && isStaple(e) ? [e.payload] : [],
-      );
-      return c.json({ added: applied.length, staples: skipped }, 201);
+      return c.json({ added: applied.length }, 201);
     },
   );
